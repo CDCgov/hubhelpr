@@ -49,10 +49,14 @@ update_hub_target_data <- function(
       date = lubridate::as_date(.data$weekendingdate),
       observation = as.numeric(.data[[nhsn_col_name]]),
       jurisdiction = stringr::str_replace(.data$jurisdiction, "USA", "US"),
-      location = forecasttools::us_location_recode(.data$jurisdiction, "abbr", "code"),
+      location = forecasttools::us_location_recode(
+        .data$jurisdiction,
+        "abbr",
+        "code"
+      ),
       as_of = !!today,
       target = glue::glue("wk inc {disease} hosp")
-     ) |>
+    ) |>
     dplyr::filter(!(.data$location %in% !!excluded_locations))
 
   hubverse_format_nhsn_data <- nhsn_data |> dplyr::select(-"jurisdiction")
