@@ -13,6 +13,7 @@ nssp_col_names <- list(
 #'
 #' @param base_hub_path Path to the base hub directory.
 #' @param disease Disease name ("covid" or "rsv").
+#' @param as_of Date of the data pull. Default is today's date.
 #' @param excluded_locations Vector of location codes to exclude from the output.
 #' Default value is c("78", "69", "66", "60"), corresponding to "US Virgin Islands",
 #' "Guam", "American Samoa", and "Northern Mariana Islands".
@@ -26,6 +27,7 @@ nssp_col_names <- list(
 update_hub_target_data <- function(
   base_hub_path,
   disease,
+  as_of = lubridate::today(),
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
   excluded_locations = c("78", "69", "66", "60"),
   legacy_file = FALSE
@@ -33,7 +35,6 @@ update_hub_target_data <- function(
   if (!disease %in% c("covid", "rsv")) {
     stop("'disease' must be either 'covid' or 'rsv'")
   }
-  today <- lubridate::today()
   output_dirpath <- fs::path(base_hub_path, "target-data")
   fs::dir_create(output_dirpath)
 
@@ -54,7 +55,7 @@ update_hub_target_data <- function(
         "abbr",
         "code"
       ),
-      as_of = !!today,
+      as_of = !!as_of,
       target = glue::glue("wk inc {disease} hosp")
     ) |>
     dplyr::filter(!(.data$location %in% !!excluded_locations))
@@ -90,7 +91,7 @@ update_hub_target_data <- function(
         "name",
         "code"
       ),
-      as_of = !!today,
+      as_of = !!as_of,
       target = glue::glue("wk inc {disease} prop ed visits")
     ) |>
     dplyr::select(
@@ -113,6 +114,5 @@ update_hub_target_data <- function(
     hubverse_format_nhsn_data,
     hubverse_format_nssp_data
   ) |>
-    dplyr::distinct() |>
     forecasttools::write_tabular_file(output_file)
 }

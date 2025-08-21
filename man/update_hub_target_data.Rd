@@ -7,6 +7,7 @@
 update_hub_target_data(
   base_hub_path,
   disease,
+  as_of = lubridate::today(),
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
   excluded_locations = c("78", "69", "66", "60"),
   legacy_file = FALSE
@@ -16,6 +17,8 @@ update_hub_target_data(
 \item{base_hub_path}{Path to the base hub directory.}
 
 \item{disease}{Disease name ("covid" or "rsv").}
+
+\item{as_of}{Date of the data pull. Default is today's date.}
 
 \item{nhsn_first_weekending_date}{First week-ending date to include for
 the NHSN dataset. Default value is "2024-11-09".}
