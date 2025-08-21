@@ -10,3 +10,16 @@ License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Imports: 
+    dplyr,
+    forecasttools,
+    fs,
+    glue,
+    lubridate,
+    readr,
+    stringr
+Remotes:
+    forecasttools=github::cdcgov/forecasttools
+Suggests:
+    testthat,
+    tibble

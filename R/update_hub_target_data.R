@@ -63,7 +63,7 @@ update_hub_target_data <- function(
       as_of = !!today,
       target = glue::glue("wk inc {disease} hosp")
     ) |>
-    dplyr::filter(!(location %in% !!excluded_locations))
+    dplyr::filter(!(.data$location %in% !!excluded_locations))
 
   hubverse_format_nhsn_data <- nhsn_data |> dplyr::select(-"jurisdiction")
 
@@ -99,7 +99,7 @@ update_hub_target_data <- function(
       as_of = !!today,
       target = glue::glue("wk inc {disease} prop ed visits")
     ) |>
-    dplyr::select(all_of(c(
+    dplyr::select(dplyr::all_of(c(
       "date",
       "observation",
       "location",
