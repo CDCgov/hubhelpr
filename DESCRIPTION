@@ -19,7 +19,8 @@ Imports:
     readr,
     stringr
 Remotes:
-    forecasttools=github::cdcgov/forecasttools
+    forecasttools=github::cdcgov/forecasttools,
+    hubUtils=github::hubverse-org/hubUtils
 Suggests:
     tibble,
     testthat (>= 3.0.0)

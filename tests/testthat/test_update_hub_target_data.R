@@ -10,15 +10,6 @@ update_hub_target_data_test <- function(
   output_file <- fs::path(base_hub_path, "target-data/time-series.parquet")
   fs::dir_create(fs::path(base_hub_path, "target-data"))
 
-  mock_target_ts <- tibble::tibble(
-    date = lubridate::as_date(character()),
-    observation = numeric(),
-    location = character(),
-    as_of = lubridate::as_date(character()),
-    target = character()
-  )
-  forecasttools::write_tabular_file(mock_target_ts, output_file)
-
   mock_nhsn <- tibble::tibble(
     weekendingdate = lubridate::as_date(c(
       "2024-11-09",

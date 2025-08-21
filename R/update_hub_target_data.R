@@ -109,8 +109,16 @@ update_hub_target_data <- function(
     dplyr::arrange(date, location)
 
   output_file <- fs::path(output_dirpath, "time-series", ext = "parquet")
-  forecasttools::read_tabular_file(output_file) |>
-    dplyr::bind_rows(hubverse_format_nhsn_data, hubverse_format_nssp_data) |>
+  if (fs::file_exists(output_file)) {
+    existing_data <- forecasttools::read_tabular_file(output_file)
+  } else {
+    existing_data <- hubverse_format_nhsn_data[0, ]
+  }
+  dplyr::bind_rows(
+    existing_data,
+    hubverse_format_nhsn_data,
+    hubverse_format_nssp_data
+  ) |>
     dplyr::distinct() |>
     forecasttools::write_tabular_file(output_file)
 }
