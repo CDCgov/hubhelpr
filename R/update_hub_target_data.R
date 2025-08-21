@@ -45,24 +45,14 @@ update_hub_target_data <- function(
     columns = nhsn_col_name,
     start_date = nhsn_first_weekending_date
   ) |>
-    dplyr::rename(
-      observation = nhsn_col_name,
-      date = "weekendingdate"
-    ) |>
     dplyr::mutate(
-      date = lubridate::as_date(.data$date),
-      observation = as.numeric(.data$observation),
-      jurisdiction = stringr::str_replace(.data$jurisdiction, "USA", "US")
-    ) |>
-    dplyr::mutate(
-      location = forecasttools::us_location_recode(
-        .data$jurisdiction,
-        "abbr",
-        "code"
-      ),
+      date = lubridate::as_date(.data$weekendingdate),
+      observation = as.numeric(.data[[nhsn_col_name]]),
+      jurisdiction = stringr::str_replace(.data$jurisdiction, "USA", "US"),
+      location = forecasttools::us_location_recode(.data$jurisdiction, "abbr", "code"),
       as_of = !!today,
       target = glue::glue("wk inc {disease} hosp")
-    ) |>
+     ) |>
     dplyr::filter(!(.data$location %in% !!excluded_locations))
 
   hubverse_format_nhsn_data <- nhsn_data |> dplyr::select(-"jurisdiction")
@@ -99,20 +89,20 @@ update_hub_target_data <- function(
       as_of = !!today,
       target = glue::glue("wk inc {disease} prop ed visits")
     ) |>
-    dplyr::select(dplyr::all_of(c(
+    dplyr::select(
       "date",
       "observation",
       "location",
       "as_of",
       "target"
-    ))) |>
+    ) |>
     dplyr::arrange(date, location)
 
   output_file <- fs::path(output_dirpath, "time-series", ext = "parquet")
   if (fs::file_exists(output_file)) {
     existing_data <- forecasttools::read_tabular_file(output_file)
   } else {
-    existing_data <- hubverse_format_nhsn_data[0, ]
+    existing_data <- NULL
   }
   dplyr::bind_rows(
     existing_data,
