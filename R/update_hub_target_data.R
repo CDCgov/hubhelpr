@@ -7,22 +7,22 @@ nssp_col_names <- list(
   rsv = "percent_visits_rsv"
 )
 
-##' Get and process target data for the hub
-##'
-##' This function pulls, formats and save NHSN and NSSP data for use in the hub.
-##'
-##' @param base_hub_path Path to the base hub directory.
-##' @param disease Disease name ("covid" or "rsv").
-##' @param excluded_locations Vector of location codes to exclude from the output.
-##' Default value is c("78", "69", "66", "60"), corresponding to "US Virgin Islands",
-##' "Guam", "American Samoa", and "Northern Mariana Islands".
-##' @param nhsn_first_weekending_date First week-ending date to include for
-##' the NHSN dataset. Default value is "2024-11-09".
-##' @param legacy_file Logical. Whether to write legacy CSV output (default: FALSE).
-##'
-##' @return Writes `time-series.parquet` and optionally legacy csv target data files
-##' to the target-data directory in the hub.
-##' @export
+#' Get and process target data for the hub
+#'
+#' This function pulls, formats and save NHSN and NSSP data for use in the hub.
+#'
+#' @param base_hub_path Path to the base hub directory.
+#' @param disease Disease name ("covid" or "rsv").
+#' @param excluded_locations Vector of location codes to exclude from the output.
+#' Default value is c("78", "69", "66", "60"), corresponding to "US Virgin Islands",
+#' "Guam", "American Samoa", and "Northern Mariana Islands".
+#' @param nhsn_first_weekending_date First week-ending date to include for
+#' the NHSN dataset. Default value is "2024-11-09".
+#' @param legacy_file Logical. Whether to write legacy CSV output (default: FALSE).
+#'
+#' @return Writes `time-series.parquet` and optionally legacy csv target data files
+#' to the target-data directory in the hub.
+#' @export
 update_hub_target_data <- function(
   base_hub_path,
   disease,
