@@ -5,8 +5,7 @@ update_hub_target_data_test <- function(
   nhsn_target,
   nssp_target
 ) {
-  base_hub_path <- tempfile(paste0("base_hub_", disease, "_"))
-  fs::dir_create(base_hub_path)
+  base_hub_path <- withr::local_tempdir(paste0("base_hub_", disease, "_"))
   output_file <- fs::path(base_hub_path, "target-data/time-series.parquet")
   fs::dir_create(fs::path(base_hub_path, "target-data"))
 
