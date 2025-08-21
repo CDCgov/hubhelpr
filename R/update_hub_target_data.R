@@ -12,20 +12,27 @@ nssp_col_names <- list(
 ##' This function pulls, formats and save NHSN and NSSP data for use in the hub.
 ##'
 ##' @param base_hub_path Path to the base hub directory.
-##' @param disease Disease name (e.g., "covid", "rsv").
+##' @param disease Disease name ("covid" or "rsv").
 ##' @param excluded_locations Vector of location codes to exclude from the output.
-##' @param first_full_weekending_date First week-ending date to include.
+##' Default value is c("78", "69", "66", "60"), corresponding to "US Virgin Islands",
+##' "Guam", "American Samoa", and "Northern Mariana Islands".
+##' @param nhsn_first_weekending_date First week-ending date to include for
+##' the NHSN dataset. Default value is "2024-11-09".
 ##' @param legacy_file Logical. Whether to write legacy CSV output (default: FALSE).
 ##'
-##' @returns Writes target data files to target-data directory in the hub.
+##' @return Writes `time-series.parquet` and optionally legacy csv target data files
+##' to the target-data directory in the hub.
 ##' @export
 update_hub_target_data <- function(
   base_hub_path,
   disease,
-  first_full_weekending_date = lubridate::as_date("2024-11-09"),
-  excluded_locations = c("78", "0", "69", "66", "60"),
+  nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
+  excluded_locations = c("78", "69", "66", "60"),
   legacy_file = FALSE
 ) {
+  if (!disease %in% c("covid", "rsv")) {
+    stop("'disease' must be either 'covid' or 'rsv'")
+  }
   today <- lubridate::today()
   output_dirpath <- fs::path(base_hub_path, "target-data")
   fs::dir_create(output_dirpath)
@@ -36,14 +43,14 @@ update_hub_target_data <- function(
   nhsn_data <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "nhsn_hrd_prelim",
     columns = nhsn_col_name,
-    start_date = first_full_weekending_date
+    start_date = nhsn_first_weekending_date
   ) |>
     dplyr::rename(
       observation = nhsn_col_name,
       date = "weekendingdate"
     ) |>
     dplyr::mutate(
-      date = as.Date(.data$date),
+      date = lubridate::as_date(.data$date),
       observation = as.numeric(.data$observation),
       jurisdiction = stringr::str_replace(.data$jurisdiction, "USA", "US")
     ) |>
@@ -82,7 +89,7 @@ update_hub_target_data <- function(
     locations = "All"
   ) |>
     dplyr::mutate(
-      date = as.Date(.data$week_end),
+      date = lubridate::as_date(.data$week_end),
       observation = as.numeric(.data[[nssp_col_name]]) / 100,
       location = forecasttools::us_location_recode(
         .data$geography,

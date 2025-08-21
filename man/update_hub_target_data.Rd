@@ -7,24 +7,28 @@
 update_hub_target_data(
   base_hub_path,
   disease,
-  first_full_weekending_date = lubridate::as_date("2024-11-09"),
-  excluded_locations = c("78", "0", "69", "66", "60"),
+  nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
+  excluded_locations = c("78", "69", "66", "60"),
   legacy_file = FALSE
 )
 }
 \arguments{
 \item{base_hub_path}{Path to the base hub directory.}
 
-\item{disease}{Disease name (e.g., "covid", "rsv").}
+\item{disease}{Disease name ("covid" or "rsv").}
 
-\item{first_full_weekending_date}{First week-ending date to include.}
+\item{nhsn_first_weekending_date}{First week-ending date to include for
+the NHSN dataset. Default value is "2024-11-09".}
 
-\item{excluded_locations}{Vector of location codes to exclude from the output.}
+\item{excluded_locations}{Vector of location codes to exclude from the output.
+Default value is c("78", "69", "66", "60"), corresponding to "US Virgin Islands",
+"Guam", "American Samoa", and "Northern Mariana Islands".}
 
 \item{legacy_file}{Logical. Whether to write legacy CSV output (default: FALSE).}
 }
 \value{
-Writes target data files to target-data directory in the hub.
+Writes \code{time-series.parquet} and optionally legacy csv target data files
+to the target-data directory in the hub.
 }
 \description{
 This function pulls, formats and save NHSN and NSSP data for use in the hub.

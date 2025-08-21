@@ -1,10 +1,4 @@
-library(fs)
-library(dplyr)
-library(testthat)
-library(hubhelpr)
-library(forecasttools)
-
-run_update_hub_target_data_test <- function(
+update_hub_target_data_test <- function(
   disease,
   nhsn_col,
   nssp_col,
@@ -12,21 +6,21 @@ run_update_hub_target_data_test <- function(
   nssp_target
 ) {
   base_hub_path <- tempfile(paste0("base_hub_", disease, "_"))
-  dir_create(base_hub_path)
-  output_file <- path(base_hub_path, "target-data/time-series.parquet")
+  fs::dir_create(base_hub_path)
+  output_file <- fs::path(base_hub_path, "target-data/time-series.parquet")
   fs::dir_create(fs::path(base_hub_path, "target-data"))
 
   mock_target_ts <- tibble::tibble(
-    date = as.Date(character()),
+    date = lubridate::as_date(character()),
     observation = numeric(),
     location = character(),
-    as_of = as.Date(character()),
+    as_of = lubridate::as_date(character()),
     target = character()
   )
   forecasttools::write_tabular_file(mock_target_ts, output_file)
 
   mock_nhsn <- tibble::tibble(
-    weekendingdate = as.Date(c(
+    weekendingdate = lubridate::as_date(c(
       "2024-11-09",
       "2024-11-16",
       "2024-11-09",
@@ -37,7 +31,7 @@ run_update_hub_target_data_test <- function(
     totalconfrsvnewadm = c(3, 4, 3, 2)
   )
   mock_nssp <- tibble::tibble(
-    week_end = as.Date(c("2024-11-09", "2024-11-09")),
+    week_end = lubridate::as_date(c("2024-11-09", "2024-11-09")),
     county = c("All", "All"),
     geography = c("Alabama", "Alaska"),
     percent_visits_covid = c(1.0, 0.2),
@@ -52,17 +46,16 @@ run_update_hub_target_data_test <- function(
       } else if (dataset == "nssp_prop_ed_visits") {
         mock_nssp |> dplyr::select(week_end, geography, all_of(columns))
       } else {
-        stop("Unknown dataset")
+        stop("Dataset type not supported by the Hubs")
       }
     },
     ns = "forecasttools"
   )
 
   expect_silent(
-    update_hub_target_data(
+    hubhelpr::update_hub_target_data(
       base_hub_path = base_hub_path,
-      disease = disease,
-      first_full_weekending_date = as.Date("2024-11-09")
+      disease = disease
     )
   )
 
@@ -78,14 +71,21 @@ run_update_hub_target_data_test <- function(
       dplyr::select(date, observation, location, target) |>
       dplyr::arrange(date, location),
     tibble::tibble(
-      date = as.Date(c(mock_nhsn$weekendingdate, mock_nssp$week_end)),
+      date = lubridate::as_date(c(
+        mock_nhsn$weekendingdate,
+        mock_nssp$week_end
+      )),
       observation = c(
         as.numeric(mock_nhsn[[nhsn_col]]),
         as.numeric(mock_nssp[[nssp_col]]) / 100
       ),
       location = c(
-        us_location_recode(mock_nhsn$jurisdiction, "abbr", "code"),
-        us_location_recode(mock_nssp$geography, "name", "code")
+        forecasttools::us_location_recode(
+          mock_nhsn$jurisdiction,
+          "abbr",
+          "code"
+        ),
+        forecasttools::us_location_recode(mock_nssp$geography, "name", "code")
       ),
       target = c(rep(nhsn_target, 4), rep(nssp_target, 2))
     ) |>
@@ -93,8 +93,8 @@ run_update_hub_target_data_test <- function(
   )
 }
 
-test_that("update_hub_target_data returns exactly the mocked NHSN data for covid", {
-  run_update_hub_target_data_test(
+test_that("update_hub_target_data returns expected data for covid", {
+  update_hub_target_data_test(
     disease = "covid",
     nhsn_col = "totalconfc19newadm",
     nssp_col = "percent_visits_covid",
@@ -103,12 +103,22 @@ test_that("update_hub_target_data returns exactly the mocked NHSN data for covid
   )
 })
 
-test_that("update_hub_target_data returns exactly the mocked NHSN data for rsv", {
-  run_update_hub_target_data_test(
+test_that("update_hub_target_data returns expected data for rsv", {
+  update_hub_target_data_test(
     disease = "rsv",
     nhsn_col = "totalconfrsvnewadm",
     nssp_col = "percent_visits_rsv",
     nhsn_target = "wk inc rsv hosp",
     nssp_target = "wk inc rsv prop ed visits"
+  )
+})
+
+test_that("update_hub_target_data errors for unsupported disease", {
+  expect_error(
+    update_hub_target_data(
+      base_hub_path = tempdir(),
+      disease = "flu"
+    ),
+    "'disease' must be either 'covid' or 'rsv'"
   )
 })
