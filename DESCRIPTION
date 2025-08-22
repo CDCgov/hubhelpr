@@ -17,7 +17,8 @@ Imports:
     glue,
     lubridate,
     readr,
-    stringr
+    stringr,
+    tidyselect
 Remotes:
     forecasttools=github::cdcgov/forecasttools,
     hubUtils=github::hubverse-org/hubUtils

@@ -18,14 +18,13 @@ update_hub_target_data(
 
 \item{disease}{Disease name ("covid" or "rsv").}
 
-\item{as_of}{Date of the data pull. Default is today's date.}
+\item{as_of}{As-of date of the data pull. Default is the system date as determined by \code{\link[lubridate:now]{lubridate::today()}}.}
 
 \item{nhsn_first_weekending_date}{First week-ending date to include for
 the NHSN dataset. Default value is "2024-11-09".}
 
 \item{excluded_locations}{Vector of location codes to exclude from the output.
-Default value is c("78", "74", "69", "66", "60"), corresponding to "US Virgin Islands",
-"U.S. Minor Outlying Islands", "Guam", "American Samoa", and "Northern Mariana Islands".}
+Default value \code{hubhelpr::excluded_locations}.}
 
 \item{legacy_file}{Logical. Whether to write legacy CSV output (default: FALSE).}
 }
