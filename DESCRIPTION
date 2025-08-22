@@ -17,12 +17,13 @@ Imports:
     glue,
     lubridate,
     readr,
-    stringr,
-    withr
+    stringr
 Remotes:
     forecasttools=github::cdcgov/forecasttools,
     hubUtils=github::hubverse-org/hubUtils
 Suggests:
     httptest2,
     testthat (>= 3.0.0),
-    tibble
+    tibble,
+    withr,
+    purrr
