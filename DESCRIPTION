@@ -17,9 +17,14 @@ Imports:
     glue,
     lubridate,
     readr,
-    stringr
+    stringr,
+    tidyselect
 Remotes:
-    forecasttools=github::cdcgov/forecasttools
+    forecasttools=github::cdcgov/forecasttools,
+    hubUtils=github::hubverse-org/hubUtils
 Suggests:
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3
+    httptest2,
+    testthat (>= 3.0.0),
+    tibble,
+    withr,
+    purrr
