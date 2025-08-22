@@ -1,5 +1,3 @@
-excluded_locations <- c("78", "74", "69", "66", "60")
-
 mockdir_tests <- fs::path(mockdir)
 
 ## replace env variables with fakes if and only if

@@ -15,8 +15,7 @@ nssp_col_names <- list(
 #' @param disease Disease name ("covid" or "rsv").
 #' @param as_of Date of the data pull. Default is today's date.
 #' @param excluded_locations Vector of location codes to exclude from the output.
-#' Default value is c("78", "74", "69", "66", "60"), corresponding to "US Virgin Islands",
-#' "U.S. Minor Outlying Islands", "Guam", "American Samoa", and "Northern Mariana Islands".
+#' Default value `hubhelpr::excluded_locations`.
 #' @param nhsn_first_weekending_date First week-ending date to include for
 #' the NHSN dataset. Default value is "2024-11-09".
 #' @param legacy_file Logical. Whether to write legacy CSV output (default: FALSE).
@@ -29,7 +28,7 @@ update_hub_target_data <- function(
   disease,
   as_of = lubridate::today(),
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
-  excluded_locations = c("78", "74", "69", "66", "60"),
+  excluded_locations = hubhelpr::excluded_locations,
   legacy_file = FALSE
 ) {
   if (!disease %in% c("covid", "rsv")) {

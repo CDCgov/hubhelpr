@@ -9,7 +9,7 @@ update_hub_target_data(
   disease,
   as_of = lubridate::today(),
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
-  excluded_locations = c("78", "74", "69", "66", "60"),
+  excluded_locations = hubhelpr::excluded_locations,
   legacy_file = FALSE
 )
 }
