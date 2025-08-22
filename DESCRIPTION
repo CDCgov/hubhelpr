@@ -23,5 +23,6 @@ Remotes:
     forecasttools=github::cdcgov/forecasttools,
     hubUtils=github::hubverse-org/hubUtils
 Suggests:
-    tibble,
-    testthat (>= 3.0.0)
+    httptest2,
+    testthat (>= 3.0.0),
+    tibble

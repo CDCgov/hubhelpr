@@ -9,7 +9,7 @@ update_hub_target_data(
   disease,
   as_of = lubridate::today(),
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
-  excluded_locations = c("78", "69", "66", "60"),
+  excluded_locations = c("78", "74", "69", "66", "60"),
   legacy_file = FALSE
 )
 }
@@ -24,8 +24,8 @@ update_hub_target_data(
 the NHSN dataset. Default value is "2024-11-09".}
 
 \item{excluded_locations}{Vector of location codes to exclude from the output.
-Default value is c("78", "69", "66", "60"), corresponding to "US Virgin Islands",
-"Guam", "American Samoa", and "Northern Mariana Islands".}
+Default value is c("78", "74", "69", "66", "60"), corresponding to "US Virgin Islands",
+"U.S. Minor Outlying Islands", "Guam", "American Samoa", and "Northern Mariana Islands".}
 
 \item{legacy_file}{Logical. Whether to write legacy CSV output (default: FALSE).}
 }

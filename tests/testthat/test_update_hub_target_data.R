@@ -1,105 +1,50 @@
-update_hub_target_data_test <- function(
-  disease,
-  nhsn_col,
-  nssp_col,
-  nhsn_target,
-  nssp_target
-) {
-  base_hub_path <- withr::local_tempdir(paste0("base_hub_", disease, "_"))
-  output_file <- fs::path(base_hub_path, "target-data/time-series.parquet")
-  fs::dir_create(fs::path(base_hub_path, "target-data"))
+excluded_locations <- c("78", "74", "69", "66", "60")
 
-  mock_nhsn <- tibble::tibble(
-    weekendingdate = lubridate::as_date(c(
-      "2024-11-09",
-      "2024-11-16",
-      "2024-11-09",
-      "2024-11-16"
-    )),
-    jurisdiction = c("MI", "MI", "CA", "CA"),
-    totalconfc19newadm = c(1, 2, 1, 0),
-    totalconfrsvnewadm = c(3, 4, 3, 2)
-  )
-  mock_nssp <- tibble::tibble(
-    week_end = lubridate::as_date(c("2024-11-09", "2024-11-09")),
-    county = c("All", "All"),
-    geography = c("Alabama", "Alaska"),
-    percent_visits_covid = c(1.0, 0.2),
-    percent_visits_rsv = c(0.5, 0.15)
-  )
-  assignInNamespace(
-    "pull_data_cdc_gov_dataset",
-    function(dataset, columns, start_date = NULL, locations = NULL) {
-      if (dataset == "nhsn_hrd_prelim") {
-        mock_nhsn |>
-          dplyr::select(weekendingdate, jurisdiction, all_of(columns))
-      } else if (dataset == "nssp_prop_ed_visits") {
-        mock_nssp |> dplyr::select(week_end, geography, all_of(columns))
-      } else {
-        stop("Dataset type not supported by the Hubs")
-      }
-    },
-    ns = "forecasttools"
-  )
+mockdir_tests <- fs::path(mockdir)
 
-  expect_silent(
-    hubhelpr::update_hub_target_data(
-      base_hub_path = base_hub_path,
-      disease = disease
+## replace env variables with fakes if and only if
+## we are mocking api calls
+if (fs::dir_exists(mockdir_tests)) {
+  withr::local_envvar(
+    .new = c(
+      "DATA_CDC_GOV_API_KEY_ID" = "fake_key",
+      "DATA_CDC_GOV_API_KEY_SECRET" = "fake_secret" #pragma: allowlist secret
     )
-  )
-
-  target_ts <- forecasttools::read_tabular_file(output_file)
-
-  expect_true(all(
-    c("date", "observation", "location", "as_of", "target") %in%
-      names(target_ts)
-  ))
-
-  expect_equal(
-    target_ts |>
-      dplyr::select(date, observation, location, target) |>
-      dplyr::arrange(date, location),
-    tibble::tibble(
-      date = lubridate::as_date(c(
-        mock_nhsn$weekendingdate,
-        mock_nssp$week_end
-      )),
-      observation = c(
-        as.numeric(mock_nhsn[[nhsn_col]]),
-        as.numeric(mock_nssp[[nssp_col]]) / 100
-      ),
-      location = c(
-        forecasttools::us_location_recode(
-          mock_nhsn$jurisdiction,
-          "abbr",
-          "code"
-        ),
-        forecasttools::us_location_recode(mock_nssp$geography, "name", "code")
-      ),
-      target = c(rep(nhsn_target, 4), rep(nssp_target, 2))
-    ) |>
-      dplyr::arrange(date, location)
   )
 }
 
-test_that("update_hub_target_data returns expected data for covid", {
-  update_hub_target_data_test(
-    disease = "covid",
-    nhsn_col = "totalconfc19newadm",
-    nssp_col = "percent_visits_covid",
-    nhsn_target = "wk inc covid hosp",
-    nssp_target = "wk inc covid prop ed visits"
-  )
-})
+purrr::walk(c("covid", "rsv"), function(disease) {
+  test_that(
+    glue::glue("update_hub_target_data returns expected data for {disease}"),
+    {
+      base_hub_path <- withr::local_tempdir(paste0("base_hub_", disease, "_"))
+      output_file <- fs::path(base_hub_path, "target-data/time-series.parquet")
+      fs::dir_create(fs::path(base_hub_path, "target-data"))
 
-test_that("update_hub_target_data returns expected data for rsv", {
-  update_hub_target_data_test(
-    disease = "rsv",
-    nhsn_col = "totalconfrsvnewadm",
-    nssp_col = "percent_visits_rsv",
-    nhsn_target = "wk inc rsv hosp",
-    nssp_target = "wk inc rsv prop ed visits"
+      httptest2::with_mock_dir(mockdir_tests, {
+        hubhelpr::update_hub_target_data(
+          base_hub_path = base_hub_path,
+          disease = disease
+        )
+
+        target_ts <- forecasttools::read_tabular_file(output_file)
+        expect_equal(
+          names(target_ts),
+          c("date", "observation", "location", "as_of", "target")
+        )
+        expect_setequal(
+          unique(target_ts$target),
+          c(
+            glue::glue("wk inc {disease} prop ed visits"),
+            glue::glue("wk inc {disease} hosp")
+          )
+        )
+        expect_setequal(
+          unique(target_ts$location),
+          setdiff(forecasttools::us_location_table$code, excluded_locations)
+        )
+      })
+    }
   )
 })
 

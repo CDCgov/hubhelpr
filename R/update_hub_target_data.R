@@ -15,8 +15,8 @@ nssp_col_names <- list(
 #' @param disease Disease name ("covid" or "rsv").
 #' @param as_of Date of the data pull. Default is today's date.
 #' @param excluded_locations Vector of location codes to exclude from the output.
-#' Default value is c("78", "69", "66", "60"), corresponding to "US Virgin Islands",
-#' "Guam", "American Samoa", and "Northern Mariana Islands".
+#' Default value is c("78", "74", "69", "66", "60"), corresponding to "US Virgin Islands",
+#' "U.S. Minor Outlying Islands", "Guam", "American Samoa", and "Northern Mariana Islands".
 #' @param nhsn_first_weekending_date First week-ending date to include for
 #' the NHSN dataset. Default value is "2024-11-09".
 #' @param legacy_file Logical. Whether to write legacy CSV output (default: FALSE).
@@ -29,7 +29,7 @@ update_hub_target_data <- function(
   disease,
   as_of = lubridate::today(),
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
-  excluded_locations = c("78", "69", "66", "60"),
+  excluded_locations = c("78", "74", "69", "66", "60"),
   legacy_file = FALSE
 ) {
   if (!disease %in% c("covid", "rsv")) {
@@ -40,7 +40,13 @@ update_hub_target_data <- function(
 
   nhsn_col_name <- nhsn_col_names[[disease]]
   nssp_col_name <- nssp_col_names[[disease]]
-
+  hubverse_ts_req_cols <- c(
+    "date",
+    "observation",
+    "location",
+    "as_of",
+    "target"
+  )
   nhsn_data <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "nhsn_hrd_prelim",
     columns = nhsn_col_name,
@@ -60,7 +66,8 @@ update_hub_target_data <- function(
     ) |>
     dplyr::filter(!(.data$location %in% !!excluded_locations))
 
-  hubverse_format_nhsn_data <- nhsn_data |> dplyr::select(-"jurisdiction")
+  hubverse_format_nhsn_data <- nhsn_data |>
+    dplyr::select(dplyr::all_of(hubverse_ts_req_cols))
 
   if (legacy_file) {
     legacy_file_name <- glue::glue(
@@ -72,7 +79,7 @@ update_hub_target_data <- function(
         state = "jurisdiction"
       ) |>
       dplyr::arrange(state) |>
-      dplyr::select(-c("as_of", "target")) |>
+      dplyr::select("state", "date", "value", "location") |>
       readr::write_csv(
         fs::path(output_dirpath, legacy_file_name)
       )
@@ -94,13 +101,7 @@ update_hub_target_data <- function(
       as_of = !!as_of,
       target = glue::glue("wk inc {disease} prop ed visits")
     ) |>
-    dplyr::select(
-      "date",
-      "observation",
-      "location",
-      "as_of",
-      "target"
-    ) |>
+    dplyr::select(dplyr::all_of(hubverse_ts_req_cols)) |>
     dplyr::arrange(date, location)
 
   output_file <- fs::path(output_dirpath, "time-series", ext = "parquet")
