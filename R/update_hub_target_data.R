@@ -13,7 +13,7 @@ nssp_col_names <- list(
 #'
 #' @param base_hub_path Path to the base hub directory.
 #' @param disease Disease name ("covid" or "rsv").
-#' @param as_of Date of the data pull. Default is today's date.
+#' @param as_of As-of date of the data pull. Default is the system date as determined by [lubridate::today()].
 #' @param excluded_locations Vector of location codes to exclude from the output.
 #' Default value `hubhelpr::excluded_locations`.
 #' @param nhsn_first_weekending_date First week-ending date to include for
@@ -66,7 +66,7 @@ update_hub_target_data <- function(
     dplyr::filter(!(.data$location %in% !!excluded_locations))
 
   hubverse_format_nhsn_data <- nhsn_data |>
-    dplyr::select(dplyr::all_of(hubverse_ts_req_cols))
+    dplyr::select(tidyselect::all_of(hubverse_ts_req_cols))
 
   if (legacy_file) {
     legacy_file_name <- glue::glue(
