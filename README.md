@@ -1,20 +1,33 @@
+# hubhelpr
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/CDCgov/hubhelpr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CDCgov/hubhelpr/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/CDCgov/hubhelpr/graph/badge.svg?token=1O8OW6N0TT)](https://codecov.io/gh/CDCgov/hubhelpr)
 <!-- badges: end -->
-
-# hubhelpr
 
 ## Overview
 
-{{Describe the purpose of your project. Add additional sections as necessary to help collaborators and potential collaborators understand and use your project.}}
+In-progress R package providing functions for CFA Hubs maintainence.
 
 ## Getting started
 
-{{How should someone new to this repo use it? How do you install it? What are the entry points to run it?}}
+You can install `hubhelpr` via [`pak`](https://pak.r-lib.org/). If you do not yet have `pak`, you should be able to install it with `install.packages('pak')`.
+
+Once `pak` is installed, run the following in an R session:
+
+```R
+pak::pkg_install('cdcgov/hubhelpr')
+```
+
+You can also install `hubhelpr` using the `remotes` R package (which itself can be installed with `install.packages('remotes')`):
+
+``` r
+remotes::install_github('cdcgov/hubhelpr')
+
+```
 
 ## Project admins
 
-- {{name}} <{{e-mail@cdc.gov}}> (CDC/IOD/ORR/CFA)
+- Subekshya Bidari, zib2@cdc.gov (CDC/IOD/ORR/CFA)
 
 ## Disclaimers
 
