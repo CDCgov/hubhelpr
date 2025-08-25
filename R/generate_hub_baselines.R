@@ -12,15 +12,15 @@ check_data_latency <- function(
   target_label
 ) {
   excess_latency_tbl <- epi_df |>
-    tidyr::drop_na(observation) |>
-    dplyr::group_by(geo_value) |>
-    dplyr::summarize(max_time_value = max(time_value), .groups = "drop") |>
+    tidyr::drop_na(.data$observation) |>
+    dplyr::group_by(.data$geo_value) |>
+    dplyr::summarize(max_time_value = max(.data$time_value), .groups = "drop") |>
     dplyr::mutate(
       excess_latency = pmax(
-        as.integer(desired_max_time_value - max_time_value) %/% 7L,
+        as.integer(desired_max_time_value - .data$max_time_value) %/% 7L,
         0L
       ),
-      has_excess_latency = excess_latency > 0L
+      has_excess_latency = .data$excess_latency > 0L
     )
 
   overlatent_err_thresh <- 0.20
@@ -33,7 +33,7 @@ check_data_latency <- function(
         "{100 * overlatent_err_thresh}% of locations have excess latency. ",
         "The reference date is {reference_date}, so we desire observations ",
         "at least through {desired_max_time_value}. However, ",
-        "{nrow(excess_latency_tbl |> dplyr::filter(has_excess_latency))} ",
+        "{nrow(excess_latency_tbl |> dplyr::filter(.data$has_excess_latency))} ",
         "location{?s} had excess latency."
       )
     )
@@ -43,7 +43,7 @@ check_data_latency <- function(
         "{target_label} forecast: Some locations have excess latency. ",
         "The reference date is {reference_date}, so we desire observations ",
         "at least through {desired_max_time_value}. However, ",
-        "{nrow(excess_latency_tbl |> dplyr::filter(has_excess_latency))} ",
+        "{nrow(excess_latency_tbl |> dplyr::filter(.data$has_excess_latency))} ",
         "location{?s} had excess latency."
       )
     )
@@ -51,17 +51,16 @@ check_data_latency <- function(
 }
 
 make_baseline_forecast <- function(
-  target_timeseries_path,
+  base_hub_path,
   target_name,
   target_label,
   reference_date,
   desired_max_time_value
 ) {
-  epi_df <- nanoparquet::read_parquet(target_timeseries_path) |>
-    dplyr::filter(target == target_name) |>
-    dplyr::filter(
-      as_of == max(as_of)
-    ) |>
+  epi_df <-  hubData::connect_target_timeseries(base_hub_path) |>
+    dplyr::collect() |>
+    forecasttools::hub_target_data_as_of()|>
+  dplyr::filter(.data$target == !!target_name) |>
     dplyr::mutate(
       geo_value = forecasttools::us_location_recode(
         .data$location,
@@ -70,9 +69,9 @@ make_baseline_forecast <- function(
       )
     ) |>
     dplyr::rename(
-      time_value = date
+      time_value = "date"
     ) |>
-    dplyr::select(-c("as_of", "location", "target")) |>
+    dplyr::select(-c("location", "target")) |>
     epiprocess::as_epi_df()
 
   check_data_latency(
@@ -89,7 +88,7 @@ make_baseline_forecast <- function(
       fcst <- epipredict::cdc_baseline_forecaster(
         epi_df |>
           dplyr::filter(
-            time_value <= desired_max_time_value
+            .data$time_value <= desired_max_time_value
           ),
         "observation",
         epipredict::cdc_baseline_args_list(aheads = 1:4, nsims = 1e5)
@@ -104,23 +103,23 @@ make_baseline_forecast <- function(
         # prepare -1 horizon predictions
         dplyr::bind_rows(
           epi_df |>
-            tidyr::drop_na(observation) |>
-            dplyr::slice_max(time_value) |>
+            tidyr::drop_na(.data$observation) |>
+            dplyr::slice_max(.data$time_value) |>
             dplyr::transmute(
               forecast_date = reference_date,
               target_date = reference_date - 7L,
               ahead = -1L,
               geo_value,
-              .pred = observation,
+              .pred = .data$observation,
               .pred_distn = hardhat::quantile_pred(
                 values = matrix(
                   rep(
-                    observation,
+                    .data$observation,
                     each = length(
                       epipredict::cdc_baseline_args_list()$quantile_levels
                     )
                   ),
-                  nrow = length(observation),
+                  nrow = length(.data$observation),
                   ncol = length(
                     epipredict::cdc_baseline_args_list()$quantile_levels
                   ),
@@ -138,17 +137,17 @@ make_baseline_forecast <- function(
       target = target_name,
       output_type = "quantile"
     ) |>
-    tidyr::drop_na(output_type_id) |>
-    dplyr::arrange(target, horizon, location) |>
+    tidyr::drop_na(.data$output_type_id) |>
+    dplyr::arrange(.data$target, .data$horizon, .data$location) |>
     dplyr::select(
-      reference_date,
-      horizon,
-      target,
-      target_end_date,
-      location,
-      output_type,
-      output_type_id,
-      value
+      "reference_date",
+      "horizon",
+      "target",
+      "target_end_date",
+      "location",
+      "output_type",
+      "output_type_id",
+      "value"
     )
   return(preds_formatted)
 }
@@ -182,16 +181,10 @@ generate_hub_baseline <- function(
     )
   }
 
-  target_timeseries_path <- fs::path(
-    base_hub_path,
-    "target-data",
-    "time-series.parquet"
-  )
-
   baseline_model_name <- baseline_model_name[[disease]]
 
   preds_hosp <- make_baseline_forecast(
-    target_timeseries_path = target_timeseries_path,
+    base_hub_path = base_hub_path,
     target_name = glue::glue("wk inc {disease} hosp"),
     target_label = "Hospital Admissions",
     reference_date = reference_date,
@@ -199,7 +192,7 @@ generate_hub_baseline <- function(
   )
 
   preds_ed <- make_baseline_forecast(
-    target_timeseries_path = target_timeseries_path,
+    base_hub_path = base_hub_path,
     target_name = glue::glue("wk inc {disease} prop ed visits"),
     target_label = "Proportion ED Visits",
     reference_date = reference_date,
