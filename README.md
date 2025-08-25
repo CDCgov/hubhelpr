@@ -27,7 +27,7 @@ remotes::install_github('cdcgov/hubhelpr')
 
 ## Project admins
 
-- Subekshya Bidari (zib2@cdc.gov) (CDC/IOD/ORR/CFA)
+- Subekshya Bidari, zib2@cdc.gov (CDC/IOD/ORR/CFA)
 
 ## Disclaimers
 
