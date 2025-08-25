@@ -14,7 +14,10 @@ check_data_latency <- function(
   excess_latency_tbl <- epi_df |>
     tidyr::drop_na(.data$observation) |>
     dplyr::group_by(.data$geo_value) |>
-    dplyr::summarize(max_time_value = max(.data$time_value), .groups = "drop") |>
+    dplyr::summarize(
+      max_time_value = max(.data$time_value),
+      .groups = "drop"
+    ) |>
     dplyr::mutate(
       excess_latency = pmax(
         as.integer(desired_max_time_value - .data$max_time_value) %/% 7L,
@@ -57,10 +60,10 @@ make_baseline_forecast <- function(
   reference_date,
   desired_max_time_value
 ) {
-  epi_df <-  hubData::connect_target_timeseries(base_hub_path) |>
+  epi_df <- hubData::connect_target_timeseries(base_hub_path) |>
     dplyr::collect() |>
-    forecasttools::hub_target_data_as_of()|>
-  dplyr::filter(.data$target == !!target_name) |>
+    forecasttools::hub_target_data_as_of() |>
+    dplyr::filter(.data$target == !!target_name) |>
     dplyr::mutate(
       geo_value = forecasttools::us_location_recode(
         .data$location,
