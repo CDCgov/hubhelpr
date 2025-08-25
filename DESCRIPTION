@@ -28,6 +28,9 @@ Imports:
 Remotes:
     forecasttools=github::cdcgov/forecasttools,
     hubUtils=github::hubverse-org/hubUtils
+    hubData=github::hubverse-org/hubData
+    epipredict=github::cmu-delphi/epipredict,
+    epiprocess=github::cmu-delphi/epiprocess
 Suggests:
     httptest2,
     testthat (>= 3.0.0),
