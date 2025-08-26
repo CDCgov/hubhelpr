@@ -53,16 +53,34 @@ check_data_latency <- function(
   }
 }
 
+
+#' Create a hub formatted baseline forecast for a single target
+#'
+#' @param target_data Data frame of target time series. Must include `date`,
+#' `location`, `target`, and `observation` columns.
+#' @param target_name Character. Name of the target to forecast,
+#' e.g., "wk inc covid hosp".
+#' @param target_label Character. Label for the target, e.g., "Hospital Admissions"
+#' or "Proportion ED Visits".
+#' @param reference_date Date. Reference date for the forecast.
+#' @param desired_max_time_value Date. Most recent date for which observations are desired.
+#' @param rng_seed Integer. Random seed for reproducibility.
+#' @return A data frame of baseline forecasts for the specified target.
 make_baseline_forecast <- function(
-  base_hub_path,
+  target_data,
   target_name,
   target_label,
   reference_date,
-  desired_max_time_value
+  desired_max_time_value,
+  rng_seed
 ) {
-  epi_df <- hubData::connect_target_timeseries(base_hub_path) |>
-    dplyr::collect() |>
-    forecasttools::hub_target_data_as_of() |>
+  checkmate::assertSubset(
+    c("date", "location", "target", "observation"),
+    colnames(target_data),
+    .var.name = "target_data columns"
+  )
+
+  epi_df <- target_data |>
     dplyr::filter(.data$target == !!target_name) |>
     dplyr::mutate(
       geo_value = forecasttools::us_location_recode(
@@ -84,7 +102,6 @@ make_baseline_forecast <- function(
     target_label
   )
 
-  rng_seed <- as.integer((59460707 + as.numeric(reference_date)) %% 2e9)
   args_list <- epipredict::cdc_baseline_args_list(aheads = 1:4, nsims = 1e5)
   preds <- withr::with_rng_version(
     "4.0.0",
@@ -170,6 +187,7 @@ generate_hub_baseline <- function(
   reference_date <- lubridate::as_date(reference_date)
   desired_max_time_value <- reference_date - 7L
   dow_supplied <- lubridate::wday(reference_date, week_start = 7, label = FALSE)
+  rng_seed <- as.integer((59460707 + as.numeric(reference_date)) %% 2e9)
   if (dow_supplied != 7) {
     cli::cli_abort(
       message = paste0(
@@ -187,20 +205,26 @@ generate_hub_baseline <- function(
     fs::dir_create(output_dirpath, recurse = TRUE)
   }
 
+  hub_target_data <- hubData::connect_target_timeseries(base_hub_path) |>
+    dplyr::collect() |>
+    forecasttools::hub_target_data_as_of()
+
   preds_hosp <- make_baseline_forecast(
-    base_hub_path = base_hub_path,
+    target_data = hub_target_data,
     target_name = glue::glue("wk inc {disease} hosp"),
     target_label = "Hospital Admissions",
     reference_date = reference_date,
-    desired_max_time_value = desired_max_time_value
+    desired_max_time_value = desired_max_time_value,
+    rng_seed = rng_seed
   )
 
   preds_ed <- make_baseline_forecast(
-    base_hub_path = base_hub_path,
+    target_data = hub_target_data,
     target_name = glue::glue("wk inc {disease} prop ed visits"),
     target_label = "Proportion ED Visits",
     reference_date = reference_date,
-    desired_max_time_value = desired_max_time_value
+    desired_max_time_value = desired_max_time_value,
+    rng_seed = rng_seed
   )
 
   forecasttools::write_tabular_file(

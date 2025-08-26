@@ -17,7 +17,8 @@ task_id_cols <- c(
 #' @param weekly_models Data frame of model metadata for the week.
 #' Must include `model_id`, `designated_model` and `target` columns.
 #' @param weekly_forecasts Data frame of forecasts for the week.
-#' @param target_name Character. Name of the target to ensemble (e.g., "wk inc covid hosp").
+#' @param target_name Character. Name of the target to ensemble,
+#' e.g., "wk inc covid hosp".
 #' @param ensemble_model_id Character. Model_id to assign to the ensemble output.
 #' @param ensemble_output_type Output type to ensemble. Default "quantile".
 #' @param ensemble_agg_fun Aggregation function to use. Default "median".
