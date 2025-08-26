@@ -11,14 +11,38 @@ task_id_cols <- c(
   "target_end_date"
 )
 
+
+#' Create an ensemble forecast for a single target
+#'
+#' @param weekly_models Data frame of model metadata for the week.
+#' Must include `model_id`, `designated_model` and `target` columns.
+#' @param weekly_forecasts Data frame of forecasts for the week.
+#' @param target_name Character. Name of the target to ensemble (e.g., "wk inc covid hosp").
+#' @param ensemble_model_id Character. Model_id to assign to the ensemble output.
+#' @param ensemble_output_type Output type to ensemble. Default "quantile".
+#' @param ensemble_agg_fun Aggregation function to use. Default "median".
+#' @return A data frame of ensemble forecasts for the specified target.
 ensemble_by_target <- function(
   weekly_models,
-  current_forecasts,
+  weekly_forecasts,
   target_name,
   ensemble_model_id,
   ensemble_output_type = "quantile",
   ensemble_agg_fun = "median"
 ) {
+  checkmate::assertSubset(
+    c("model_id", "designated_model", "target"),
+    colnames(weekly_models),
+    .var.name = "weekly_models columns"
+  )
+
+  expected_cols <- c(names(forecasttools::hubverse_std_colnames), task_id_cols)
+  checkmate::assertSetEqual(
+    colnames(weekly_forecasts),
+    expected_cols,
+    .var.name = "weekly_forecasts columns"
+  )
+
   if (ensemble_output_type != "quantile") {
     stop("Only 'quantile' ensemble_output_type is currently supported")
   }
@@ -26,7 +50,7 @@ ensemble_by_target <- function(
   eligible_models <- weekly_models |>
     dplyr::filter(.data$designated_model, .data$target == !!target_name)
 
-  forecasts_to_ensemble <- current_forecasts |>
+  forecasts_to_ensemble <- weekly_forecasts |>
     dplyr::filter(
       model_id %in% eligible_models$model_id,
       output_type == !!ensemble_output_type,
@@ -47,13 +71,15 @@ ensemble_by_target <- function(
   return(median_ensemble_outputs)
 }
 
+
 #' Generate hub ensemble forecasts for a given disease and reference date
 #'
 #' @param base_hub_path Path to the base hub directory.
 #' @param reference_date Reference date (should be a Saturday).
 #' @param disease Disease name ("covid" or "rsv").
-#' @param ensemble_targets A vector specifying targets to generate
-#' ensemble forecasts for, eg c("hosp", "prop ed visits"). Defaults to "hosp".
+#' @param ensemble_targets A vector specifying targets to generate ensemble
+#' forecasts for, e.g., c("hosp", "prop ed visits"). Defaults to "hosp".
+#' @return Writes ensemble forecast file to the model-output directory.
 #' @export
 generate_hub_ensemble <- function(
   base_hub_path,
@@ -93,7 +119,7 @@ generate_hub_ensemble <- function(
     fs::dir_create(output_dirpath, recurse = TRUE)
   }
 
-  current_forecasts <- hubData::connect_hub(base_hub_path) |>
+  weekly_forecasts <- hubData::connect_hub(base_hub_path) |>
     dplyr::filter(
       .data$reference_date == !!reference_date,
       !str_detect(.data$model_id, hub_name)
@@ -102,14 +128,14 @@ generate_hub_ensemble <- function(
 
   weekly_models <- hubData::load_model_metadata(
     base_hub_path,
-    model_ids = unique(current_forecasts$model_id)
+    model_ids = unique(weekly_forecasts$model_id)
   ) |>
     dplyr::select("model_id", "designated_model") |>
     dplyr::distinct() |>
     dplyr::right_join(
-      (current_forecasts |>
+      weekly_forecasts |>
         dplyr::select("model_id", "target") |>
-        dplyr::distinct()),
+        dplyr::distinct(),
       by = "model_id"
     ) |>
     dplyr::arrange(.data$target)
@@ -133,7 +159,7 @@ generate_hub_ensemble <- function(
     function(ensemble_target) {
       ensemble_by_target(
         weekly_models,
-        current_forecasts,
+        weekly_forecasts,
         target_name = glue::glue("wk inc {disease} {ensemble_target}"),
         ensemble_model_id = paste0(hub_name, "-quantile-median-ensemble")
       )

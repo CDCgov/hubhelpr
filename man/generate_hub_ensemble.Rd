@@ -18,8 +18,11 @@ generate_hub_ensemble(
 
 \item{disease}{Disease name ("covid" or "rsv").}
 
-\item{ensemble_targets}{A vector specifying targets to generate
-ensemble forecasts for, eg c("hosp", "prop ed visits"). Defaults to "hosp".}
+\item{ensemble_targets}{A vector specifying targets to generate ensemble
+forecasts for, e.g., c("hosp", "prop ed visits"). Defaults to "hosp".}
+}
+\value{
+Writes ensemble forecast file to the model-output directory.
 }
 \description{
 Generate hub ensemble forecasts for a given disease and reference date
