@@ -1,6 +1,6 @@
 library(epipredict)
 
-baseline_model_name <- list(
+baseline_model_names <- list(
   covid = "CovidHub-baseline",
   rsv = "RSVHub-baseline"
 )
@@ -170,7 +170,7 @@ generate_hub_baseline <- function(
   if (!disease %in% c("covid", "rsv")) {
     stop("'disease' must be either 'covid' or 'rsv'")
   }
-  reference_date <- as.Date(reference_date)
+  reference_date <- lubridate::as_date(reference_date)
   desired_max_time_value <- reference_date - 7L
   dow_supplied <- lubridate::wday(reference_date, week_start = 7, label = FALSE)
   if (dow_supplied != 7) {
@@ -184,7 +184,11 @@ generate_hub_baseline <- function(
     )
   }
 
-  baseline_model_name <- baseline_model_name[[disease]]
+  baseline_model_name <- baseline_model_names[[disease]]
+  output_dirpath <- fs::path(base_hub_path, "model-output", baseline_model_name)
+  if (!fs::dir_exists(output_dirpath)) {
+    fs::dir_create(output_dirpath, recurse = TRUE)
+  }
 
   preds_hosp <- make_baseline_forecast(
     base_hub_path = base_hub_path,
@@ -202,12 +206,7 @@ generate_hub_baseline <- function(
     desired_max_time_value = desired_max_time_value
   )
 
-  output_dirpath <- fs::path(base_hub_path, "model-output", baseline_model_name)
-  if (!fs::dir_exists(output_dirpath)) {
-    fs::dir_create(output_dirpath, recurse = TRUE)
-  }
-
-  readr::write_csv(
+  forecasttools::write_tabular_file(
     dplyr::bind_rows(preds_hosp, preds_ed),
     fs::path(
       output_dirpath,
