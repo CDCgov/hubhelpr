@@ -85,6 +85,7 @@ make_baseline_forecast <- function(
   )
 
   rng_seed <- as.integer((59460707 + as.numeric(reference_date)) %% 2e9)
+  args_list <- epipredict::cdc_baseline_args_list(aheads = 1:4, nsims = 1e5)
   preds <- withr::with_rng_version(
     "4.0.0",
     withr::with_seed(rng_seed, {
@@ -94,7 +95,7 @@ make_baseline_forecast <- function(
             .data$time_value <= desired_max_time_value
           ),
         "observation",
-        epipredict::cdc_baseline_args_list(aheads = 1:4, nsims = 1e5)
+        args_list
       )
       # advance forecast_date by a week due to data latency and
       # create forecast for horizon -1
@@ -118,17 +119,13 @@ make_baseline_forecast <- function(
                 values = matrix(
                   rep(
                     .data$observation,
-                    each = length(
-                      epipredict::cdc_baseline_args_list()$quantile_levels
-                    )
+                    each = length(args_list$quantile_levels)
                   ),
                   nrow = length(.data$observation),
-                  ncol = length(
-                    epipredict::cdc_baseline_args_list()$quantile_levels
-                  ),
+                  ncol = length(args_list$quantile_levels),
                   byrow = TRUE
                 ),
-                quantile_levels = epipredict::cdc_baseline_args_list()$quantile_levels # nolint
+                quantile_levels = args_list$quantile_levels
               )
             )
         )
