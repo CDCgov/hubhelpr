@@ -11,17 +11,27 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports:
+    checkmate,
+    cli,
     dplyr,
+    epipredict,
+    epiprocess,
     forecasttools,
     fs,
     glue,
+    hardhat,
+    hubData,
+    hubEnsembles,
     lubridate,
-    readr,
     stringr,
+    tidyr,
     tidyselect
 Remotes:
     forecasttools=github::cdcgov/forecasttools,
-    hubUtils=github::hubverse-org/hubUtils
+    hubUtils=github::hubverse-org/hubUtils,
+    hubData=github::hubverse-org/hubData,
+    epipredict=github::cmu-delphi/epipredict,
+    epiprocess=github::cmu-delphi/epiprocess
 Suggests:
     httptest2,
     testthat (>= 3.0.0),
