@@ -181,9 +181,8 @@ generate_hub_baseline <- function(
   reference_date,
   disease
 ) {
-  if (!disease %in% c("covid", "rsv")) {
-    stop("'disease' must be either 'covid' or 'rsv'")
-  }
+   checkmate::assert_scalar(disease)
+   checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
   reference_date <- lubridate::as_date(reference_date)
   desired_max_time_value <- reference_date - 7L
   dow_supplied <- lubridate::wday(reference_date, week_start = 7, label = FALSE)
@@ -199,7 +198,7 @@ generate_hub_baseline <- function(
     )
   }
 
-  baseline_model_name <- baseline_model_names[[disease]]
+  baseline_model_name <- glue::glue("{toupper(disease)}Hub-baseline")
   output_dirpath <- fs::path(base_hub_path, "model-output", baseline_model_name)
   if (!fs::dir_exists(output_dirpath)) {
     fs::dir_create(output_dirpath, recurse = TRUE)
@@ -231,7 +230,8 @@ generate_hub_baseline <- function(
     dplyr::bind_rows(preds_hosp, preds_ed),
     fs::path(
       output_dirpath,
-      paste0(as.character(reference_date), "-", baseline_model_name, ".csv")
+      glue::glue("{reference_date}-"{baseline_model_name}"), ext = "csv")
     )
   )
+  invisible()
 }

@@ -1,7 +1,3 @@
-ensemble_model_names <- list(
-  covid = "CovidHub-ensemble",
-  rsv = "RSVHub-ensemble"
-)
 
 task_id_cols <- c(
   "reference_date",
@@ -31,9 +27,9 @@ ensemble_by_target <- function(
   ensemble_output_type = "quantile",
   ensemble_agg_fun = "median"
 ) {
-  checkmate::assertSubset(
-    c("model_id", "designated_model", "target"),
+  checkmate::assert_names(
     colnames(weekly_models),
+    must.include = c("model_id", "designated_model", "target"), 
     .var.name = "weekly_models columns"
   )
 
