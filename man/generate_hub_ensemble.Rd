@@ -22,7 +22,7 @@ generate_hub_ensemble(
 forecasts for, e.g., c("hosp", "prop ed visits"). Defaults to "hosp".}
 }
 \value{
-Writes ensemble forecast file to the model-output directory.
+NULL. Writes ensemble forecast file to hub's model-output directory.
 }
 \description{
 Generate hub ensemble forecasts for a given disease and reference date

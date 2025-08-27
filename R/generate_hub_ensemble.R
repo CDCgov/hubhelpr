@@ -1,4 +1,3 @@
-
 task_id_cols <- c(
   "reference_date",
   "location",
@@ -29,7 +28,7 @@ ensemble_by_target <- function(
 ) {
   checkmate::assert_names(
     colnames(weekly_models),
-    must.include = c("model_id", "designated_model", "target"), 
+    must.include = c("model_id", "designated_model", "target"),
     .var.name = "weekly_models columns"
   )
 
@@ -76,7 +75,7 @@ ensemble_by_target <- function(
 #' @param disease Disease name ("covid" or "rsv").
 #' @param ensemble_targets A vector specifying targets to generate ensemble
 #' forecasts for, e.g., c("hosp", "prop ed visits"). Defaults to "hosp".
-#' @return Writes ensemble forecast file to the model-output directory.
+#' @return NULL. Writes ensemble forecast file to hub's model-output directory.
 #' @export
 generate_hub_ensemble <- function(
   base_hub_path,
@@ -137,17 +136,13 @@ generate_hub_ensemble <- function(
     ) |>
     dplyr::arrange(.data$target)
 
-  forecasttools::write_tabular
+  forecasttools::write_tabular(
     weekly_models,
     fs::path(
       base_hub_path,
       "auxiliary-data",
       "weekly-model-submissions",
-      paste0(
-        as.character(reference_date),
-        "-",
-        "models-submitted-to-hub.csv"
-      )
+      glue::glue("{reference_date}-models-submitted-to-hub.csv")
     )
   )
 
@@ -168,4 +163,5 @@ generate_hub_ensemble <- function(
     median_ensemble_outputs,
     fs::path(output_dirpath, output_filename)
   )
+  invisible()
 }

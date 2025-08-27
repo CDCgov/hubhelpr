@@ -1,10 +1,5 @@
 library(epipredict)
 
-baseline_model_names <- list(
-  covid = "CovidHub-baseline",
-  rsv = "RSVHub-baseline"
-)
-
 check_data_latency <- function(
   epi_df,
   reference_date,
@@ -176,14 +171,15 @@ make_baseline_forecast <- function(
 #' @param base_hub_path Path to the base hub directory.
 #' @param reference_date Reference date (should be a Saturday).
 #' @param disease Disease name ("covid" or "rsv").
+#' @return NULL. Writes baseline forecast file to hub's model-output directory.
 #' @export
 generate_hub_baseline <- function(
   base_hub_path,
   reference_date,
   disease
 ) {
-   checkmate::assert_scalar(disease)
-   checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_scalar(disease)
+  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
   reference_date <- lubridate::as_date(reference_date)
   desired_max_time_value <- reference_date - 7L
   dow_supplied <- lubridate::wday(reference_date, week_start = 7, label = FALSE)
@@ -227,12 +223,13 @@ generate_hub_baseline <- function(
     rng_seed = rng_seed
   )
 
-  forecasttools::write_tabular(
+  forecasttools::write_tabular_file(
     dplyr::bind_rows(preds_hosp, preds_ed),
     fs::path(
       output_dirpath,
-      glue::glue("{reference_date}-"{baseline_model_name}"), ext = "csv")
+      glue::glue("{reference_date}-{baseline_model_name}.csv")
     )
   )
+
   invisible()
 }

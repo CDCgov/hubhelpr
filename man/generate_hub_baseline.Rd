@@ -13,6 +13,9 @@ generate_hub_baseline(base_hub_path, reference_date, disease)
 
 \item{disease}{Disease name ("covid" or "rsv").}
 }
+\value{
+NULL. Writes baseline forecast file to hub's model-output directory.
+}
 \description{
 Generate hub baseline forecasts for a given disease and reference date
 }
