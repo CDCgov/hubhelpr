@@ -149,7 +149,9 @@ generate_hub_ensemble <- function(
         weekly_models,
         weekly_forecasts,
         target_name = glue::glue("wk inc {disease} {ensemble_target}"),
-        ensemble_model_id = as.character(glue::glue("{hub_name}-quantile-median-ensemble"))
+        ensemble_model_id = as.character(glue::glue(
+          "{hub_name}-quantile-median-ensemble"
+        ))
       )
     }
   ) |>
