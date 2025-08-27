@@ -241,7 +241,8 @@ generate_hub_baseline <- function(
     dplyr::bind_rows(preds_hosp, preds_ed),
     fs::path(
       output_dirpath,
-      glue::glue("{reference_date}-{baseline_model_name}.csv")
+      glue::glue("{reference_date}-{baseline_model_name}"),
+      ext = "csv"
     )
   )
 

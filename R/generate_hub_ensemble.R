@@ -104,12 +104,7 @@ generate_hub_ensemble <- function(
   ensemble_model_name <- glue::glue("{hub_name}-baseline")
 
   output_dirpath <- fs::path(base_hub_path, "model-output", ensemble_model_name)
-  output_filename <- paste0(
-    as.character(reference_date),
-    "-",
-    hub_name,
-    "-ensemble.csv"
-  )
+  output_filename <- glue::glue("{reference_date}-{hub_name}-ensemble")
 
   if (!fs::dir_exists(output_dirpath)) {
     fs::dir_create(output_dirpath, recurse = TRUE)
@@ -142,7 +137,8 @@ generate_hub_ensemble <- function(
       base_hub_path,
       "auxiliary-data",
       "weekly-model-submissions",
-      glue::glue("{reference_date}-models-submitted-to-hub.csv")
+      glue::glue("{reference_date}-models-submitted-to-hub"),
+      ext = "csv"
     )
   )
 
@@ -153,7 +149,7 @@ generate_hub_ensemble <- function(
         weekly_models,
         weekly_forecasts,
         target_name = glue::glue("wk inc {disease} {ensemble_target}"),
-        ensemble_model_id = paste0(hub_name, "-quantile-median-ensemble")
+        ensemble_model_id = as.character(glue::glue("{hub_name}-quantile-median-ensemble"))
       )
     }
   ) |>
@@ -161,7 +157,7 @@ generate_hub_ensemble <- function(
 
   forecasttools::write_tabular(
     median_ensemble_outputs,
-    fs::path(output_dirpath, output_filename)
+    fs::path(output_dirpath, output_filename, ext = "csv")
   )
   invisible()
 }
