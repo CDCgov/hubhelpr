@@ -83,9 +83,8 @@ generate_hub_ensemble <- function(
   disease,
   ensemble_targets = c("hosp")
 ) {
-  if (!disease %in% c("covid", "rsv")) {
-    stop("'disease' must be either 'covid' or 'rsv'")
-  }
+  checkmate::assert_scalar(disease)
+  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
   reference_date <- lubridate::as_date(reference_date)
 
   dow_supplied <- lubridate::wday(reference_date, week_start = 7, label = FALSE)
@@ -101,7 +100,7 @@ generate_hub_ensemble <- function(
   }
 
   hub_name <- glue::glue("{stringr::str_to_title(disease)}Hub")
-  ensemble_model_name <- glue::glue("{hub_name}-baseline")
+  ensemble_model_name <- glue::glue("{hub_name}-ensemble")
 
   output_dirpath <- fs::path(base_hub_path, "model-output", ensemble_model_name)
   output_filename <- glue::glue("{reference_date}-{hub_name}-ensemble")
