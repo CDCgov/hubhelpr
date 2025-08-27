@@ -63,7 +63,8 @@ check_data_latency <- function(
 #' @param target_label Character. Label for the target, e.g., "Hospital Admissions"
 #' or "Proportion ED Visits".
 #' @param reference_date Date. Reference date for the forecast.
-#' @param desired_max_time_value Date. Most recent date for which observations are desired.
+#' @param desired_max_time_value Date. Most recent date for which observations are expected.
+#'  Function will error if there is excess latency; see [check_data_latency()].
 #' @param rng_seed Integer. Random seed for reproducibility.
 #' @return A data frame of baseline forecasts for the specified target.
 make_baseline_forecast <- function(
@@ -226,7 +227,7 @@ generate_hub_baseline <- function(
     rng_seed = rng_seed
   )
 
-  forecasttools::write_tabular_file(
+  forecasttools::write_tabular(
     dplyr::bind_rows(preds_hosp, preds_ed),
     fs::path(
       output_dirpath,

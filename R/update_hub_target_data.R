@@ -79,7 +79,7 @@ update_hub_target_data <- function(
       ) |>
       dplyr::arrange(state) |>
       dplyr::select("state", "date", "value", "location") |>
-      forecasttools::write_tabular_file(
+      forecasttools::write_tabular(
         fs::path(output_dirpath, legacy_file_name)
       )
   }

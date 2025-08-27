@@ -137,7 +137,7 @@ generate_hub_ensemble <- function(
     ) |>
     dplyr::arrange(.data$target)
 
-  forecasttools::write_tabular_file(
+  forecasttools::write_tabular
     weekly_models,
     fs::path(
       base_hub_path,
@@ -164,7 +164,7 @@ generate_hub_ensemble <- function(
   ) |>
     dplyr::bind_rows()
 
-  forecasttools::write_tabular_file(
+  forecasttools::write_tabular(
     median_ensemble_outputs,
     fs::path(output_dirpath, output_filename)
   )
