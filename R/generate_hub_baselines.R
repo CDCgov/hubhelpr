@@ -1,10 +1,23 @@
 library(epipredict)
 
+#' Checks data latency in the input epi_df
+#'
+#' @param epi_df An epi_df object of time series data.
+#' @param reference_date Date. The reference date for the forecast.
+#' @param desired_max_time_value Date. The most recent date for which
+#' observations are expected.
+#' @param target_label Character. Human-readable label for the target,
+#' e.g., "Hospital Admissions".
+#' @param overlatent_err_thresh Numeric. Proportion threshold of locations
+#' with excess latency to raise an error. Default 0.20 (20%).
+#' @return NULL. Raises a warning if any location has excess latency or
+#' raises an error if proportion of locations with excess latency exceeds threshold.
 check_data_latency <- function(
   epi_df,
   reference_date,
   desired_max_time_value,
-  target_label
+  target_label,
+  overlatent_err_thresh = 0.20
 ) {
   excess_latency_tbl <- epi_df |>
     tidyr::drop_na(.data$observation) |>
@@ -21,7 +34,6 @@ check_data_latency <- function(
       has_excess_latency = .data$excess_latency > 0L
     )
 
-  overlatent_err_thresh <- 0.20
   prop_locs_overlatent <- mean(excess_latency_tbl$has_excess_latency)
 
   if (prop_locs_overlatent > overlatent_err_thresh) {
@@ -195,7 +207,9 @@ generate_hub_baseline <- function(
     )
   }
 
-  baseline_model_name <- glue::glue("{toupper(disease)}Hub-baseline")
+  baseline_model_name <- glue::glue(
+    "{stringr::str_to_title(disease)}Hub-baseline"
+  )
   output_dirpath <- fs::path(base_hub_path, "model-output", baseline_model_name)
   if (!fs::dir_exists(output_dirpath)) {
     fs::dir_create(output_dirpath, recurse = TRUE)

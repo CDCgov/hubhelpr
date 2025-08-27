@@ -100,8 +100,8 @@ generate_hub_ensemble <- function(
     )
   }
 
-  ensemble_model_name <- ensemble_model_names[[disease]]
-  hub_name <- stringr::str_split_i(ensemble_model_name, "-", 1)
+  hub_name <- glue::glue("{stringr::str_to_title(disease)}Hub")
+  ensemble_model_name <- glue::glue("{hub_name}-baseline")
 
   output_dirpath <- fs::path(base_hub_path, "model-output", ensemble_model_name)
   output_filename <- paste0(
