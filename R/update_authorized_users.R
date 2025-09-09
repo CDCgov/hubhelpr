@@ -14,10 +14,9 @@ update_authorized_users <- function(base_hub_path) {
 
   fs::dir_create(output_path)
 
-  yml_files <- list.files(
+  yml_files <- fs::dir_ls(
     metadata_dir,
-    pattern = "\\.ya?ml$",
-    full.names = TRUE
+    glob = "*.{yml,yaml}"
   )
 
   json_list <- purrr::map(yml_files, \(file) {
