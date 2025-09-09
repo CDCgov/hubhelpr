@@ -12,7 +12,7 @@ update_authorized_users <- function(base_hub_path) {
   output_dir <- fs::path(base_hub_path, "auxiliary-data")
   metadata_dir <- fs::path(base_hub_path, "model-metadata")
 
-  fs::dir_create(output_path)
+  fs::dir_create(output_dir)
 
   yml_files <- list.files(
     metadata_dir,
