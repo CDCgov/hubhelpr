@@ -38,7 +38,7 @@ update_authorized_users <- function(base_hub_path) {
 
   jsonlite::write_json(
     json_list,
-    path = file.path(output_path, "authorized_users.json"),
+    path = fs::path(output_dir, "authorized_users", ext = "json"),
     pretty = TRUE,
     auto_unbox = TRUE
   )
