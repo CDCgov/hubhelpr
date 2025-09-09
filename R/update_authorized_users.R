@@ -6,7 +6,7 @@
 # JSON file.
 #'
 #' @param base_hub_path Path to the base hub directory.
-#' @return NULL. Writes authorized_users.json file to the
+#' @return `NULL`, invisibly. Writes `authorized_users.json` file to the
 #' auxiliary-data directory.
 update_authorized_users <- function(base_hub_path) {
   output_path <- fs::path(base_hub_path, "auxiliary-data")
