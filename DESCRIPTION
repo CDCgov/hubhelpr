@@ -22,10 +22,12 @@ Imports:
     hardhat,
     hubData,
     hubEnsembles,
+    jsonlite,
     lubridate,
     stringr,
     tidyr,
-    tidyselect
+    tidyselect,
+    yaml
 Remotes:
     forecasttools=github::cdcgov/forecasttools,
     hubUtils=github::hubverse-org/hubUtils,
