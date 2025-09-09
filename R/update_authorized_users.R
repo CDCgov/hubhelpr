@@ -7,7 +7,7 @@
 #'
 #' @param base_hub_path Path to the base hub directory.
 #' @return `NULL`, invisibly. Writes `authorized_users.json` file to the
-#' auxiliary-data directory.
+#' `auxiliary-data` directory of the hub as a side effect.
 update_authorized_users <- function(base_hub_path) {
   output_path <- fs::path(base_hub_path, "auxiliary-data")
   metadata_dir <- fs::path(base_hub_path, "model-metadata")
