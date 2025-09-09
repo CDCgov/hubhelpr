@@ -2,7 +2,7 @@
 #'
 #' This function reads YAML metadata files from a Hub's
 #' model-metadata directory and extracts authorized GitHub
-# users for each model, outputting the results as a
+# users for each model, saving the results to a JSON file in the hub `auxiliary-data` directory.
 # JSON file.
 #'
 #' @param base_hub_path Path to the base hub directory.
