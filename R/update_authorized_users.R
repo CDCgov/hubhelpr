@@ -2,17 +2,17 @@
 #'
 #' This function reads YAML metadata files from a Hub's
 #' model-metadata directory and extracts authorized GitHub
-# users for each model, outputting the results as a
+# users for each model, saving the results to a JSON file in the hub `auxiliary-data` directory.
 # JSON file.
 #'
 #' @param base_hub_path Path to the base hub directory.
-#' @return NULL. Writes authorized_users.json file to the
-#' auxiliary-data directory.
+#' @return `NULL`, invisibly. Writes `authorized_users.json` file to the
+#' `auxiliary-data` directory of the hub as a side effect.
 update_authorized_users <- function(base_hub_path) {
-  output_path <- fs::path(base_hub_path, "auxiliary-data")
+  output_dir <- fs::path(base_hub_path, "auxiliary-data")
   metadata_dir <- fs::path(base_hub_path, "model-metadata")
 
-  fs::dir_create(output_path)
+  fs::dir_create(output_dir)
 
   yml_files <- fs::dir_ls(
     metadata_dir,
@@ -37,7 +37,7 @@ update_authorized_users <- function(base_hub_path) {
 
   jsonlite::write_json(
     json_list,
-    path = file.path(output_path, "authorized_users.json"),
+    path = fs::path(output_dir, "authorized_users", ext = "json"),
     pretty = TRUE,
     auto_unbox = TRUE
   )
