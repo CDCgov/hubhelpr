@@ -24,10 +24,10 @@ Imports:
     hubEnsembles,
     jsonlite,
     lubridate,
+    purrr,
     stringr,
     tidyr,
-    tidyselect,
-    yaml
+    tidyselect
 Remotes:
     forecasttools=github::cdcgov/forecasttools,
     hubUtils=github::hubverse-org/hubUtils,
@@ -38,5 +38,4 @@ Suggests:
     httptest2,
     testthat (>= 3.0.0),
     tibble,
-    withr,
-    purrr
+    withr
