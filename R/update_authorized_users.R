@@ -16,31 +16,29 @@ update_authorized_users <- function(base_hub_path) {
 
   fs::dir_create(output_dir)
 
-  model_metadata <- hubData::load_model_metadata(base_hub_path)
-
-  json_list <- purrr::pmap(
-    list(
-      team = model_metadata$team_abbr,
-      model = model_metadata$model_abbr,
-      designated_users = model_metadata$designated_github_users
-    ),
-    \(team, model, designated_users) {
-      team <- if (!is.null(team) && !is.na(team)) team else NA_character_
-      model <- if (!is.null(model) && !is.na(model)) model else NA_character_
-      designated_users <- if (
-        !is.null(designated_users) && !all(is.na(designated_users))
+  model_users <- hubData::load_model_metadata(base_hub_path) |>
+    dplyr::group_by(.data$model_id) |>
+    dplyr::summarize(
+      authorized_github_users = if (
+        any(!is.na(.data$designated_github_users))
       ) {
-        # ensure single-user lists are rendered as JSON lists
-        I(designated_users)
+        I(list(.data$designated_github_users[
+          !is.na(.data$designated_github_users)
+        ]))
       } else {
         NA
-      }
+      },
+      .groups = "drop"
+    )
+
+  json_list <- model_users |>
+    dplyr::select("model_id", "authorized_github_users") |>
+    purrr::pmap(\(model_id, authorized_github_users) {
       list(
-        model = paste(team, model, sep = "-"),
-        authorized_github_users = designated_users
+        model = model_id,
+        authorized_github_users = authorized_github_users
       )
-    }
-  )
+    })
 
   jsonlite::write_json(
     json_list,
