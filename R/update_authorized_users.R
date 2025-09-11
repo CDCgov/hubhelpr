@@ -22,29 +22,20 @@ update_authorized_users <- function(base_hub_path) {
       authorized_github_users = if (
         any(!is.na(.data$designated_github_users))
       ) {
-        I(list(.data$designated_github_users[
+        list(I(.data$designated_github_users[
           !is.na(.data$designated_github_users)
         ]))
       } else {
-        NA
+        list(NA)
       },
       .groups = "drop"
     )
-
-  json_list <- model_users |>
-    dplyr::select("model_id", "authorized_github_users") |>
-    purrr::pmap(\(model_id, authorized_github_users) {
-      list(
-        model = model_id,
-        authorized_github_users = authorized_github_users
-      )
-    })
-
   jsonlite::write_json(
-    json_list,
+    model_users,
     path = fs::path(output_dir, "authorized_users", ext = "json"),
     pretty = TRUE,
-    auto_unbox = TRUE
+    auto_unbox = TRUE,
+    na = "null"
   )
 
   invisible()
