@@ -10,10 +10,14 @@ update_authorized_users(base_hub_path)
 \item{base_hub_path}{Path to the base hub directory.}
 }
 \value{
-\code{NULL}, invisibly. Writes \code{authorized_users.json} file to the
-\code{auxiliary-data} directory of the hub as a side effect.
+\code{NULL}, invisibly. Writes
+\code{authorized_users.json} file to the \code{auxiliary-data}
+directory of the hub as a side effect.
 }
 \description{
 This function reads YAML metadata files from a Hub's
 model-metadata directory and extracts authorized GitHub
+users for each model, saving the results to a JSON file
+in the hub \code{auxiliary-data} directory.
+JSON file.
 }
