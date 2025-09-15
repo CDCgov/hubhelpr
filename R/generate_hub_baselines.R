@@ -207,8 +207,7 @@ generate_hub_baseline <- function(
     )
   }
 
-  hub_name <- get_hub_name(disease)
-  baseline_model_name <- glue::glue("{hub_name}-baseline")
+  baseline_model_name <- glue::glue("{get_hub_name(disease)}-baseline")
   output_dirpath <- fs::path(base_hub_path, "model-output", baseline_model_name)
   if (!fs::dir_exists(output_dirpath)) {
     fs::dir_create(output_dirpath, recurse = TRUE)
