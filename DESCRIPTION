@@ -22,7 +22,9 @@ Imports:
     hardhat,
     hubData,
     hubEnsembles,
+    jsonlite,
     lubridate,
+    purrr,
     stringr,
     tidyr,
     tidyselect
@@ -36,5 +38,4 @@ Suggests:
     httptest2,
     testthat (>= 3.0.0),
     tibble,
-    withr,
-    purrr
+    withr
