@@ -19,13 +19,11 @@ update_authorized_users <- function(base_hub_path) {
   model_users <- hubData::load_model_metadata(base_hub_path) |>
     dplyr::group_by(.data$model_id) |>
     dplyr::summarize(
-      authorized_github_users = list(
-        I(
-          .data$designated_github_users |>
-            na.omit() |>
-            as.character()
-        )
-      ),
+      authorized_github_users = .data$designated_github_users |>
+        na.omit() |>
+        as.character() |>
+        I() |>
+        list(),
       .groups = "drop"
     )
   jsonlite::write_json(
