@@ -99,7 +99,10 @@ generate_hub_ensemble <- function(
     )
   }
 
-  hub_name <- glue::glue("{stringr::str_to_title(disease)}Hub")
+  hub_name <- dplyr::case_when(
+    disease == "covid" ~ "CovidHub",
+    disease == "rsv" ~ "RSVHub"
+  )
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
 
   output_dirpath <- fs::path(base_hub_path, "model-output", ensemble_model_name)
