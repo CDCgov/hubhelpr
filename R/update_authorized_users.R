@@ -1,10 +1,10 @@
 #' Get authorized GitHub users from Hub model-metadata.
 #'
-#' This function reads YAML metadata files from a Hub's
-#' model-metadata directory and extracts authorized GitHub
-#' users for each model, saving the results to a JSON file
-#' in the hub `auxiliary-data` directory.
-#' JSON file.
+#' This function reads model metadata from a Hub and extracts
+#' authorized GitHub users for each model, saving the results
+#' to a JSON file in the hub's `auxiliary-data` directory.
+#' Models without authorized users will have an empty array
+#' in the output.
 #'
 #' @param base_hub_path Path to the base hub directory.
 #' @return `NULL`, invisibly. Writes
@@ -19,15 +19,13 @@ update_authorized_users <- function(base_hub_path) {
   model_users <- hubData::load_model_metadata(base_hub_path) |>
     dplyr::group_by(.data$model_id) |>
     dplyr::summarize(
-      authorized_github_users = if (
-        any(!is.na(.data$designated_github_users))
-      ) {
-        list(I(.data$designated_github_users[
-          !is.na(.data$designated_github_users)
-        ]))
-      } else {
-        list(NA)
-      },
+      authorized_github_users = list(
+        I(
+          .data$designated_github_users |>
+            na.omit() |>
+            as.character()
+        )
+      ),
       .groups = "drop"
     )
   jsonlite::write_json(
