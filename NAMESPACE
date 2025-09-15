@@ -3,4 +3,5 @@
 export(excluded_locations)
 export(generate_hub_baseline)
 export(generate_hub_ensemble)
+export(get_hub_name)
 export(update_hub_target_data)

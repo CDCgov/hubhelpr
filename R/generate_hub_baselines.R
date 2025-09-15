@@ -207,10 +207,7 @@ generate_hub_baseline <- function(
     )
   }
 
-  hub_name <- dplyr::case_when(
-    disease == "covid" ~ "CovidHub",
-    disease == "rsv" ~ "RSVHub"
-  )
+  hub_name <- get_hub_name(disease)
   baseline_model_name <- glue::glue("{hub_name}-baseline")
   output_dirpath <- fs::path(base_hub_path, "model-output", baseline_model_name)
   if (!fs::dir_exists(output_dirpath)) {
