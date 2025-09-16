@@ -3,7 +3,8 @@
 \docType{data}
 \name{excluded_locations}
 \alias{excluded_locations}
-\title{Two digits FIPS codes for locations excluded from hubs' target data}
+\title{Two digits FIPS codes for locations excluded from Hubs'
+target data.}
 \format{
 An object of class \code{character} of length 5.
 }
@@ -11,6 +12,7 @@ An object of class \code{character} of length 5.
 excluded_locations
 }
 \description{
-Two digits FIPS codes for locations excluded from hubs' target data
+Two digits FIPS codes for locations excluded from Hubs'
+target data.
 }
 \keyword{datasets}
