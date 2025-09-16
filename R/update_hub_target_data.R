@@ -7,28 +7,34 @@ nssp_col_names <- list(
   rsv = "percent_visits_rsv"
 )
 
-#' Get and process target data for the hub
+#' Get and process target data for a given Hub.
 #'
-#' This function pulls, formats and save NHSN and NSSP data for use in the hub.
+#' This function pulls, formats and save NHSN and NSSP
+#' data for use in the Hub.
 #'
 #' @param base_hub_path Path to the base hub directory.
 #' @param disease Disease name ("covid" or "rsv").
-#' @param as_of As-of date of the data pull. Default is the system date as determined by [lubridate::today()].
-#' @param excluded_locations Vector of location codes to exclude from the output.
-#' Default value `hubhelpr::excluded_locations`.
-#' @param nhsn_first_weekending_date First week-ending date to include for
-#' the NHSN dataset. Default value is "2024-11-09".
-#' @param legacy_file Logical. Whether to write legacy CSV output (default: FALSE).
+#' @param as_of As-of date of the data pull. Default is
+#' the system date as determined by [lubridate::today()].
+#' @param included_locations Vector of location codes to
+#' include in the output.
+#' Default value `hubhelpr::included_locations`.
+#' @param nhsn_first_weekending_date First week-ending
+#' date to include for the NHSN dataset. Default value
+#' is "2024-11-09".
+#' @param legacy_file Logical. Whether to write legacy
+#' CSV output (default: FALSE).
 #'
-#' @return Writes `time-series.parquet` and optionally legacy csv target data files
-#' to the target-data directory in the hub.
+#' @return Writes `time-series.parquet` and optionally
+#' legacy CSV target data files to the target-data
+#' directory in the hub.
 #' @export
 update_hub_target_data <- function(
   base_hub_path,
   disease,
   as_of = lubridate::today(),
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
-  excluded_locations = hubhelpr::excluded_locations,
+  included_locations = hubhelpr::included_locations,
   legacy_file = FALSE
 ) {
   if (!disease %in% c("covid", "rsv")) {
@@ -63,7 +69,7 @@ update_hub_target_data <- function(
       as_of = !!as_of,
       target = glue::glue("wk inc {disease} hosp")
     ) |>
-    dplyr::filter(!(.data$location %in% !!excluded_locations))
+    dplyr::filter(.data$location %in% !!included_locations)
 
   hubverse_format_nhsn_data <- nhsn_data |>
     dplyr::select(tidyselect::all_of(hubverse_ts_req_cols))
@@ -100,6 +106,7 @@ update_hub_target_data <- function(
       as_of = !!as_of,
       target = glue::glue("wk inc {disease} prop ed visits")
     ) |>
+    dplyr::filter(.data$location %in% !!included_locations) |>
     dplyr::select(dplyr::all_of(hubverse_ts_req_cols)) |>
     dplyr::arrange(date, location)
 
