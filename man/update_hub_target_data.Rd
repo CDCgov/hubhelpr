@@ -2,14 +2,14 @@
 % Please edit documentation in R/update_hub_target_data.R
 \name{update_hub_target_data}
 \alias{update_hub_target_data}
-\title{Get and process target data for the hub}
+\title{Get and process target data for a given Hub.}
 \usage{
 update_hub_target_data(
   base_hub_path,
   disease,
   as_of = lubridate::today(),
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
-  excluded_locations = hubhelpr::excluded_locations,
+  included_locations = hubhelpr::included_locations,
   legacy_file = FALSE
 )
 }
@@ -18,20 +18,26 @@ update_hub_target_data(
 
 \item{disease}{Disease name ("covid" or "rsv").}
 
-\item{as_of}{As-of date of the data pull. Default is the system date as determined by \code{\link[lubridate:now]{lubridate::today()}}.}
+\item{as_of}{As-of date of the data pull. Default is
+the system date as determined by \code{\link[lubridate:now]{lubridate::today()}}.}
 
-\item{nhsn_first_weekending_date}{First week-ending date to include for
-the NHSN dataset. Default value is "2024-11-09".}
+\item{nhsn_first_weekending_date}{First week-ending
+date to include for the NHSN dataset. Default value
+is "2024-11-09".}
 
-\item{excluded_locations}{Vector of location codes to exclude from the output.
-Default value \code{hubhelpr::excluded_locations}.}
+\item{included_locations}{Vector of location codes to
+include in the output.
+Default value \code{hubhelpr::included_locations}.}
 
-\item{legacy_file}{Logical. Whether to write legacy CSV output (default: FALSE).}
+\item{legacy_file}{Logical. Whether to write legacy
+CSV output (default: FALSE).}
 }
 \value{
-Writes \code{time-series.parquet} and optionally legacy csv target data files
-to the target-data directory in the hub.
+Writes \code{time-series.parquet} and optionally
+legacy CSV target data files to the target-data
+directory in the hub.
 }
 \description{
-This function pulls, formats and save NHSN and NSSP data for use in the hub.
+This function pulls, formats and save NHSN and NSSP
+data for use in the Hub.
 }

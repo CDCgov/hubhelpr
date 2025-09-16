@@ -15,9 +15,9 @@ update_authorized_users(base_hub_path)
 directory of the hub as a side effect.
 }
 \description{
-This function reads YAML metadata files from a Hub's
-model-metadata directory and extracts authorized GitHub
-users for each model, saving the results to a JSON file
-in the hub \code{auxiliary-data} directory.
-JSON file.
+This function reads model metadata from a Hub and extracts
+authorized GitHub users for each model, saving the results
+to a JSON file in the hub's \code{auxiliary-data} directory.
+Models without authorized users will have an empty array
+in the output.
 }
