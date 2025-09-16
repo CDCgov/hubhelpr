@@ -3,6 +3,7 @@
 export(excluded_locations)
 export(generate_hub_baseline)
 export(generate_hub_ensemble)
+export(get_hub_name)
 export(included_locations)
 export(update_authorized_users)
 export(update_hub_target_data)
