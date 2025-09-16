@@ -1,16 +1,20 @@
 #' Two digits FIPS codes for locations excluded from Hubs'
 #' target data.
 #'
+#' Excludes Virgin Islands (78), Northern Mariana
+#' Islands (69), Guam (66), American Samoa (60), and Minor
+#' Outlying Islands (74).
+#'
 #' @export
 excluded_locations <- c("78", "74", "69", "66", "60")
 
 #' Two digits FIPS codes for locations included in Hubs'
 #' target data.
 #'
-#' Includes US states, DC, and Puerto Rico (PR). Excludes
-#' Virgin Islands (78), Northern Mariana Islands (69),
-#' Guam (66), American Samoa (60), and Minor Outlying
-#' Islands (74).
+#' Includes 50 states, US national, DC, and Puerto Rico
+#' (PR). Excludes Virgin Islands (78), Northern Mariana
+#' Islands (69), Guam (66), American Samoa (60), and Minor
+#' Outlying Islands (74).
 #'
 #' @export
 included_locations <- c(
