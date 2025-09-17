@@ -10,8 +10,6 @@
 #' making changes.
 #' @param base_hub_path Character. Path to the base hub
 #' directory.
-#' @param write_status Logical. Whether to write a status
-#' file on success (default: TRUE).
 #'
 #' @return NULL invisibly. Exits with error if the user is
 #' unauthorized and prints success message if authorized.
