@@ -26,12 +26,6 @@ check_authorized_users <- function(
 
   model_metadata <- hubData::load_model_metadata(base_hub_path)
 
-  if (nrow(model_metadata) == 0) {
-    cli::cli_abort(
-      "Error: Could not load model metadata from {base_hub_path}!"
-    )
-  }
-
   dir_users_map <- model_metadata |>
     dplyr::group_by(.data$model_id) |>
     dplyr::summarize(
