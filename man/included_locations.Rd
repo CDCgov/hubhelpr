@@ -12,9 +12,9 @@ An object of class \code{character} of length 53.
 included_locations
 }
 \description{
-Includes US states, DC, and Puerto Rico (PR). Excludes
-Virgin Islands (78), Northern Mariana Islands (69),
-Guam (66), American Samoa (60), and Minor Outlying
-Islands (74).
+Includes 50 states, US national, DC, and Puerto Rico
+(PR). Excludes Virgin Islands (78), Northern Mariana
+Islands (69), Guam (66), American Samoa (60), and Minor
+Outlying Islands (74).
 }
 \keyword{datasets}
