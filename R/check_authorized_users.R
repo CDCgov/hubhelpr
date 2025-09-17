@@ -11,7 +11,7 @@
 #' @param base_hub_path Character. Path to the base hub
 #' directory.
 #'
-#' @return NULL invisibly. Exits with error if the user is
+#' @return Exits invisibly, with error if the user is
 #' unauthorized and prints success message if authorized.
 #'
 #' @export
@@ -72,5 +72,5 @@ check_authorized_users <- function(
   cli::cli_inform(
     "Success: Changes authorized for user '{gh_actor}'."
   )
-  invisible(NULL)
+  invisible()
 }
