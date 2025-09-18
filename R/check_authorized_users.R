@@ -67,7 +67,8 @@ check_authorized_users <- function(
             glue::glue(
               "Only the following users can modify the model directory '{.data$dir}/': {.data$authorized_users}"
             ),
-          TRUE ~ "Encountered an unexpected error while checking change authorization."
+          TRUE ~
+            "Encountered an unexpected error while checking change authorization."
         )
       ) |>
       dplyr::pull(.data$error_msg)
