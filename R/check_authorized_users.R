@@ -63,7 +63,7 @@ check_authorized_users <- function(
             ),
           .data$has_authorized_users ~
             glue::glue(
-              "Only the following users can modify: '{.data$dir}/': {.data$authorized_users}"
+              "Only the following users can modify the model directory '{.data$dir}/': {.data$authorized_users}"
             ),
           TRUE ~ "Encountered an unexpected error while checking change authorization."
         )
