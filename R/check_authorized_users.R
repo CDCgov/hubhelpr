@@ -59,7 +59,11 @@ check_authorized_users <- function(
       dplyr::mutate(
         error_msg = dplyr::case_when(
           is.na(.data$authorized_users) ~
-            paste0("'", .data$model_id, "' is not authorized for modification."),
+            paste0(
+              "'",
+              .data$model_id,
+              "' is not authorized for modification."
+            ),
           !.data$has_authorized_users ~
             paste0(
               "Changes found in '",
