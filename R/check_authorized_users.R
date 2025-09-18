@@ -60,26 +60,18 @@ check_authorized_users <- function(
       dplyr::mutate(
         error_msg = dplyr::case_when(
           .data$dir_not_modifiable ~
-            paste0(
-              "'",
-              .data$dir,
-              "' is not authorized for modification."
+            glue::glue(
+              "'{.data$dir}' cannot be modified in auto-approved PRs.",
+              "If this is your team's model output subdirectory, check ",
+              "that the Hub already has a model metadata file for this model."
             ),
           !.data$has_authorized_users ~
-            paste0(
-              "Changes found in '",
-              .data$dir,
-              "/'; no authorized users listed."
+            glue::glue(
+              "Changes found in '{.data$dir}/'; no authorized users listed."
             ),
           TRUE ~
-            paste0(
-              "Only the following users can modify: '",
-              .data$dir,
-              "/': ",
-              purrr::map_chr(
-                .data$authorized_users,
-                function(x) paste(x, collapse = ", ")
-              )
+            glue::glue(
+              "Only the following users can modify: '{.data$dir}/': {purrr::map_chr(.data$authorized_users, ~paste(.x, collapse = ', '))}"
             )
         )
       ) |>
