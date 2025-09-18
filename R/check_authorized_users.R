@@ -65,7 +65,7 @@ check_authorized_users <- function(
             glue::glue(
               "Only the following users can modify: '{.data$dir}/': {.data$authorized_users}"
             ),
-          TRUE ~ "Unknown authorization error"
+          TRUE ~ "Encountered an unexpected error while checking change authorization."
         )
       ) |>
       dplyr::pull(.data$error_msg)
