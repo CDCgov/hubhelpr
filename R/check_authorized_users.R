@@ -61,7 +61,7 @@ check_authorized_users <- function(
             ),
           !.data$has_authorized_users ~
             glue::glue(
-              "Changes found in '{.data$dir}/'; no authorized users listed."
+              "Changes found in model directory '{.data$dir}/' but no authorized users listed for that model."
             ),
           .data$has_authorized_users ~
             glue::glue(
