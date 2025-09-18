@@ -33,12 +33,13 @@ check_authorized_users <- function(
         na.omit(.data$designated_github_users)
       ),
       .groups = "drop"
-    )
+    ) |>
+    dplyr::rename(dir = "model_id")
 
-  changed_dirs_tbl <- tibble::tibble(model_id = changed_dirs)
+  changed_dirs_tbl <- tibble::tibble(dir = changed_dirs)
 
   authorization_check <- changed_dirs_tbl |>
-    dplyr::left_join(dir_users_map, by = "model_id") |>
+    dplyr::left_join(dir_users_map, by = "dir") |>
     dplyr::mutate(
       actor_authorized = purrr::map2_lgl(
         .data$authorized_users,
@@ -61,19 +62,19 @@ check_authorized_users <- function(
           is.na(.data$authorized_users) ~
             paste0(
               "'",
-              .data$model_id,
+              .data$dir,
               "' is not authorized for modification."
             ),
           !.data$has_authorized_users ~
             paste0(
               "Changes found in '",
-              .data$model_id,
+              .data$dir,
               "/'; no authorized users listed."
             ),
           TRUE ~
             paste0(
               "Only the following users can modify: '",
-              .data$model_id,
+              .data$dir,
               "/': ",
               purrr::map_chr(
                 .data$authorized_users,
