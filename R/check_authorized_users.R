@@ -44,7 +44,7 @@ check_authorized_users <- function(
       dir_not_in_metadata = is.na(.data$authorized_users),
       has_authorized_users = purrr::map_lgl(
         .data$authorized_users,
-        \(authorized) !anyNA(authorized) && length(authorized) > 0
+        \(authorized) length(authorized) > 0
       ),
       actor_authorized = purrr::map_lgl(
         .data$authorized_users,
