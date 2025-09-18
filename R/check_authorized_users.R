@@ -23,7 +23,7 @@ check_authorized_users <- function(
   base_hub_path
 ) {
   checkmate::assert_character(changed_dirs, min.len = 1)
-  checkmate::assert_scalar(gh_actor)
+  checkmate::assert_string(gh_actor)
   checkmate::assert_string(base_hub_path)
 
   model_metadata <- hubData::load_model_metadata(base_hub_path) |>

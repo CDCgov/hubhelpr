@@ -3,16 +3,13 @@
 \name{check_authorized_users}
 \alias{check_authorized_users}
 \title{Check if a user is authorized to modify model
-directories. This function verifies whether a GitHub
-user is authorized to modify specific model directories
-in a Hub by checking the designated users in model
-metadata.}
+directories.}
 \usage{
 check_authorized_users(changed_dirs, gh_actor, base_hub_path)
 }
 \arguments{
-\item{changed_dirs}{Character vector. Directory names
-that have been changed.}
+\item{changed_dirs}{Character vector. Names of directories
+whose contents have been modified.}
 
 \item{gh_actor}{Character. GitHub username of the person
 making changes.}
@@ -21,13 +18,12 @@ making changes.}
 directory.}
 }
 \value{
-Exits invisibly, with error if the user is
-unauthorized and prints success message if authorized.
+\code{NULL}, invisibly, raising an error if the user is
+unauthorized and printing a success message if the user is authorized.
 }
 \description{
-Check if a user is authorized to modify model
-directories. This function verifies whether a GitHub
-user is authorized to modify specific model directories
+This function verifies whether a GitHub
+user is authorized to modify specific directories
 in a Hub by checking the designated users in model
 metadata.
 }
