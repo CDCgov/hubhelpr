@@ -30,7 +30,7 @@ check_authorized_users <- function(
     dplyr::group_by(.data$model_id) |>
     dplyr::summarize(
       authorized_users = list(
-        na.omit(.data$designated_github_users)
+        as.character(na.omit(.data$designated_github_users))
       ),
       .groups = "drop"
     ) |>
