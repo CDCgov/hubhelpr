@@ -1,6 +1,6 @@
 #' Check if a user is authorized to modify model
 #' directories. This function verifies whether a GitHub
-#' user is authorized to modify specific model directories
+#' user is authorized to modify specific directories
 #' in a Hub by checking the designated users in model
 #' metadata.
 #'
