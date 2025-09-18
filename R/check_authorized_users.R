@@ -12,7 +12,7 @@
 #' directory.
 #'
 #' @return `NULL`, invisibly, raising an error if the user is
-#' unauthorized and prints success message if authorized.
+#' unauthorized and printing a success message if the user is authorized.
 #'
 #' @export
 check_authorized_users <- function(
