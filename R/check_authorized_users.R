@@ -41,7 +41,7 @@ check_authorized_users <- function(
   authorization_check <- changed_dirs_tbl |>
     dplyr::left_join(dir_users_map, by = "dir") |>
     dplyr::mutate(
-      dir_not_in_metadata = is.na(.data$authorized_users),
+      dir_not_modifiable = purrr::map_lgl(.data$authorized_users, is.null)
       has_authorized_users = purrr::map_lgl(
         .data$authorized_users,
         \(authorized) length(authorized) > 0
