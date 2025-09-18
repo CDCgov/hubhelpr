@@ -35,32 +35,57 @@ check_authorized_users <- function(
       .groups = "drop"
     )
 
-  for (dir in changed_dirs) {
-    if (!(dir %in% dir_users_map$model_id)) {
-      cli::cli_abort(
-        "Error: {dir} is not authorized for modification!"
+  changed_dirs_tbl <- tibble::tibble(model_id = changed_dirs)
+
+  authorization_check <- changed_dirs_tbl |>
+    dplyr::left_join(dir_users_map, by = "model_id") |>
+    dplyr::mutate(
+      actor_authorized = purrr::map2_lgl(
+        .data$authorized_users,
+        gh_actor,
+        ~ !is.null(.x) && length(.x) > 0 && .y %in% .x
+      ),
+      has_authorized_users = purrr::map_lgl(
+        .data$authorized_users,
+        ~ !is.null(.x) && length(.x) > 0
       )
-    }
+    )
 
-    user_list <- dir_users_map |>
-      dplyr::filter(.data$model_id == dir) |>
-      dplyr::pull(.data$authorized_users) |>
-      purrr::pluck(1)
+  problem_dirs <- authorization_check |>
+    dplyr::filter(!.data$actor_authorized)
 
-    if (length(user_list) == 0) {
-      cli::cli_abort(
-        "Error: Changes found in '{dir}/', but no authorized users listed!"
-      )
-    }
-
-    if (!(gh_actor %in% user_list)) {
-      cli::cli_abort(
-        paste0(
-          "Error: Only the following users can modify '{dir}/': ",
-          "{paste(user_list, collapse = ', ')}"
+  if (nrow(problem_dirs) > 0) {
+    error_messages <- problem_dirs |>
+      dplyr::mutate(
+        error_msg = dplyr::case_when(
+          is.na(.data$authorized_users) ~
+            paste0("'", .data$model_id, "' is not authorized for modification."),
+          !.data$has_authorized_users ~
+            paste0(
+              "Changes found in '",
+              .data$model_id,
+              "/'; no authorized users listed."
+            ),
+          TRUE ~
+            paste0(
+              "Only the following users can modify: '",
+              .data$model_id,
+              "/': ",
+              purrr::map_chr(
+                .data$authorized_users,
+                ~ paste(.x, collapse = ", ")
+              )
+            )
         )
+      ) |>
+      dplyr::pull(.data$error_msg)
+
+    cli::cli_abort(
+      c(
+        "Authorization check failed for user '{gh_actor}':",
+        error_messages
       )
-    }
+    )
   }
 
   cli::cli_inform(
