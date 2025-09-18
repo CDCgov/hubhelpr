@@ -4,8 +4,8 @@
 #' in a Hub by checking the designated users in model
 #' metadata.
 #'
-#' @param changed_dirs Character vector. Directory names
-#' that have been changed.
+#' @param changed_dirs Character vector. Names of directories
+#' whose contents have been modified.
 #' @param gh_actor Character. GitHub username of the person
 #' making changes.
 #' @param base_hub_path Character. Path to the base hub
