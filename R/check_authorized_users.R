@@ -24,32 +24,24 @@ check_authorized_users <- function(
   checkmate::assert_scalar(gh_actor)
   checkmate::assert_string(base_hub_path)
 
-  model_metadata <- hubData::load_model_metadata(base_hub_path)
-
-  dir_users_map <- model_metadata |>
-    dplyr::group_by(.data$model_id) |>
-    dplyr::summarize(
-      authorized_users = list(
-        as.character(na.omit(.data$designated_github_users))
-      ),
-      .groups = "drop"
-    ) |>
+  model_metadata <- hubData::load_model_metadata(base_hub_path) |>
+    dplyr::mutate(is_model_dir = TRUE) |>
     dplyr::rename(dir = "model_id")
 
   changed_dirs_tbl <- tibble::tibble(dir = changed_dirs)
 
   authorization_check <- changed_dirs_tbl |>
-    dplyr::left_join(dir_users_map, by = "dir") |>
-    dplyr::mutate(
-      dir_not_modifiable = purrr::map_lgl(.data$authorized_users, is.null),
-      has_authorized_users = purrr::map_lgl(
-        .data$authorized_users,
-        \(authorized) length(authorized) > 0
+    dplyr::left_join(model_metadata, by = "dir", na_matches = "never") |>
+    dplyr::group_by(.data$dir) |>
+    dplyr::summarize(
+      modifiable = all(tidyr::replace_na(.data$is_model_dir, FALSE)),
+      actor_authorized = !!gh_actor %in% .data$designated_github_users,
+      authorized_users = paste(
+        na.omit(.data$designated_github_users),
+        collapse = ", "
       ),
-      actor_authorized = purrr::map_lgl(
-        .data$authorized_users,
-        \(authorized) gh_actor %in% authorized
-      ),
+      has_authorized_users = length(na.omit(.data$designated_github_users)) > 0,
+      .groups = "drop"
     )
 
   problem_dirs <- authorization_check |>
@@ -59,7 +51,7 @@ check_authorized_users <- function(
     error_messages <- problem_dirs |>
       dplyr::mutate(
         error_msg = dplyr::case_when(
-          .data$dir_not_modifiable ~
+          !.data$modifiable ~
             glue::glue(
               "'{.data$dir}' cannot be modified in auto-approved PRs.",
               "If this is your team's model output subdirectory, check ",
@@ -71,7 +63,7 @@ check_authorized_users <- function(
             ),
           .data$has_authorized_users ~
             glue::glue(
-              "Only the following users can modify: '{.data$dir}/': {purrr::map_chr(.data$authorized_users, ~paste(.x, collapse = ', '))}"
+              "Only the following users can modify: '{.data$dir}/': {.data$authorized_users}"
             ),
           TRUE ~ "Unknown authorization error"
         )
