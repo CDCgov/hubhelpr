@@ -73,8 +73,7 @@ check_authorized_users <- function(
             glue::glue(
               "Only the following users can modify: '{.data$dir}/': {purrr::map_chr(.data$authorized_users, ~paste(.x, collapse = ', '))}"
             ),
-          TRUE ~
-            "Unknown authorization error"
+          TRUE ~ "Unknown authorization error"
         )
       ) |>
       dplyr::pull(.data$error_msg)
