@@ -41,7 +41,7 @@ check_authorized_users <- function(
   authorization_check <- changed_dirs_tbl |>
     dplyr::left_join(dir_users_map, by = "dir") |>
     dplyr::mutate(
-      dir_not_in_metadata = is.na(.data$authorized_users),
+      dir_not_modifiable = is.na(.data$authorized_users),
       has_authorized_users = purrr::map_lgl(
         .data$authorized_users,
         \(authorized) !anyNA(authorized) && length(authorized) > 0
@@ -59,7 +59,7 @@ check_authorized_users <- function(
     error_messages <- problem_dirs |>
       dplyr::mutate(
         error_msg = dplyr::case_when(
-          .data$dir_not_in_metadata ~
+          .data$dir_not_modifiable ~
             paste0(
               "'",
               .data$dir,
