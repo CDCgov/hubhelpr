@@ -11,7 +11,7 @@
 #' @param base_hub_path Character. Path to the base hub
 #' directory.
 #'
-#' @return Exits invisibly, with error if the user is
+#' @return `NULL`, invisibly, raising an error if the user is
 #' unauthorized and prints success message if authorized.
 #'
 #' @export
