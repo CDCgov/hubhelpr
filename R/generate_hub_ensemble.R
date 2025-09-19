@@ -99,7 +99,7 @@ generate_hub_ensemble <- function(
     )
   }
 
-  ensemble_model_name <- glue::glue("{get_hub_name(disease)}-ensemble")
+  ensemble_model_name <- glue::glue("{hubhelpr::get_hub_name(disease)}-ensemble")
 
   output_dirpath <- fs::path(base_hub_path, "model-output", ensemble_model_name)
   output_filename <- glue::glue("{reference_date}-{hub_name}-ensemble")
