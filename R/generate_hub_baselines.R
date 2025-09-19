@@ -1,5 +1,3 @@
-library(epipredict)
-
 #' Checks data latency in the input epi_df
 #'
 #' @param epi_df An epi_df object of time series data.
