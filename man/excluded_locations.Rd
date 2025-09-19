@@ -12,7 +12,8 @@ An object of class \code{character} of length 5.
 excluded_locations
 }
 \description{
-Two digits FIPS codes for locations excluded from Hubs'
-target data.
+Excludes Virgin Islands (78), Northern Mariana
+Islands (69), Guam (66), American Samoa (60), and Minor
+Outlying Islands (74).
 }
 \keyword{datasets}
