@@ -188,7 +188,6 @@ generate_hub_baseline <- function(
   reference_date,
   disease
 ) {
-  library(epipredict)
   checkmate::assert_scalar(disease)
   checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
   reference_date <- lubridate::as_date(reference_date)
