@@ -12,9 +12,6 @@ Damon = "Damon"
 
 [files]
 extend-exclude = [
-    ".gitignore",
-    ".pre-commit-config.yaml",
-    ".github/ISSUE_TEMPLATE/",
     "*.bib",
     "*.html",
     "*.js",
