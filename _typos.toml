@@ -9,6 +9,7 @@ AttributeIDSupressMenu = "AttributeIDSupressMenu"
 [default.extend-words]
 # words that should not be corrected
 Damon = "Damon"
+ND = "ND"
 
 [files]
 extend-exclude = [
