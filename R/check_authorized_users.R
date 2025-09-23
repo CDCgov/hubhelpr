@@ -6,8 +6,8 @@
 #' in a Hub by checking the designated users in model
 #' metadata.
 #'
-#' @param changed_dirs Character vector. Names of directories
-#' whose contents have been modified.
+#' @param changed_dirs Character vector. Full paths of files
+#' that have been modified.
 #' @param gh_actor Character. GitHub username of the person
 #' making changes.
 #' @param base_hub_path Character. Path to the base hub
@@ -30,7 +30,48 @@ check_authorized_users <- function(
     dplyr::mutate(is_model_dir = TRUE) |>
     dplyr::rename(dir = "model_id")
 
-  changed_dirs_tbl <- tibble::tibble(dir = changed_dirs)
+  # process full paths to extract model directories
+  changed_dirs_tbl <- tibble::tibble(full_path = changed_dirs) |>
+    dplyr::mutate(
+      # check if change is within model-output directory
+      is_model_output_change = grepl(
+        "model-output/",
+        .data$full_path,
+        fixed = TRUE
+      )
+    )
+
+  # check for changes outside model-output
+  outside_changes <- changed_dirs_tbl |>
+    dplyr::filter(!.data$is_model_output_change)
+
+  if (nrow(outside_changes) > 0) {
+    cli::cli_abort(
+      c(
+        "Changes found outside model-output directory are not allowed in auto-approved PRs:",
+        outside_changes$full_path
+      )
+    )
+  }
+
+  # extract model directory names from model-output paths
+  changed_dirs_tbl <- changed_dirs_tbl |>
+    dplyr::filter(.data$is_model_output_change) |>
+    dplyr::mutate(
+      # extract model directory using fs path functions
+      dir = fs::path_file(fs::path_dir(fs::path_rel(
+        .data$full_path,
+        "model-output"
+      )))
+    ) |>
+    dplyr::select(.data$dir) |>
+    dplyr::distinct()
+
+  # if no model-output changes, nothing to check
+  if (nrow(changed_dirs_tbl) == 0) {
+    cli::cli_inform("No model-output changes found.")
+    return(invisible())
+  }
 
   authorization_check <- changed_dirs_tbl |>
     dplyr::left_join(model_metadata, by = "dir", na_matches = "never") |>
