@@ -99,7 +99,8 @@ generate_hub_ensemble <- function(
     )
   }
 
-  ensemble_model_name <- glue::glue("{get_hub_name(disease)}-ensemble")
+  hub_name <- get_hub_name(disease)
+  ensemble_model_name <- glue::glue("{hub_name}-ensemble")
 
   output_dirpath <- fs::path(base_hub_path, "model-output", ensemble_model_name)
   output_filename <- glue::glue("{reference_date}-{hub_name}-ensemble")
@@ -110,8 +111,7 @@ generate_hub_ensemble <- function(
 
   weekly_forecasts <- hubData::connect_hub(base_hub_path) |>
     dplyr::filter(
-      .data$reference_date == !!reference_date,
-      !stringr::str_detect(.data$model_id, hub_name)
+      .data$reference_date == !!reference_date
     ) |>
     hubData::collect_hub()
 
