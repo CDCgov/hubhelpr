@@ -135,9 +135,8 @@ generate_hub_ensemble <- function(
     "weekly-model-submissions"
   )
 
-  if (!fs::dir_exists(auxiliary_data_path)) {
-    fs::dir_create(auxiliary_data_path, recurse = TRUE)
-  }
+  fs::dir_create(auxiliary_data_path, recurse = TRUE)
+
 
   forecasttools::write_tabular(
     weekly_models,
