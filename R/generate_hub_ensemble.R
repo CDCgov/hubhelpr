@@ -137,7 +137,6 @@ generate_hub_ensemble <- function(
 
   fs::dir_create(auxiliary_data_path, recurse = TRUE)
 
-
   forecasttools::write_tabular(
     weekly_models,
     fs::path(
