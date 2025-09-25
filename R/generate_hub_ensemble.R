@@ -111,8 +111,7 @@ generate_hub_ensemble <- function(
 
   weekly_forecasts <- hubData::connect_hub(base_hub_path) |>
     dplyr::filter(
-      .data$reference_date == !!reference_date,
-      !stringr::str_detect(.data$model_id, !!hub_name)
+      .data$reference_date == !!reference_date
     ) |>
     hubData::collect_hub()
 
