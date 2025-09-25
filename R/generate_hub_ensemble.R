@@ -129,18 +129,18 @@ generate_hub_ensemble <- function(
     ) |>
     dplyr::arrange(.data$target)
 
-  auxiliary_data_path <- fs::path(
+  weekly_model_submissions_path <- fs::path(
     base_hub_path,
     "auxiliary-data",
     "weekly-model-submissions"
   )
 
-  fs::dir_create(auxiliary_data_path, recurse = TRUE)
+  fs::dir_create(weekly_model_submissions_path, recurse = TRUE)
 
   forecasttools::write_tabular(
     weekly_models,
     fs::path(
-      auxiliary_data_path,
+      weekly_model_submissions_path,
       glue::glue("{reference_date}-models-submitted-to-hub"),
       ext = "csv"
     )
