@@ -36,21 +36,20 @@ check_changes_for_autoapproval <- function(
     full_path = changed_files
   ) |>
     dplyr::mutate(
-      # normalize paths via remove leading slashes
-      clean_path = stringr::str_remove(.data$full_path, "^/+"),
+      # normalize paths
+      clean_path = fs::path_norm(.data$full_path),
+      # get path parts
+      path_parts = purrr::map(.data$clean_path, fs::path_split),
       # extract first directory from the path
-      first_dir = stringr::str_extract(.data$clean_path, "^[^/]+"),
+      first_dir = purrr::map_chr(.data$path_parts, ~ .x[[1]][1]),
       # check file is in model-output
       in_model_output = .data$first_dir == model_output_dir,
-      # extract model_id (second directory) for files in model-output
+      # extract model_id for files in model-output
       model_id = dplyr::if_else(
         .data$in_model_output,
-        stringr::str_extract(
-          stringr::str_remove(
-            .data$clean_path,
-            glue::glue("^{model_output_dir}/")
-          ),
-          "^[^/]+"
+        purrr::map_chr(
+          .data$path_parts,
+          ~ purrr::pluck(.x, 1, 2, .default = NA_character_)
         ),
         NA_character_
       )
