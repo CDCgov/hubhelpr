@@ -33,7 +33,7 @@ check_changes_for_autoapproval <- function(
     full_path = changed_files
   ) |>
     dplyr::mutate(
-      path_rel_root = fs::path_rel(.data$full_path, parent = !!base_hub_path),
+      path_rel_root = fs::path_rel(.data$full_path, start = !!base_hub_path),
       in_model_output = fs::path_has_parent(
         .data$path_rel_root,
         "model-output"
