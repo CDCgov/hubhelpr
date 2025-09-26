@@ -4,12 +4,7 @@
 \alias{check_changes_for_autoapproval}
 \title{Check changed files for auto-approval eligibility.}
 \usage{
-check_changes_for_autoapproval(
-  changed_files,
-  gh_actor,
-  base_hub_path,
-  model_output_dir = "model-output"
-)
+check_changes_for_autoapproval(changed_files, gh_actor, base_hub_path)
 }
 \arguments{
 \item{changed_files}{Character vector. List of changed
@@ -20,9 +15,6 @@ person making changes.}
 
 \item{base_hub_path}{Character. Path to the base hub
 directory.}
-
-\item{model_output_dir}{Character. Name of the model
-output directory. Defaults to "model-output".}
 }
 \value{
 \code{NULL}, invisibly, raising an error if changes
