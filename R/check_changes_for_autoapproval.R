@@ -34,23 +34,9 @@ check_changes_for_autoapproval <- function(
     full_path = changed_files
   ) |>
     dplyr::mutate(
-      # normalize paths
-      clean_path = fs::path_norm(.data$full_path),
-      # get path parts
-      path_parts = purrr::map(.data$clean_path, fs::path_split),
-      # extract first directory from the path
-      first_dir = purrr::map_chr(.data$path_parts, ~ .x[[1]][1]),
-      # check file is in model-output
-      in_model_output = .data$first_dir == "model-output",
-      # extract model_id for files in model-output
-      model_id = dplyr::if_else(
-        .data$in_model_output,
-        purrr::map_chr(
-          .data$path_parts,
-          ~ purrr::pluck(.x, 1, 2, .default = NA_character_)
-        ),
-        NA_character_
-      )
+       path_rel_root = fs::path_rel(.data$full_path, parent = !!base_hub_path),
+       in_model_output = fs::path_has_parent(.data$path_rel_root, "model-output"),
+       model_id = ifelse(.data$in_model_output, fs::path_dir(.data$path_rel_root) |> fs::path_file(), NA_character_)
     )
 
   # check for files outside model-output
