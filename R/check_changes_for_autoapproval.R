@@ -50,7 +50,7 @@ check_changes_for_autoapproval <- function(
     dplyr::filter(!.data$in_model_output) |>
     dplyr::pull(.data$full_path)
 
-  if (length(files_outside_model_output) > 0) {
+  if (nrow(files_outside_model_output) > 0) {
     cli::cli_abort(
       c(
         "Auto-approval failed: Changes detected outside 'model-output' directory.",
