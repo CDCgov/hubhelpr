@@ -21,7 +21,6 @@ check_changes_for_autoapproval <- function(
   gh_actor,
   base_hub_path
 ) {
-  # validate inputs
   checkmate::assert_string(gh_actor)
   checkmate::assert_string(base_hub_path)
   if (length(changed_files) == 0) {
@@ -34,9 +33,16 @@ check_changes_for_autoapproval <- function(
     full_path = changed_files
   ) |>
     dplyr::mutate(
-       path_rel_root = fs::path_rel(.data$full_path, parent = !!base_hub_path),
-       in_model_output = fs::path_has_parent(.data$path_rel_root, "model-output"),
-       model_id = ifelse(.data$in_model_output, fs::path_dir(.data$path_rel_root) |> fs::path_file(), NA_character_)
+      path_rel_root = fs::path_rel(.data$full_path, parent = !!base_hub_path),
+      in_model_output = fs::path_has_parent(
+        .data$path_rel_root,
+        "model-output"
+      ),
+      model_id = ifelse(
+        .data$in_model_output,
+        fs::path_dir(.data$path_rel_root) |> fs::path_file(),
+        NA_character_
+      )
     )
 
   # check for files outside model-output
