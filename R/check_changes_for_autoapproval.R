@@ -11,8 +11,6 @@
 #' person making changes.
 #' @param base_hub_path Character. Path to the base hub
 #' directory.
-#' @param model_output_dir Character. Name of the model
-#' output directory. Defaults to "model-output".
 #'
 #' @return `NULL`, invisibly, raising an error if changes
 #' are outside model-output or if the user is unauthorized.
@@ -21,14 +19,11 @@
 check_changes_for_autoapproval <- function(
   changed_files,
   gh_actor,
-  base_hub_path,
-  model_output_dir = "model-output"
+  base_hub_path
 ) {
   # validate inputs
   checkmate::assert_string(gh_actor)
   checkmate::assert_string(base_hub_path)
-  checkmate::assert_string(model_output_dir)
-
   checkmate::assert_character(changed_files, min.len = 1)
 
   # tibble of changed files with paths
@@ -43,7 +38,7 @@ check_changes_for_autoapproval <- function(
       # extract first directory from the path
       first_dir = purrr::map_chr(.data$path_parts, ~ .x[[1]][1]),
       # check file is in model-output
-      in_model_output = .data$first_dir == model_output_dir,
+      in_model_output = .data$first_dir == "model-output",
       # extract model_id for files in model-output
       model_id = dplyr::if_else(
         .data$in_model_output,
@@ -63,8 +58,8 @@ check_changes_for_autoapproval <- function(
   if (length(files_outside_model_output) > 0) {
     cli::cli_abort(
       c(
-        "Auto-approval failed: Changes detected outside '{model_output_dir}' directory.",
-        "The following files are outside '{model_output_dir}':",
+        "Auto-approval failed: Changes detected outside 'model-output' directory.",
+        "The following files are outside 'model-output':",
         files_outside_model_output
       )
     )
