@@ -24,7 +24,10 @@ check_changes_for_autoapproval <- function(
   # validate inputs
   checkmate::assert_string(gh_actor)
   checkmate::assert_string(base_hub_path)
-  checkmate::assert_character(changed_files, min.len = 1)
+  if (length(changed_files) == 0) {
+    cli::cli_abort("Empty PRs cannot be autoapproved.")
+  }
+  checkmate::assert_character(changed_files)
 
   # tibble of changed files with paths
   changed_files_tbl <- tibble::tibble(
@@ -71,22 +74,19 @@ check_changes_for_autoapproval <- function(
     dplyr::pull(.data$model_id) |>
     unique()
 
-  if (length(changed_dirs) == 0) {
-    cli::cli_abort(
-      "No valid model directories found in changed files."
+  # only check authorization if there are model directories
+  if (length(changed_dirs) > 0) {
+    cli::cli_inform(
+      "Checking authorization for {length(changed_dirs)} model director{?y/ies}: {.val {changed_dirs}}"
+    )
+
+    # pass model IDs to check_authorized_users
+    check_authorized_users(
+      changed_dirs = changed_dirs,
+      gh_actor = gh_actor,
+      base_hub_path = base_hub_path
     )
   }
-
-  cli::cli_inform(
-    "Checking authorization for {length(changed_dirs)} model director{?y/ies}: {.val {changed_dirs}}"
-  )
-
-  # pass model IDs to check_authorized_users
-  check_authorized_users(
-    changed_dirs = changed_dirs,
-    gh_actor = gh_actor,
-    base_hub_path = base_hub_path
-  )
 
   invisible()
 }
