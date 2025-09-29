@@ -58,7 +58,7 @@ check_changes_for_autoapproval <- function(
         files_outside_model_output
       )
     )
-  }
+  changed_model_ids <- changed_files_tbl |>
 
   # extract unique model IDs
   changed_dirs <- changed_files_tbl |>
