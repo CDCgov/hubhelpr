@@ -50,7 +50,7 @@ check_changes_for_autoapproval <- function(
     dplyr::filter(!.data$in_model_output) |>
     dplyr::pull(.data$full_path)
 
-  if (nrow(files_outside_model_output) > 0) {
+  if (length(files_outside_model_output) > 0) {
     cli::cli_abort(
       c(
         "Auto-approval failed: Changes detected outside 'model-output' directory.",
@@ -58,24 +58,25 @@ check_changes_for_autoapproval <- function(
         files_outside_model_output
       )
     )
-  changed_model_ids <- changed_files_tbl |>
+  }
 
   # extract unique model IDs
-  changed_dirs <- changed_files_tbl |>
+  changed_model_ids <- changed_files_tbl |>
+
     dplyr::filter(.data$in_model_output) |>
-  if (nrow(changed_model_ids) == 0) {
+    dplyr::pull(.data$model_id) |>
     unique()
 
   # only check authorization if there are model directories
-  if (length(changed_dirs) > 0) {
+  if (length(changed_model_ids) > 0) {
     cli::cli_inform(
-      "Checking authorization for {length(changed_dirs)} model director{?y/ies}: {.val {changed_dirs}}"
+      "Checking authorization for {length(changed_model_ids)} model director{?y/ies}: {.val {changed_model_ids}}"
     )
 
     # pass model IDs to check_authorized_users
     check_authorized_users(
-      changed_dirs = changed_dirs,
-    changed_dirs = changed_model_ids,
+      changed_dirs = changed_model_ids,
+      gh_actor = gh_actor,
       base_hub_path = base_hub_path
     )
   }
