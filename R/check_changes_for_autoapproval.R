@@ -63,7 +63,7 @@ check_changes_for_autoapproval <- function(
   # extract unique model IDs
   changed_dirs <- changed_files_tbl |>
     dplyr::filter(.data$in_model_output) |>
-    dplyr::pull(.data$model_id) |>
+  if (nrow(changed_model_ids) == 0) {
     unique()
 
   # only check authorization if there are model directories
