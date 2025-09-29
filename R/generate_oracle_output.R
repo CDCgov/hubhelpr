@@ -80,7 +80,8 @@ generate_oracle_output <- function(hub_path) {
 
   ## this involves duplication given how hubUtils::get_round_model_tasks
   ## behaves by default with round ids created from reference dates,
-  ## but we do this this way for completeness / generality
+  ## but to support hubs with round_ids created in other ways, we 
+  ## do it this way and then deduplicate as needed.
   list_of_task_lists <- purrr::map(round_ids, \(id) {
     hubUtils::get_round_model_tasks(config_tasks, id)
   })
