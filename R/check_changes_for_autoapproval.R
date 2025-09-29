@@ -75,7 +75,7 @@ check_changes_for_autoapproval <- function(
     # pass model IDs to check_authorized_users
     check_authorized_users(
       changed_dirs = changed_dirs,
-      gh_actor = gh_actor,
+    changed_dirs = changed_model_ids,
       base_hub_path = base_hub_path
     )
   }
