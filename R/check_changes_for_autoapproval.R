@@ -28,8 +28,6 @@ check_changes_for_autoapproval <- function(
     min.len = 1,
     info = "Empty PRs cannot be autoapproved. At least one file must be changed in the pull request."
   )
-
-  # tibble of changed files with paths
   changed_files_tbl <- tibble::tibble(
     full_path = changed_files
   ) |>
@@ -45,8 +43,6 @@ check_changes_for_autoapproval <- function(
         NA_character_
       )
     )
-
-  # check for files outside model-output
   files_outside_model_output <- changed_files_tbl |>
     dplyr::filter(!.data$in_model_output) |>
     dplyr::pull(.data$full_path)
@@ -60,21 +56,17 @@ check_changes_for_autoapproval <- function(
       )
     )
   }
-
-  # extract unique model IDs
   changed_model_ids <- changed_files_tbl |>
 
     dplyr::filter(.data$in_model_output) |>
     dplyr::pull(.data$model_id) |>
     unique()
 
-  # only check authorization if there are model directories
   if (length(changed_model_ids) > 0) {
     cli::cli_inform(
       "Checking authorization for {length(changed_model_ids)} model director{?y/ies}: {.val {changed_model_ids}}"
     )
 
-    # pass model IDs to check_authorized_users
     check_authorized_users(
       changed_dirs = changed_model_ids,
       gh_actor = gh_actor,
