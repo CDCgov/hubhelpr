@@ -23,11 +23,10 @@ check_changes_for_autoapproval <- function(
 ) {
   checkmate::assert_string(gh_actor)
   checkmate::assert_string(base_hub_path)
-  checkmate::assert_character(
-    changed_files,
-    min.len = 1,
-    info = "Empty PRs cannot be autoapproved. At least one file must be changed in the pull request."
-  )
+  checkmate::assert_character(changed_files)
+  if (length(changed_files) < 1) {
+    cli::cli_abort("Empty PRs cannot be autoapproved. At least one file must be changed in the pull request.")
+  }
   changed_files_tbl <- tibble::tibble(
     full_path = changed_files
   ) |>
