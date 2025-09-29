@@ -69,6 +69,7 @@ flatten_task_list <- function(task_list, .deduplicate = TRUE) {
 #' @param hub_path Path to the hub root.
 #'
 #' @return nothing, invisibly, on success.
+#" @export
 generate_oracle_output <- function(hub_path) {
   output_dirpath <- fs::path(hub_path, "target-data")
   fs::dir_create(output_dirpath)
