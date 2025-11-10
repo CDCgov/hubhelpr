@@ -13,7 +13,7 @@ repos:
 #####
 # Python
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.13.2
+  rev: v0.14.4
   hooks:
     # Sort imports
     - id: ruff
@@ -27,7 +27,7 @@ repos:
 #####
 # R
 -   repo: https://github.com/lorenzwalthert/precommit
-    rev: v0.4.3.9015
+    rev: v0.4.3.9017
     hooks:
     -   id: lintr
 #####
