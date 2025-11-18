@@ -25,6 +25,8 @@ Imports:
     jsonlite,
     lubridate,
     purrr,
+    RcppTOML,
+    readr,
     stringr,
     tidyr,
     tidyselect,
