@@ -1,3 +1,6 @@
+#' @importFrom rlang .data :=
+NULL
+
 #' Get hub name for a given disease.
 #'
 #' Converts disease identifier to proper hub name format.
