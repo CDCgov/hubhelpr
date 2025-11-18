@@ -1,16 +1,16 @@
-#' Generate text content for COVID-19 forecast
+#' Generate text content for forecast hub
 #' visualization webpage.
 #'
 #' This script generates formatted text summaries for the
-#' COVID-19 forecast visualization webpage. It processes
+#' forecast hub visualization webpage. It processes
 #' ensemble forecast data, target hospital admissions data,
 #' and contributing team information to create a text
-#' description of the current week's COVID-19
+#' description of the current week's
 #' hospitalization forecasts.
 #'
 #' Usage:
-#' Rscript src/get_webtext.R --reference-date "2025-09-19"
-#' --hub-reports-path "../covidhub-reports"
+#' Rscript R/get_webtext.R --reference-date "2025-09-19"
+#' --hub-reports-path "../hub-reports"
 
 parser <- argparser::arg_parser(
   "Generate text for the webpage."
@@ -26,20 +26,44 @@ parser <- argparser::add_argument(
   "--base-hub-path",
   type = "character",
   default = ".",
-  help = "Path to the Covid19 forecast hub directory."
+  help = "Path to the forecast hub directory."
 )
 parser <- argparser::add_argument(
   parser,
   "--hub-reports-path",
   type = "character",
   default = "../covidhub-reports",
-  help = "path to COVIDhub reports directory"
+  help = "path to forecast hub reports directory"
+)
+parser <- argparser::add_argument(
+  parser,
+  "--file-prefix",
+  type = "character",
+  default = "covid",
+  help = "prefix used in data filenames (e.g., 'covid', 'rsv')"
+)
+parser <- argparser::add_argument(
+  parser,
+  "--hub-name",
+  type = "character",
+  default = "CovidHub",
+  help = "name of the forecast hub (e.g., 'CovidHub', 'RSVHub')"
+)
+parser <- argparser::add_argument(
+  parser,
+  "--disease-name",
+  type = "character",
+  default = "COVID-19",
+  help = "name of the disease being forecasted (e.g., 'COVID-19', 'RSV')"
 )
 
 args <- argparser::parse_args(parser)
 reference_date <- args$reference_date
 base_hub_path <- args$base_hub_path
 hub_reports_path <- args$hub_reports_path
+file_prefix <- args$file_prefix
+hub_name <- args$hub_name
+disease_name <- args$disease_name
 
 weekly_data_path <- file.path(
   hub_reports_path,
@@ -48,7 +72,10 @@ weekly_data_path <- file.path(
 )
 
 ensemble_us_1wk_ahead <- readr::read_csv(
-  file.path(weekly_data_path, paste0(reference_date, "_covid_map_data.csv")),
+  file.path(
+    weekly_data_path,
+    glue::glue("{reference_date}_{file_prefix}_map_data.csv")
+  ),
   show_col_types = FALSE
 ) |>
   dplyr::filter(horizon == 1, location_name == "US")
@@ -56,10 +83,7 @@ ensemble_us_1wk_ahead <- readr::read_csv(
 target_data <- readr::read_csv(
   file.path(
     weekly_data_path,
-    paste0(
-      reference_date,
-      "_covid_target_hospital_admissions_data.csv"
-    )
+    glue::glue("{reference_date}_{file_prefix}_target_hospital_admissions_data.csv")
   ),
   show_col_types = FALSE
 )
@@ -67,11 +91,11 @@ target_data <- readr::read_csv(
 contributing_teams <- readr::read_csv(
   file.path(
     weekly_data_path,
-    paste0(reference_date, "_covid_forecasts_data.csv")
+    glue::glue("{reference_date}_{file_prefix}_forecasts_data.csv")
   ),
   show_col_types = FALSE
 ) |>
-  dplyr::filter(model != "CovidHub-ensemble") |>
+  dplyr::filter(model != glue::glue("{hub_name}-ensemble")) |>
   dplyr::pull(model) |>
   unique()
 
@@ -232,29 +256,29 @@ last_reported_target_data <- target_data |>
 last_reported_admissions <- round(last_reported_target_data$value, -2)
 
 web_text <- glue::glue(
-  "The CovidHub ensemble's one-week-ahead forecast predicts that the number ",
-  "of new weekly laboratory-confirmed COVID-19 hospital admissions will be ",
+  "The {hub_name} ensemble's one-week-ahead forecast predicts that the number ",
+  "of new weekly laboratory-confirmed {disease_name} hospital admissions will be ",
   "approximately {median_forecast_1wk_ahead} nationally, with ",
   "{lower_95ci_forecast_1wk_ahead} to {upper_95ci_forecast_1wk_ahead} ",
-  "laboratory confirmed COVID-19 hospital admissions likely reported in the ",
+  "laboratory confirmed {disease_name} hospital admissions likely reported in the ",
   "week ending {target_end_date_1wk_ahead}. This is compared to the ",
   "{last_reported_admissions} admissions reported for the week ",
   "ending {last_reported_target_data$week_end_date_formatted}, the most ",
   "recent week of reporting from U.S. hospitals.\n\n",
-  "Reported and forecasted new COVID-19 hospital admissions as of ",
+  "Reported and forecasted new {disease_name} hospital admissions as of ",
   "{forecast_due_date}. This week, {weekly_num_teams} modeling groups ",
   "contributed {weekly_num_models} forecasts that were eligible for inclusion ",
   "in the ensemble forecasts for at least one jurisdiction.\n\n",
-  "The figure shows the number of new laboratory-confirmed COVID-19 hospital ",
+  "The figure shows the number of new laboratory-confirmed {disease_name} hospital ",
   "admissions reported in the United States each week from ",
   "{first_target_data_date} through {last_target_data_date} and forecasted ",
-  "new COVID-19 hospital admissions per week for this week and the next ",
+  "new {disease_name} hospital admissions per week for this week and the next ",
   "2 weeks through {target_end_date_2wk_ahead}.\n\n",
   "{reporting_rate_flag}\n",
   "Contributing teams and models:\n\n",
-  "Models included in the CovidHub ensemble:\n",
+  "Models included in the {hub_name} ensemble:\n",
   "{paste(model_incl_in_hub_ensemble, collapse = '\n')}\n\n",
-  "Models not included in the CovidHub ensemble:\n",
+  "Models not included in the {hub_name} ensemble:\n",
   "{paste(model_not_incl_in_hub_ensemble, collapse = '\n')}"
 )
 
