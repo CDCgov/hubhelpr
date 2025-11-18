@@ -2,12 +2,12 @@
 #' directories.
 #'
 #' This function verifies whether a GitHub
-#' user is authorized to modify specific directories
+#' user is authorized to modify specific model IDs
 #' in a Hub by checking the designated users in model
 #' metadata.
 #'
-#' @param changed_dirs Character vector. Names of directories
-#' whose contents have been modified.
+#' @param changed_model_ids Character vector. Model IDs that
+#' have been modified.
 #' @param gh_actor Character. GitHub username of the person
 #' making changes.
 #' @param base_hub_path Character. Path to the base hub
@@ -18,11 +18,11 @@
 #'
 #' @export
 check_authorized_users <- function(
-  changed_dirs,
+  changed_model_ids,
   gh_actor,
   base_hub_path
 ) {
-  checkmate::assert_character(changed_dirs, min.len = 1)
+  checkmate::assert_character(changed_model_ids, min.len = 1)
   checkmate::assert_string(gh_actor)
   checkmate::assert_string(base_hub_path)
 
@@ -30,7 +30,7 @@ check_authorized_users <- function(
     dplyr::mutate(is_model_dir = TRUE) |>
     dplyr::rename(dir = "model_id")
 
-  changed_dirs_tbl <- tibble::tibble(dir = changed_dirs)
+  changed_dirs_tbl <- tibble::tibble(dir = changed_model_ids)
 
   authorization_check <- changed_dirs_tbl |>
     dplyr::left_join(model_metadata, by = "dir", na_matches = "never") |>

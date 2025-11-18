@@ -27,7 +27,8 @@ Imports:
     purrr,
     stringr,
     tidyr,
-    tidyselect
+    tidyselect,
+    hubUtils
 Remotes:
     forecasttools=github::cdcgov/forecasttools,
     hubUtils=github::hubverse-org/hubUtils,

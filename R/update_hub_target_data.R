@@ -24,6 +24,9 @@ nssp_col_names <- list(
 #' is "2024-11-09".
 #' @param legacy_file Logical. Whether to write legacy
 #' CSV output (default: FALSE).
+#' @param nssp_update_local Logical. Whether to update NSSP
+#' data from local file `auxiliary-data/latest.csv`
+#' (default: FALSE).
 #'
 #' @return Writes `time-series.parquet` and optionally
 #' legacy CSV target data files to the target-data
@@ -35,7 +38,8 @@ update_hub_target_data <- function(
   as_of = lubridate::today(),
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
   included_locations = hubhelpr::included_locations,
-  legacy_file = FALSE
+  legacy_file = FALSE,
+  nssp_update_local = FALSE
 ) {
   if (!disease %in% c("covid", "rsv")) {
     stop("'disease' must be either 'covid' or 'rsv'")
@@ -90,11 +94,31 @@ update_hub_target_data <- function(
       )
   }
 
-  hubverse_format_nssp_data <- forecasttools::pull_data_cdc_gov_dataset(
-    dataset = "nssp_prop_ed_visits",
-    columns = c(nssp_col_name, "geography"),
-    locations = "All"
-  ) |>
+  if (nssp_update_local) {
+    raw_nssp_data <- forecasttools::read_tabular(
+      fs::path(
+        base_hub_path,
+        "auxiliary-data",
+        "nssp-raw-data",
+        "latest",
+        ext = "csv"
+      )
+    ) |>
+      dplyr::filter(county == "All") |>
+      dplyr::select(
+        week_end,
+        geography,
+        dplyr::all_of(nssp_col_name)
+      )
+  } else {
+    raw_nssp_data <- forecasttools::pull_data_cdc_gov_dataset(
+      dataset = "nssp_prop_ed_visits",
+      columns = c(nssp_col_name, "geography"),
+      locations = "All"
+    )
+  }
+
+  hubverse_format_nssp_data <- raw_nssp_data |>
     dplyr::mutate(
       date = lubridate::as_date(.data$week_end),
       observation = as.numeric(.data[[nssp_col_name]]) / 100,
