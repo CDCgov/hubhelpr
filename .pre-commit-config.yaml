@@ -13,7 +13,7 @@ repos:
 #####
 # Python
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.13.1
+  rev: v0.14.5
   hooks:
     # Sort imports
     - id: ruff
@@ -27,7 +27,7 @@ repos:
 #####
 # R
 -   repo: https://github.com/lorenzwalthert/precommit
-    rev: v0.4.3.9014
+    rev: v0.4.3.9017
     hooks:
     -   id: lintr
 #####
@@ -53,3 +53,8 @@ repos:
     -   id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
         exclude: package.lock.json
+-   repo: https://github.com/crate-ci/typos
+    rev: v1.39.1
+    hooks:
+    -   id: typos
+        args: ["--force-exclude"]
