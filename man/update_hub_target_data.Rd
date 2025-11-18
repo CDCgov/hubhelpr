@@ -10,7 +10,8 @@ update_hub_target_data(
   as_of = lubridate::today(),
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
   included_locations = hubhelpr::included_locations,
-  legacy_file = FALSE
+  legacy_file = FALSE,
+  nssp_update_local = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,10 @@ Default value \code{hubhelpr::included_locations}.}
 
 \item{legacy_file}{Logical. Whether to write legacy
 CSV output (default: FALSE).}
+
+\item{nssp_update_local}{Logical. Whether to update NSSP
+data from local file \code{auxiliary-data/latest.csv}
+(default: FALSE).}
 }
 \value{
 Writes \code{time-series.parquet} and optionally

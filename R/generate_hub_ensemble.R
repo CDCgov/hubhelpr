@@ -99,7 +99,8 @@ generate_hub_ensemble <- function(
     )
   }
 
-  ensemble_model_name <- glue::glue("{get_hub_name(disease)}-ensemble")
+  hub_name <- get_hub_name(disease)
+  ensemble_model_name <- glue::glue("{hub_name}-ensemble")
 
   output_dirpath <- fs::path(base_hub_path, "model-output", ensemble_model_name)
   output_filename <- glue::glue("{reference_date}-{hub_name}-ensemble")
@@ -110,8 +111,7 @@ generate_hub_ensemble <- function(
 
   weekly_forecasts <- hubData::connect_hub(base_hub_path) |>
     dplyr::filter(
-      .data$reference_date == !!reference_date,
-      !stringr::str_detect(.data$model_id, hub_name)
+      .data$reference_date == !!reference_date
     ) |>
     hubData::collect_hub()
 
@@ -129,12 +129,18 @@ generate_hub_ensemble <- function(
     ) |>
     dplyr::arrange(.data$target)
 
+  weekly_model_submissions_path <- fs::path(
+    base_hub_path,
+    "auxiliary-data",
+    "weekly-model-submissions"
+  )
+
+  fs::dir_create(weekly_model_submissions_path, recurse = TRUE)
+
   forecasttools::write_tabular(
     weekly_models,
     fs::path(
-      base_hub_path,
-      "auxiliary-data",
-      "weekly-model-submissions",
+      weekly_model_submissions_path,
       glue::glue("{reference_date}-models-submitted-to-hub"),
       ext = "csv"
     )

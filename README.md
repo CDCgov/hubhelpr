@@ -6,7 +6,7 @@
 
 ## Overview
 
-In-progress R package providing functions for CFA Hubs maintainence.
+In-progress R package providing functions for CFA Hubs maintenance.
 
 ## Getting started
 
