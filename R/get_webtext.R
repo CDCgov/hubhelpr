@@ -83,7 +83,9 @@ ensemble_us_1wk_ahead <- readr::read_csv(
 target_data <- readr::read_csv(
   file.path(
     weekly_data_path,
-    glue::glue("{reference_date}_{file_prefix}_target_hospital_admissions_data.csv")
+    glue::glue(
+      "{reference_date}_{file_prefix}_target_hospital_admissions_data.csv"
+    )
   ),
   show_col_types = FALSE
 )
