@@ -261,6 +261,4 @@ get_webtext <- function(
     web_text,
     file.path(weekly_data_path, paste0(reference_date, "_webtext.md"))
   )
-
-  invisible(web_text)
 }
