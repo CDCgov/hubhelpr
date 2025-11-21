@@ -100,7 +100,6 @@ update_hub_target_data <- function(
       "auxiliary-data",
       "nssp-raw-data"
     )
-    # find latest.* file (csv or parquet)
     nssp_files <- fs::dir_ls(nssp_dir, regexp = "latest\\.(csv|parquet)$")
 
     if (length(nssp_files) == 0) {
