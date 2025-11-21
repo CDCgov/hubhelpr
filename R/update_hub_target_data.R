@@ -87,7 +87,7 @@ update_hub_target_data <- function(
         value = "observation",
         state = "jurisdiction"
       ) |>
-      dplyr::arrange(state) |>
+      dplyr::arrange(.data$state) |>
       dplyr::select("state", "date", "value", "location") |>
       forecasttools::write_tabular(
         fs::path(output_dirpath, legacy_file_name)
@@ -104,10 +104,10 @@ update_hub_target_data <- function(
         ext = "csv"
       )
     ) |>
-      dplyr::filter(county == "All") |>
+      dplyr::filter(.data$county == "All") |>
       dplyr::select(
-        week_end,
-        geography,
+        "week_end",
+        "geography",
         dplyr::all_of(nssp_col_name)
       )
   } else {
@@ -132,7 +132,7 @@ update_hub_target_data <- function(
     ) |>
     dplyr::filter(.data$location %in% !!included_locations) |>
     dplyr::select(dplyr::all_of(hubverse_ts_req_cols)) |>
-    dplyr::arrange(date, location)
+    dplyr::arrange(.data$date, .data$location)
 
   output_file <- fs::path(output_dirpath, "time-series", ext = "parquet")
   if (fs::file_exists(output_file)) {
