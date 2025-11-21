@@ -45,118 +45,61 @@
 #' hub directory.
 #' @param hub_reports_path character, path to forecast hub
 #' reports directory.
+#' @param disease character, disease name ("covid" or "rsv").
+#' Used to derive hub name and file prefix.
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
-#' @param hub_name character, name of the forecast hub
-#' ensemble (e.g., "CovidHub", "RSVHub"). Default:
-#' "CovidHub".
-#' @param file_prefix character, prefix used in output
-#' filename (e.g., "covid", "rsv"). Default: "covid".
+#' @param population_data data frame with columns
+#' "location_name" and "population".
+#' @param excluded_locations character vector of location
+#' codes to exclude from the output. Default: character(0).
+#' @param output_format character, output file format.
+#' One of "csv", "tsv", or "parquet". Default: "csv".
 #'
 #' @export
 get_map_data <- function(
   reference_date,
   base_hub_path,
   hub_reports_path,
+  disease,
   horizons_to_include = c(0, 1, 2),
-  hub_name = "CovidHub",
-  file_prefix = "covid"
+  population_data,
+  excluded_locations = character(0),
+  output_format = "csv"
 ) {
-  # check for invalid horizon entries
-  valid_horizons <- c(-1, 0, 1, 2, 3)
-  invalid_horizons <- horizons_to_include[
-    !sapply(
-      horizons_to_include,
-      function(x) x %in% valid_horizons
-    )
-  ]
-  if (length(invalid_horizons) > 0) {
-    stop(
-      "Invalid elements: ",
-      glue::glue_collapse(invalid_horizons, sep = ", ")
-    )
-  }
+  checkmate::assert_scalar(disease)
+  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_subset(horizons_to_include, choices = c(-1, 0, 1, 2, 3))
+  checkmate::assert_data_frame(population_data)
+  checkmate::assert_names(
+    colnames(population_data),
+    must.include = c("location_name", "population")
+  )
+  checkmate::assert_character(excluded_locations)
+  checkmate::assert_choice(output_format, choices = c("csv", "tsv", "parquet"))
+
+  reference_date <- lubridate::as_date(reference_date)
+
+  hub_name <- get_hub_name(disease)
+  file_prefix <- disease
 
   # load the latest ensemble data from the model-output folder
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
-  ensemble_folder <- file.path(
-    base_hub_path,
-    "model-output",
-    ensemble_model_name
-  )
-  ensemble_file_current <- file.path(
-    ensemble_folder,
-    glue::glue("{reference_date}-{ensemble_model_name}.csv")
-  )
-  if (file.exists(ensemble_file_current)) {
-    ensemble_file <- ensemble_file_current
-  } else {
-    stop(
-      glue::glue(
-        "Ensemble file for reference date {reference_date} ",
-        "not found in the directory: {ensemble_folder}"
-      )
-    )
-  }
-  ensemble_data <- readr::read_csv(ensemble_file)
-  required_columns <- c(
-    "reference_date",
-    "target_end_date",
-    "value",
-    "location"
-  )
-  missing_columns <- setdiff(
-    required_columns,
-    colnames(ensemble_data)
-  )
-  if (length(missing_columns) > 0) {
-    stop(
-      glue::glue(
-        "Missing columns in ensemble data: ",
-        "{glue::glue_collapse(missing_columns, sep = ', ')}"
-      )
-    )
-  }
 
-  # population data, add later to forecasttools
-  pop_data_path <- file.path(
-    base_hub_path,
-    "auxiliary-data",
-    "locations_with_2023_census_pop.csv"
-  )
-  pop_data <- readr::read_csv(pop_data_path)
-  pop_required_columns <- c("abbreviation", "population")
-  missing_pop_columns <- setdiff(
-    pop_required_columns,
-    colnames(pop_data)
-  )
-  if (length(missing_pop_columns) > 0) {
-    stop(
+  ensemble_data <- hubData::connect_hub(base_hub_path) |>
+    dplyr::filter(
+      .data$reference_date == !!reference_date,
+      .data$model_id == !!ensemble_model_name
+    ) |>
+    hubData::collect_hub()
+
+  if (nrow(ensemble_data) == 0) {
+    cli::cli_abort(
       glue::glue(
-        "Missing columns in population data: ",
-        "{glue::glue_collapse(missing_pop_columns, sep = ', ')}"
+        "No ensemble data found for reference date {reference_date} ",
+        "and model {ensemble_model_name}"
       )
     )
-  }
-
-  # check if the reference date has any
-  # exclusions and exclude specified locations if any
-  exclude_data_path_toml <- fs::path(
-    base_hub_path,
-    "auxiliary-data",
-    "excluded_locations.toml"
-  )
-  if (fs::file_exists(exclude_data_path_toml)) {
-    exclude_data_toml <- RcppTOML::parseTOML(exclude_data_path_toml)
-    if (reference_date %in% names(exclude_data_toml)) {
-      excluded_locations <- exclude_data_toml[[reference_date]]
-      message("Excluding locations for reference date: ", reference_date)
-    } else {
-      excluded_locations <- character(0)
-      message("No exclusion for reference date: ", reference_date)
-    }
-  } else {
-    stop("TOML file not found: ", exclude_data_path_toml)
   }
 
   # process ensemble data into the required format for Map file
@@ -170,9 +113,7 @@ get_map_data <- function(
       "quantile_0.975" = 0.975
     )
   ) |>
-    # usually filter out horizon 3, -1
     dplyr::filter(.data$horizon %in% !!horizons_to_include) |>
-    # filter out excluded locations if the ref date is the first week in season
     dplyr::filter(!(.data$location %in% !!excluded_locations)) |>
     dplyr::mutate(
       reference_date = as.Date(.data$reference_date),
@@ -199,7 +140,7 @@ get_map_data <- function(
     ) |>
     dplyr::arrange(.data$location_sort_order, .data$location) |>
     dplyr::left_join(
-      pop_data,
+      population_data,
       by = c("location" = "location_name")
     ) |>
     dplyr::mutate(
@@ -258,18 +199,16 @@ get_map_data <- function(
   output_filepath <- fs::path(
     output_folder_path,
     output_filename,
-    ext = "csv"
+    ext = output_format
   )
 
-  # determine if the output folder exists, create it if not
   fs::dir_create(output_folder_path)
-  message("Directory is ready: ", output_folder_path)
+  cli::cli_inform("Directory is ready: {output_folder_path}")
 
-  # check if the file exists, and if not, save to csv, else throw an error
   if (!fs::file_exists(output_filepath)) {
-    readr::write_csv(map_data, output_filepath)
-    message("File saved as: ", output_filepath)
+    forecasttools::write_tabular(map_data, output_filepath)
+    cli::cli_inform("File saved as: {output_filepath}")
   } else {
-    stop("File already exists: ", output_filepath)
+    cli::cli_abort("File already exists: {output_filepath}")
   }
 }
