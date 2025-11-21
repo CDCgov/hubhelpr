@@ -95,15 +95,28 @@ update_hub_target_data <- function(
   }
 
   if (nssp_update_local) {
-    raw_nssp_data <- forecasttools::read_tabular(
-      fs::path(
-        base_hub_path,
-        "auxiliary-data",
-        "nssp-raw-data",
-        "latest",
-        ext = "csv"
+    nssp_dir <- fs::path(
+      base_hub_path,
+      "auxiliary-data",
+      "nssp-raw-data"
+    )
+    # find latest.* file (csv or parquet)
+    nssp_files <- fs::dir_ls(nssp_dir, regexp = "latest\\.(csv|parquet)$")
+
+    if (length(nssp_files) == 0) {
+      cli::cli_abort(
+        glue::glue(
+          "Cannot find NSSP data file (latest.csv or latest.parquet) ",
+          "in {nssp_dir}."
+        )
       )
-    ) |>
+    }
+
+    nssp_file_path <- nssp_files[which.max(
+      fs::path_ext(nssp_files) == "parquet"
+    )]
+
+    raw_nssp_data <- forecasttools::read_tabular(nssp_file_path) |>
       dplyr::filter(.data$county == "All") |>
       dplyr::select(
         "week_end",
