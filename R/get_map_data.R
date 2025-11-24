@@ -45,16 +45,16 @@
 #' hub directory.
 #' @param hub_reports_path character, path to forecast hub
 #' reports directory.
-#' @param disease character, disease name ("covid" or "rsv").
-#' Used to derive hub name and file prefix.
+#' @param disease character, disease name ("covid" or
+#' "rsv"). Used to derive hub name and file prefix.
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
 #' "location_name" and "population".
 #' @param excluded_locations character vector of location
 #' codes to exclude from the output. Default: character(0).
-#' @param output_format character, output file format.
-#' One of "csv", "tsv", or "parquet". Default: "csv".
+#' @param output_format character, output file format. One
+#' of "csv", "tsv", or "parquet". Default: "csv".
 #'
 #' @export
 get_map_data <- function(
