@@ -50,7 +50,7 @@
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
-#' "location_name" and "population".
+#' "location" and "population".
 #' @param excluded_locations character vector of location
 #' codes to exclude from the output. Default: character(0).
 #' @param output_format character, output file format. One
@@ -67,13 +67,12 @@ get_map_data <- function(
   excluded_locations = character(0),
   output_format = "csv"
 ) {
-  checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
   checkmate::assert_subset(horizons_to_include, choices = c(-1, 0, 1, 2, 3))
   checkmate::assert_data_frame(population_data)
   checkmate::assert_names(
     colnames(population_data),
-    must.include = c("location_name", "population")
+    must.include = c("location", "population")
   )
   checkmate::assert_character(excluded_locations)
   checkmate::assert_choice(output_format, choices = c("csv", "tsv", "parquet"))
@@ -81,9 +80,6 @@ get_map_data <- function(
   reference_date <- lubridate::as_date(reference_date)
 
   hub_name <- get_hub_name(disease)
-  file_prefix <- disease
-
-  # load the latest ensemble data from the model-output folder
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
 
   ensemble_data <- hubData::connect_hub(base_hub_path) |>
@@ -141,7 +137,7 @@ get_map_data <- function(
     dplyr::arrange(.data$location_sort_order, .data$location) |>
     dplyr::left_join(
       population_data,
-      by = c("location" = "location_name")
+      by = "location"
     ) |>
     dplyr::mutate(
       population = as.numeric(.data$population),
@@ -195,7 +191,7 @@ get_map_data <- function(
     "weekly-summaries",
     reference_date
   )
-  output_filename <- glue::glue("{reference_date}_{file_prefix}_map_data")
+  output_filename <- glue::glue("{reference_date}_{disease}_map_data")
   output_filepath <- fs::path(
     output_folder_path,
     output_filename,
@@ -203,7 +199,6 @@ get_map_data <- function(
   )
 
   fs::dir_create(output_folder_path)
-  cli::cli_inform("Directory is ready: {output_folder_path}")
 
   if (!fs::file_exists(output_filepath)) {
     forecasttools::write_tabular(map_data, output_filepath)
