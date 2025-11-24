@@ -27,6 +27,7 @@ Imports:
     purrr,
     RcppTOML,
     readr,
+    rlang,
     stringr,
     tidyr,
     tidyselect,
