@@ -95,25 +95,19 @@ update_hub_target_data <- function(
   }
 
   if (nssp_update_local) {
-    nssp_dir <- fs::path(
+    nssp_file_path <- fs::path(
       base_hub_path,
       "auxiliary-data",
-      "nssp-raw-data"
+      "nssp-raw-data",
+      "latest",
+      ext = "parquet"
     )
-    nssp_files <- fs::dir_ls(nssp_dir, regexp = "latest\\.(csv|parquet)$")
 
-    if (length(nssp_files) == 0) {
+    if (!fs::file_exists(nssp_file_path)) {
       cli::cli_abort(
-        glue::glue(
-          "Cannot find NSSP data file (latest.csv or latest.parquet) ",
-          "in {nssp_dir}."
-        )
+        glue::glue("Cannot find NSSP data file at {nssp_file_path}")
       )
     }
-
-    nssp_file_path <- nssp_files[which.max(
-      fs::path_ext(nssp_files) == "parquet"
-    )]
 
     raw_nssp_data <- forecasttools::read_tabular(nssp_file_path) |>
       dplyr::filter(.data$county == "All") |>
