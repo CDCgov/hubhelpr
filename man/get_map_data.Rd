@@ -26,20 +26,20 @@ hub directory.}
 \item{hub_reports_path}{character, path to forecast hub
 reports directory.}
 
-\item{disease}{character, disease name ("covid" or "rsv").
-Used to derive hub name and file prefix.}
+\item{disease}{character, disease name ("covid" or
+"rsv"). Used to derive hub name and file prefix.}
 
 \item{horizons_to_include}{integer vector, horizons to
 include in the output. Default: c(0, 1, 2).}
 
 \item{population_data}{data frame with columns
-"location_name" and "population".}
+"location" and "population".}
 
 \item{excluded_locations}{character vector of location
 codes to exclude from the output. Default: character(0).}
 
-\item{output_format}{character, output file format.
-One of "csv", "tsv", or "parquet". Default: "csv".}
+\item{output_format}{character, output file format. One
+of "csv", "tsv", or "parquet". Default: "csv".}
 }
 \description{
 This function loads the latest ensemble forecast data
