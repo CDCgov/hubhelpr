@@ -9,9 +9,10 @@ get_forecast_data(
   reference_date,
   base_hub_path,
   hub_reports_path,
+  disease,
   horizons_to_include = c(0, 1, 2),
-  file_prefix = "covid",
-  target_name = "wk inc covid hosp"
+  excluded_locations = character(0),
+  output_format = "csv"
 )
 }
 \arguments{
@@ -24,15 +25,17 @@ hub directory.}
 \item{hub_reports_path}{character, path to forecast hub
 reports directory.}
 
+\item{disease}{character, disease name ("covid" or
+"rsv"). Used to derive target name and file prefix.}
+
 \item{horizons_to_include}{integer vector, horizons to
 include in the output. Default: c(0, 1, 2).}
 
-\item{file_prefix}{character, prefix used in output
-filename (e.g., "covid", "rsv"). Default: "covid".}
+\item{excluded_locations}{character vector of location
+codes to exclude from the output. Default: character(0).}
 
-\item{target_name}{character, target name to filter
-forecasts e.g., "wk inc covid hosp", "wk inc rsv hosp").
-Default: "wk inc covid hosp".}
+\item{output_format}{character, output file format. One
+of "csv", "tsv", or "parquet". Default: "csv".}
 }
 \description{
 This function fetches all forecast submissions from a
