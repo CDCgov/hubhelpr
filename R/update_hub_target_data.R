@@ -87,7 +87,7 @@ update_hub_target_data <- function(
         value = "observation",
         state = "jurisdiction"
       ) |>
-      dplyr::arrange(state) |>
+      dplyr::arrange(.data$state) |>
       dplyr::select("state", "date", "value", "location") |>
       forecasttools::write_tabular(
         fs::path(output_dirpath, legacy_file_name)
@@ -95,19 +95,25 @@ update_hub_target_data <- function(
   }
 
   if (nssp_update_local) {
-    raw_nssp_data <- forecasttools::read_tabular(
-      fs::path(
-        base_hub_path,
-        "auxiliary-data",
-        "nssp-raw-data",
-        "latest",
-        ext = "csv"
+    nssp_file_path <- fs::path(
+      base_hub_path,
+      "auxiliary-data",
+      "nssp-raw-data",
+      "latest",
+      ext = "parquet"
+    )
+
+    if (!fs::file_exists(nssp_file_path)) {
+      cli::cli_abort(
+        glue::glue("Cannot find NSSP data file at {nssp_file_path}")
       )
-    ) |>
-      dplyr::filter(county == "All") |>
+    }
+
+    raw_nssp_data <- forecasttools::read_tabular(nssp_file_path) |>
+      dplyr::filter(.data$county == "All") |>
       dplyr::select(
-        week_end,
-        geography,
+        "week_end",
+        "geography",
         dplyr::all_of(nssp_col_name)
       )
   } else {
@@ -132,7 +138,7 @@ update_hub_target_data <- function(
     ) |>
     dplyr::filter(.data$location %in% !!included_locations) |>
     dplyr::select(dplyr::all_of(hubverse_ts_req_cols)) |>
-    dplyr::arrange(date, location)
+    dplyr::arrange(.data$date, .data$location)
 
   output_file <- fs::path(output_dirpath, "time-series", ext = "parquet")
   if (fs::file_exists(output_file)) {
