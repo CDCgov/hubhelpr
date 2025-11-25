@@ -9,9 +9,8 @@ get_webtext(
   reference_date,
   base_hub_path = ".",
   hub_reports_path = "../covidhub-reports",
-  file_prefix = "covid",
-  hub_name = "CovidHub",
-  disease_name = "COVID-19"
+  disease,
+  excluded_territories = character(0)
 )
 }
 \arguments{
@@ -24,15 +23,13 @@ directory. Default: "."}
 \item{hub_reports_path}{character, path to forecast hub
 reports directory. Default: "../covidhub-reports"}
 
-\item{file_prefix}{character, prefix used in data
-filenames (e.g., "covid", "rsv"). Default: "covid"}
+\item{disease}{character, disease name ("covid" or
+"rsv"). Used to derive hub name, file prefix, and
+disease display name.}
 
-\item{hub_name}{character, name of the forecast hub
-(e.g., "CovidHub", "RSVHub"). Default: "CovidHub"}
-
-\item{disease_name}{character, name of the disease
-being forecasted (e.g., "COVID-19", "RSV"). Default:
-"COVID-19"}
+\item{excluded_territories}{character vector of location
+codes to exclude from reporting calculations. Default:
+character(0).}
 }
 \description{
 This function generates formatted text summaries for the
