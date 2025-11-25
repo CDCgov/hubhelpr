@@ -13,7 +13,7 @@ get_forecast_data(
   horizons_to_include = c(0, 1, 2),
   excluded_locations = character(0),
   output_format = "csv",
-  target_name = NULL
+  targets = NULL
 )
 }
 \arguments{
@@ -38,10 +38,11 @@ codes to exclude from the output. Default: character(0).}
 \item{output_format}{character, output file format. One
 of "csv", "tsv", or "parquet". Default: "csv".}
 
-\item{target_name}{character, target name to filter
-forecasts. If NULL (default), derives target name as
-"wk inc {disease} hosp". Can be set to other targets
-like "wk inc {disease} prop ed visits".}
+\item{targets}{character vector, target name(s) to filter
+forecasts. If NULL (default), does not filter by target.
+Can be a single target like "wk inc covid hosp" or
+multiple targets like c("wk inc covid hosp", "wk inc
+covid prop ed visits").}
 }
 \description{
 This function fetches all forecast submissions from a
