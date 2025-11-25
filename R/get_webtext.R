@@ -14,54 +14,64 @@
 #' directory. Default: "."
 #' @param hub_reports_path character, path to forecast hub
 #' reports directory. Default: "../covidhub-reports"
-#' @param file_prefix character, prefix used in data
-#' filenames (e.g., "covid", "rsv"). Default: "covid"
-#' @param hub_name character, name of the forecast hub
-#' (e.g., "CovidHub", "RSVHub"). Default: "CovidHub"
-#' @param disease_name character, name of the disease
-#' being forecasted (e.g., "COVID-19", "RSV"). Default:
-#' "COVID-19"
+#' @param disease character, disease name ("covid" or
+#' "rsv"). Used to derive hub name, file prefix, and
+#' disease display name.
+#' @param excluded_territories character vector of location
+#' codes to exclude from reporting calculations. Default:
+#' character(0).
 #'
 #' @export
 get_webtext <- function(
   reference_date,
   base_hub_path = ".",
   hub_reports_path = "../covidhub-reports",
-  file_prefix = "covid",
-  hub_name = "CovidHub",
-  disease_name = "COVID-19"
+  disease,
+  excluded_territories = character(0)
 ) {
-  weekly_data_path <- file.path(
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+  checkmate::assert_character(excluded_territories)
+
+  reference_date <- lubridate::as_date(reference_date)
+
+  hub_name <- get_hub_name(disease)
+  disease_name <- dplyr::case_match(
+    disease,
+    "covid" ~ "COVID-19",
+    "rsv" ~ "RSV"
+  )
+
+  weekly_data_path <- fs::path(
     hub_reports_path,
     "weekly-summaries",
     reference_date
   )
 
-  ensemble_us_1wk_ahead <- readr::read_csv(
-    file.path(
+  ensemble_us_1wk_ahead <- forecasttools::read_tabular(
+    fs::path(
       weekly_data_path,
-      glue::glue("{reference_date}_{file_prefix}_map_data.csv")
-    ),
-    show_col_types = FALSE
+      glue::glue("{reference_date}_{disease}_map_data"),
+      ext = "csv"
+    )
   ) |>
     dplyr::filter(horizon == 1, location_name == "US")
 
-  target_data <- readr::read_csv(
-    file.path(
+  target_data <- forecasttools::read_tabular(
+    fs::path(
       weekly_data_path,
       glue::glue(
-        "{reference_date}_{file_prefix}_target_hospital_admissions_data.csv"
-      )
-    ),
-    show_col_types = FALSE
+        "{reference_date}_{disease}_target_hospital_admissions_data"
+      ),
+      ext = "csv"
+    )
   )
 
-  contributing_teams <- readr::read_csv(
-    file.path(
+  contributing_teams <- forecasttools::read_tabular(
+    fs::path(
       weekly_data_path,
-      glue::glue("{reference_date}_{file_prefix}_forecasts_data.csv")
-    ),
-    show_col_types = FALSE
+      glue::glue("{reference_date}_{disease}_forecasts_data"),
+      ext = "csv"
+    )
   ) |>
     dplyr::filter(model != glue::glue("{hub_name}-ensemble")) |>
     dplyr::pull(model) |>
@@ -85,18 +95,7 @@ get_webtext <- function(
       designated_model
     )
 
-  # generate flag for less than 80 percent of hospitals reporting
   desired_weekendingdate <- as.Date(reference_date) - lubridate::dweeks(1)
-
-  exclude_territories_path <- fs::path(
-    base_hub_path,
-    "auxiliary-data",
-    "excluded_territories",
-    ext = "toml"
-  )
-  stopifnot(fs::file_exists(exclude_territories_path))
-  exclude_territories_toml <- RcppTOML::parseTOML(exclude_territories_path)
-  excluded_locations <- exclude_territories_toml$locations
 
   percent_hosp_reporting_below80 <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "mpgq-jmmr",
@@ -124,7 +123,7 @@ get_webtext <- function(
         "name"
       )
     ) |>
-    dplyr::filter(!(.data$location %in% !!excluded_locations)) |>
+    dplyr::filter(!(.data$location %in% !!excluded_territories)) |>
     dplyr::group_by(.data$jurisdiction) |>
     dplyr::mutate(max_weekendingdate = max(.data$weekendingdate)) |>
     dplyr::ungroup()
@@ -257,8 +256,18 @@ get_webtext <- function(
     "{paste(model_not_incl_in_hub_ensemble, collapse = '\n')}"
   )
 
-  writeLines(
-    web_text,
-    file.path(weekly_data_path, paste0(reference_date, "_webtext.md"))
+  output_filepath <- fs::path(
+    weekly_data_path,
+    glue::glue("{reference_date}_webtext"),
+    ext = "md"
   )
+
+  fs::dir_create(weekly_data_path)
+
+  if (!fs::file_exists(output_filepath)) {
+    writeLines(web_text, output_filepath)
+    cli::cli_inform("Webtext saved as: {output_filepath}")
+  } else {
+    cli::cli_abort("File already exists: {output_filepath}")
+  }
 }
