@@ -34,6 +34,10 @@
 #' codes to exclude from the output. Default: character(0).
 #' @param output_format character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
+#' @param target_name character, target name to filter
+#' forecasts. If NULL (default), derives target name as
+#' "wk inc {disease} hosp". Can be set to other targets
+#' like "wk inc {disease} prop ed visits".
 #'
 #' @export
 get_forecast_data <- function(
@@ -43,16 +47,20 @@ get_forecast_data <- function(
   disease,
   horizons_to_include = c(0, 1, 2),
   excluded_locations = character(0),
-  output_format = "csv"
+  output_format = "csv",
+  target_name = NULL
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
   checkmate::assert_subset(horizons_to_include, choices = c(-1, 0, 1, 2, 3))
   checkmate::assert_character(excluded_locations)
   checkmate::assert_choice(output_format, choices = c("csv", "tsv", "parquet"))
+  checkmate::assert_string(target_name, null.ok = TRUE)
 
   reference_date <- lubridate::as_date(reference_date)
 
-  target_name <- glue::glue("wk inc {disease} hosp")
+  if (is.null(target_name)) {
+    target_name <- glue::glue("wk inc {disease} hosp")
+  }
 
   model_metadata <- hubData::load_model_metadata(
     base_hub_path,
