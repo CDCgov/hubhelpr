@@ -67,13 +67,16 @@ get_forecast_data <- function(
   hub_content <- hubData::connect_hub(base_hub_path)
 
   current_forecasts <- hub_content |>
-    dplyr::filter(reference_date == !!reference_date) |>
-    dplyr::filter(!(location %in% !!excluded_locations)) |>
-    dplyr::filter(forecasttools::nullable_comparison(
-      .data$target,
-      "%in%",
-      !!targets
-    )) |>
+    dplyr::filter(
+      .data$reference_date == !!reference_date,
+      !(.data$location %in% !!excluded_locations),
+      .data$horizon %in% !!horizons_to_include,
+      forecasttools::nullable_comparison(
+        .data$target,
+        "%in%",
+        !!targets
+      )
+    ) |>
     hubData::collect_hub()
 
   all_forecasts_data <- forecasttools::pivot_hubverse_quantiles_wider(
@@ -86,7 +89,6 @@ get_forecast_data <- function(
       "quantile_0.975" = 0.975
     )
   ) |>
-    dplyr::filter(horizon %in% !!horizons_to_include) |>
     dplyr::mutate(
       location_name = forecasttools::us_location_recode(
         .data$location,
