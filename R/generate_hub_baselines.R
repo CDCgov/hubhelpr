@@ -181,12 +181,16 @@ make_baseline_forecast <- function(
 #' @param base_hub_path Path to the base hub directory.
 #' @param reference_date Reference date (should be a Saturday).
 #' @param disease Disease name ("covid" or "rsv").
+#' @param as_of As of date to filter to, as an object
+#' coercible by as.Date(), or "latest" to filter to the
+#' most recent available vintage. Default "latest".
 #' @return NULL. Writes baseline forecast file to hub's model-output directory.
 #' @export
 generate_hub_baseline <- function(
   base_hub_path,
   reference_date,
-  disease
+  disease,
+  as_of = "latest"
 ) {
   checkmate::assert_scalar(disease)
   checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
@@ -213,7 +217,7 @@ generate_hub_baseline <- function(
 
   hub_target_data <- hubData::connect_target_timeseries(base_hub_path) |>
     dplyr::collect() |>
-    forecasttools::hub_target_data_as_of()
+    forecasttools::hub_target_data_as_of(as_of)
 
   preds_hosp <- make_baseline_forecast(
     target_data = hub_target_data,
