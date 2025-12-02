@@ -74,10 +74,10 @@ get_forecast_data <- function(
     ) |>
     hubData::collect_hub() |>
     dplyr::filter(forecasttools::nullable_comparison(
-        .data$target,
-        "%in%",
-        !!targets
-      ))
+      .data$target,
+      "%in%",
+      !!targets
+    ))
 
   all_forecasts_data <- forecasttools::pivot_hubverse_quantiles_wider(
     hubverse_table = current_forecasts,
