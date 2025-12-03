@@ -4,7 +4,7 @@
 \alias{generate_hub_baseline}
 \title{Generate hub baseline forecasts for a given disease and reference date}
 \usage{
-generate_hub_baseline(base_hub_path, reference_date, disease)
+generate_hub_baseline(base_hub_path, reference_date, disease, as_of = "latest")
 }
 \arguments{
 \item{base_hub_path}{Path to the base hub directory.}
@@ -12,6 +12,10 @@ generate_hub_baseline(base_hub_path, reference_date, disease)
 \item{reference_date}{Reference date (should be a Saturday).}
 
 \item{disease}{Disease name ("covid" or "rsv").}
+
+\item{as_of}{As of date to filter to, as an object
+coercible by as.Date(), or "latest" to filter to the
+most recent available vintage. Default "latest".}
 }
 \value{
 NULL. Writes baseline forecast file to hub's model-output directory.
