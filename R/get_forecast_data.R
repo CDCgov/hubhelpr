@@ -70,14 +70,14 @@ get_forecast_data <- function(
     dplyr::filter(
       .data$reference_date == !!reference_date,
       !(.data$location %in% !!excluded_locations),
-      .data$horizon %in% !!horizons_to_include,
-      forecasttools::nullable_comparison(
-        .data$target,
-        "%in%",
-        !!targets
-      )
+      .data$horizon %in% !!horizons_to_include
     ) |>
-    hubData::collect_hub()
+    hubData::collect_hub() |>
+    dplyr::filter(forecasttools::nullable_comparison(
+      .data$target,
+      "%in%",
+      !!targets
+    ))
 
   all_forecasts_data <- forecasttools::pivot_hubverse_quantiles_wider(
     hubverse_table = current_forecasts,
