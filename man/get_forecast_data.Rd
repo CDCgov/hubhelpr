@@ -2,8 +2,7 @@
 % Please edit documentation in R/get_forecast_data.R
 \name{get_forecast_data}
 \alias{get_forecast_data}
-\title{Generate forecast data file containing all forecast hub
-model submissions.}
+\title{Generate forecast data file containing all forecast hub model submissions (DEPRECATED)}
 \usage{
 get_forecast_data(
   reference_date,
@@ -45,25 +44,6 @@ multiple targets like c("wk inc covid hosp", "wk inc
 covid prop ed visits").}
 }
 \description{
-This function fetches all forecast submissions from a
-forecast hub based on the reference date. The forecast
-data is then pivoted to create a wide format with
-quantile levels as columns.
-}
-\details{
-The resulting file contains the following columns:
-\itemize{
-\item \code{location_name}: full state name (including "US" for
-the US state)
-\item \code{abbreviation}: state abbreviation
-\item \code{horizon}: forecast horizon
-\item \code{forecast_date}: date the forecast was generated
-\item \code{target_end_date}: target date for the forecast
-\item \code{model}: model name
-\item \verb{quantile_*}: forecast values for various quantiles
-(e.g., 0.025, 0.5, 0.975)
-\item \code{forecast_teams}: name of the team that generated the
-model
-\item \code{forecast_fullnames}: full model name
-}
+This function is deprecated. Please use \code{write_ref_date_summary_all()}
+instead.
 }

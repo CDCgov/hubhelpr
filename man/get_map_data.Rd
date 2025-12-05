@@ -2,8 +2,7 @@
 % Please edit documentation in R/get_map_data.R
 \name{get_map_data}
 \alias{get_map_data}
-\title{Generate map data file containing ensemble forecast
-data.}
+\title{Generate map data file containing ensemble forecast data (DEPRECATED)}
 \usage{
 get_map_data(
   reference_date,
@@ -42,46 +41,6 @@ codes to exclude from the output. Default: character(0).}
 of "csv", "tsv", or "parquet". Default: "csv".}
 }
 \description{
-This function loads the latest ensemble forecast data
-from the forecast hub and processes it into the required
-format. The resulting file contains forecast values for
-all regions (including US, DC, and Puerto Rico), for
-various forecast horizons, and quantiles (0.025, 0.5,
-and 0.975).
-}
-\details{
-The ensemble data is expected to contain the following
-columns:
-\itemize{
-\item \code{reference_date}: the date of the forecast
-\item \code{location}: state abbreviation
-\item \code{horizon}: forecast horizon
-\item \code{target}: forecast target (e.g., "wk inc covid hosp")
-\item \code{target_end_date}: the forecast target date
-\item \code{output_type}: type of output (e.g., "quantile")
-\item \code{output_type_id}: quantile value (e.g., 0.025, 0.5,
-0.975)
-\item \code{value}: forecast value
-}
-
-The resulting map file will have the following columns:
-\itemize{
-\item \code{location_name}: full state name (including "US" for
-the US state)
-\item \verb{quantile_*}: the quantile forecast values (rounded
-to two decimal places)
-\item \code{horizon}: forecast horizon
-\item \code{target}: forecast target (e.g., "7 day ahead inc
-hosp")
-\item \code{target_end_date}: target date for the forecast (Ex:
-2024-11-30)
-\item \code{reference_date}: date that the forecast was generated
-(Ex: 2024-11-23)
-\item \code{target_end_date_formatted}: target date for the
-forecast, prettily re-formatted as a string (Ex:
-"November 30, 2024")
-\item \code{reference_date_formatted}: date that the forecast
-was generated, prettily re-formatted as a string
-(Ex: "November 23, 2024")
-}
+This function is deprecated. Please use \code{write_ref_date_summary_ensemble()}
+instead.
 }
