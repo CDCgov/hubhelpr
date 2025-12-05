@@ -2,8 +2,9 @@
 % Please edit documentation in R/write_ref_date_summary.R
 \name{write_ref_date_summary_all}
 \alias{write_ref_date_summary_all}
-\title{This function generates and writes forecast data
-for all models. Replicates the behavior of the old
+\title{Write all-models forecast summary to disk. This function
+generates and writes forecast data for all models. This
+replicates the behavior of the legacy
 \code{get_forecast_data()} function.}
 \usage{
 write_ref_date_summary_all(
@@ -12,6 +13,7 @@ write_ref_date_summary_all(
   hub_reports_path,
   disease,
   horizons_to_include = c(0, 1, 2),
+  population_data,
   excluded_locations = character(0),
   output_format = "csv",
   targets = NULL
@@ -27,11 +29,13 @@ directory.}
 \item{hub_reports_path}{character, path to forecast hub
 reports directory.}
 
-\item{disease}{character, disease name ("covid" or
-"rsv").}
+\item{disease}{character, disease name ("covid" or "rsv").}
 
 \item{horizons_to_include}{integer vector, horizons to
 include in the output. Default: c(0, 1, 2).}
+
+\item{population_data}{data frame with columns
+"location" and "population".}
 
 \item{excluded_locations}{character vector of location
 codes to exclude from the output. Default: character(0).}
@@ -48,7 +52,8 @@ invisibly returns the file path where data was
 written
 }
 \description{
-This function generates and writes forecast data
-for all models. Replicates the behavior of the old
+Write all-models forecast summary to disk. This function
+generates and writes forecast data for all models. This
+replicates the behavior of the legacy
 \code{get_forecast_data()} function.
 }

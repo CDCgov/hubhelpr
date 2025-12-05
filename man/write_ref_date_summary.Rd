@@ -2,9 +2,9 @@
 % Please edit documentation in R/write_ref_date_summary.R
 \name{write_ref_date_summary}
 \alias{write_ref_date_summary}
-\title{This function calls \code{summarize_ref_date_forecasts()}
-and writes the resulting tibble to disk in the specified
-format.}
+\title{Write forecast summary to disk. This function calls
+\code{summarize_ref_date_forecasts()} and writes the
+resulting tibble to disk in the specified format.}
 \usage{
 write_ref_date_summary(
   reference_date,
@@ -17,9 +17,8 @@ write_ref_date_summary(
   output_format = "csv",
   targets = NULL,
   model_ids = NULL,
-  population_data = NULL,
-  include_metadata = TRUE,
-  column_selection = NULL
+  population_data,
+  column_selection = tidyselect::everything()
 )
 }
 \arguments{
@@ -55,20 +54,18 @@ target.}
 include. If NULL (default), includes all models.}
 
 \item{population_data}{data frame with columns
-"location" and "population". Default: NULL.}
+"location" and "population".}
 
-\item{include_metadata}{logical, whether to include
-model metadata (team_name, model_name). Default: TRUE.}
-
-\item{column_selection}{named character vector
-specifying which columns to select and rename. If NULL,
-includes all columns. Default: NULL.}
+\item{column_selection}{character vector specifying
+which columns to select. Uses tidyselect semantics.
+Default: tidyselect::everything().}
 }
 \value{
-invisibly returns the file path where data was written
+invisibly returns the file path where data was
+written
 }
 \description{
-This function calls \code{summarize_ref_date_forecasts()}
-and writes the resulting tibble to disk in the specified
-format.
+Write forecast summary to disk. This function calls
+\code{summarize_ref_date_forecasts()} and writes the
+resulting tibble to disk in the specified format.
 }

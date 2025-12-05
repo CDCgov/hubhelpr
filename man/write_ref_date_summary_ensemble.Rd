@@ -2,9 +2,10 @@
 % Please edit documentation in R/write_ref_date_summary.R
 \name{write_ref_date_summary_ensemble}
 \alias{write_ref_date_summary_ensemble}
-\title{Write ensemble forecast summary to disk; generates and
-writes ensemble-only forecast data. Replicates the
-behavior of the older \code{get_map_data()} function.}
+\title{Write ensemble forecast summary to disk. Function that
+generates and writes ensemble-only forecast data. This
+replicates the behavior of the old \code{get_map_data()}
+function.}
 \usage{
 write_ref_date_summary_ensemble(
   reference_date,
@@ -18,8 +19,8 @@ write_ref_date_summary_ensemble(
 )
 }
 \arguments{
-\item{reference_date}{character, the reference date for the
-forecast in YYYY-MM-DD format (ISO-8601).}
+\item{reference_date}{character, the reference date for
+the forecast in YYYY-MM-DD format (ISO-8601).}
 
 \item{base_hub_path}{character, path to the forecast hub
 directory.}
@@ -29,23 +30,25 @@ reports directory.}
 
 \item{disease}{character, disease name ("covid" or "rsv").}
 
-\item{horizons_to_include}{integer vector, horizons to include
-in the output. Default: c(0, 1, 2).}
+\item{horizons_to_include}{integer vector, horizons to
+include in the output. Default: c(0, 1, 2).}
 
-\item{population_data}{data frame with columns "location" and
-"population".}
+\item{population_data}{data frame with columns
+"location" and "population".}
 
-\item{excluded_locations}{character vector of location codes to
-exclude from the output. Default: character(0).}
+\item{excluded_locations}{character vector of location
+codes to exclude from the output. Default: character(0).}
 
-\item{output_format}{character, output file format. One of
-"csv", "tsv", or "parquet". Default: "csv".}
+\item{output_format}{character, output file format. One
+of "csv", "tsv", or "parquet". Default: "csv".}
 }
 \value{
-invisibly returns the file path where data was written
+invisibly returns the file path where data was
+written
 }
 \description{
-Write ensemble forecast summary to disk; generates and
-writes ensemble-only forecast data. Replicates the
-behavior of the older \code{get_map_data()} function.
+Write ensemble forecast summary to disk. Function that
+generates and writes ensemble-only forecast data. This
+replicates the behavior of the old \code{get_map_data()}
+function.
 }

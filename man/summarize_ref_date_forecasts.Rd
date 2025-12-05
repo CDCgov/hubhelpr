@@ -3,8 +3,10 @@
 \name{summarize_ref_date_forecasts}
 \alias{summarize_ref_date_forecasts}
 \title{Summarize forecast hub data for a specific reference
-date. This function enerates a tibble of forecast data
-for a given reference date.}
+date. This function generates a tibble of forecast data
+for a given reference date. It can filter by model IDs;
+allows flexibility retrieve all models or specific
+subsets (e.g., ensemble only).}
 \usage{
 summarize_ref_date_forecasts(
   reference_date,
@@ -14,8 +16,7 @@ summarize_ref_date_forecasts(
   excluded_locations = character(0),
   targets = NULL,
   model_ids = NULL,
-  population_data = NULL,
-  include_metadata = TRUE
+  population_data
 )
 }
 \arguments{
@@ -34,25 +35,22 @@ include in the output. Default: c(0, 1, 2).}
 \item{excluded_locations}{character vector of location
 codes to exclude from the output. Default: character(0).}
 
-\item{targets}{character vector, target name(s) to
-filter forecasts. If NULL (default), does not filter by
-target.}
+\item{targets}{character vector, target name(s) to filter
+forecasts. If NULL (default), does not filter by target.}
 
-\item{model_ids}{character vector of model IDs to
-include. If NULL (default), includes all models.}
+\item{model_ids}{character vector of model IDs to include.
+If NULL (default), includes all models.}
 
-\item{population_data}{data frame with columns
-"location" and "population". If provided, adds
-population-based calculations. Default: NULL.}
-
-\item{include_metadata}{logical, whether to include
-model metadata (team_name, model_name). Default: TRUE.}
+\item{population_data}{data frame with columns "location"
+and "population". Adds population-based calculations.}
 }
 \value{
 tibble containing forecast summary data
 }
 \description{
 Summarize forecast hub data for a specific reference
-date. This function enerates a tibble of forecast data
-for a given reference date.
+date. This function generates a tibble of forecast data
+for a given reference date. It can filter by model IDs;
+allows flexibility retrieve all models or specific
+subsets (e.g., ensemble only).
 }
