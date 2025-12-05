@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_map_data.R
 \name{get_map_data}
 \alias{get_map_data}
-\title{Generate map data file containing ensemble forecast data (DEPRECATED)}
+\title{Generate map data file containing ensemble forecast data}
 \usage{
 get_map_data(
   reference_date,
@@ -41,6 +41,10 @@ codes to exclude from the output. Default: character(0).}
 of "csv", "tsv", or "parquet". Default: "csv".}
 }
 \description{
-This function is deprecated. Please use \code{write_ref_date_summary_ensemble()}
-instead.
+This function loads the latest ensemble forecast data
+from the forecast hub and processes it into the required
+format. The resulting file contains forecast values for
+all regions (including US, DC, and Puerto Rico), for
+various forecast horizons, and quantiles (0.025, 0.5,
+and 0.975).
 }

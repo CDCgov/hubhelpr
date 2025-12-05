@@ -2,7 +2,9 @@
 % Please edit documentation in R/summarize_ref_date_forecasts.R
 \name{summarize_ref_date_forecasts}
 \alias{summarize_ref_date_forecasts}
-\title{Summarize forecast hub data for a specific reference date}
+\title{Summarize forecast hub data for a specific reference
+date. This function enerates a tibble of forecast data
+for a given reference date.}
 \usage{
 summarize_ref_date_forecasts(
   reference_date,
@@ -17,40 +19,40 @@ summarize_ref_date_forecasts(
 )
 }
 \arguments{
-\item{reference_date}{character, the reference date for the
-forecast in YYYY-MM-DD format (ISO-8601).}
+\item{reference_date}{character, the reference date for
+the forecast in YYYY-MM-DD format (ISO-8601).}
 
 \item{base_hub_path}{character, path to the forecast hub
 directory.}
 
-\item{disease}{character, disease name ("covid" or "rsv").
-Used to derive hub name and file prefix.}
+\item{disease}{character, disease name ("covid" or
+"rsv"). Used to derive hub name and file prefix.}
 
-\item{horizons_to_include}{integer vector, horizons to include
-in the output. Default: c(0, 1, 2).}
+\item{horizons_to_include}{integer vector, horizons to
+include in the output. Default: c(0, 1, 2).}
 
-\item{excluded_locations}{character vector of location codes to
-exclude from the output. Default: character(0).}
+\item{excluded_locations}{character vector of location
+codes to exclude from the output. Default: character(0).}
 
-\item{targets}{character vector, target name(s) to filter
-forecasts. If NULL (default), does not filter by target.}
+\item{targets}{character vector, target name(s) to
+filter forecasts. If NULL (default), does not filter by
+target.}
 
-\item{model_ids}{character vector of model IDs to include. If
-NULL (default), includes all models.}
+\item{model_ids}{character vector of model IDs to
+include. If NULL (default), includes all models.}
 
-\item{population_data}{data frame with columns "location" and
-"population". If provided, adds population-based calculations.
-Default: NULL.}
+\item{population_data}{data frame with columns
+"location" and "population". If provided, adds
+population-based calculations. Default: NULL.}
 
-\item{include_metadata}{logical, whether to include model
-metadata (team_name, model_name). Default: TRUE.}
+\item{include_metadata}{logical, whether to include
+model metadata (team_name, model_name). Default: TRUE.}
 }
 \value{
 tibble containing forecast summary data
 }
 \description{
-This is the core function that generates a tibble of forecast
-data for a given reference date. It can filter by model IDs,
-allowing flexibility to retrieve all models or specific subsets
-(e.g., ensemble only).
+Summarize forecast hub data for a specific reference
+date. This function enerates a tibble of forecast data
+for a given reference date.
 }

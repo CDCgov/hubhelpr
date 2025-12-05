@@ -2,7 +2,9 @@
 % Please edit documentation in R/write_ref_date_summary.R
 \name{write_ref_date_summary}
 \alias{write_ref_date_summary}
-\title{Write forecast summary to disk}
+\title{This function calls \code{summarize_ref_date_forecasts()}
+and writes the resulting tibble to disk in the specified
+format.}
 \usage{
 write_ref_date_summary(
   reference_date,
@@ -21,8 +23,8 @@ write_ref_date_summary(
 )
 }
 \arguments{
-\item{reference_date}{character, the reference date for the
-forecast in YYYY-MM-DD format (ISO-8601).}
+\item{reference_date}{character, the reference date for
+the forecast in YYYY-MM-DD format (ISO-8601).}
 
 \item{base_hub_path}{character, path to the forecast hub
 directory.}
@@ -30,42 +32,43 @@ directory.}
 \item{hub_reports_path}{character, path to forecast hub
 reports directory.}
 
-\item{disease}{character, disease name ("covid" or "rsv").}
+\item{disease}{character, disease name ("covid" or
+"rsv").}
 
-\item{file_suffix}{character, suffix to append to filename
-(e.g., "map_data", "forecasts_data").}
+\item{file_suffix}{character, suffix to append to
+filename (e.g., "map_data", "forecasts_data").}
 
-\item{horizons_to_include}{integer vector, horizons to include
-in the output. Default: c(0, 1, 2).}
+\item{horizons_to_include}{integer vector, horizons to
+include in the output. Default: c(0, 1, 2).}
 
-\item{excluded_locations}{character vector of location codes to
-exclude from the output. Default: character(0).}
+\item{excluded_locations}{character vector of location
+codes to exclude from the output. Default: character(0).}
 
-\item{output_format}{character, output file format. One of
-"csv", "tsv", or "parquet". Default: "csv".}
+\item{output_format}{character, output file format. One
+of "csv", "tsv", or "parquet". Default: "csv".}
 
-\item{targets}{character vector, target name(s) to filter
-forecasts. If NULL (default), does not filter by target.}
+\item{targets}{character vector, target name(s) to
+filter forecasts. If NULL (default), does not filter by
+target.}
 
-\item{model_ids}{character vector of model IDs to include. If
-NULL (default), includes all models.}
+\item{model_ids}{character vector of model IDs to
+include. If NULL (default), includes all models.}
 
-\item{population_data}{data frame with columns "location" and
-"population". If provided, adds population-based calculations.
-Default: NULL.}
+\item{population_data}{data frame with columns
+"location" and "population". Default: NULL.}
 
-\item{include_metadata}{logical, whether to include model
-metadata (team_name, model_name). Default: TRUE.}
+\item{include_metadata}{logical, whether to include
+model metadata (team_name, model_name). Default: TRUE.}
 
-\item{column_selection}{named character vector specifying which
-columns to select and rename. If NULL, includes all columns.
-Default: NULL.}
+\item{column_selection}{named character vector
+specifying which columns to select and rename. If NULL,
+includes all columns. Default: NULL.}
 }
 \value{
 invisibly returns the file path where data was written
 }
 \description{
-This wrapper function calls \code{summarize_ref_date_forecasts()}
+This function calls \code{summarize_ref_date_forecasts()}
 and writes the resulting tibble to disk in the specified
 format.
 }

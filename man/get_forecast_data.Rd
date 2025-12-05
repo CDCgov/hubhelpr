@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_forecast_data.R
 \name{get_forecast_data}
 \alias{get_forecast_data}
-\title{Generate forecast data file containing all forecast hub model submissions (DEPRECATED)}
+\title{Generate forecast data file containing all forecast hub model submissions}
 \usage{
 get_forecast_data(
   reference_date,
@@ -44,6 +44,8 @@ multiple targets like c("wk inc covid hosp", "wk inc
 covid prop ed visits").}
 }
 \description{
-This function is deprecated. Please use \code{write_ref_date_summary_all()}
-instead.
+This function fetches all forecast submissions from a
+forecast hub based on the reference date. The forecast
+data is then pivoted to create a wide format with
+quantile levels as columns.
 }

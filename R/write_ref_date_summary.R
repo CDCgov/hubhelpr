@@ -97,6 +97,10 @@ write_ref_date_summary <- function(
 }
 
 
+#' Write ensemble forecast summary to disk; generates and
+#' writes ensemble-only forecast data. Replicates the
+#' behavior of the older `get_map_data()` function.
+#'
 #' @param reference_date character, the reference date for the
 #' forecast in YYYY-MM-DD format (ISO-8601).
 #' @param base_hub_path character, path to the forecast hub

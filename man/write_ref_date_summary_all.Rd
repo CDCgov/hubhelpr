@@ -2,7 +2,9 @@
 % Please edit documentation in R/write_ref_date_summary.R
 \name{write_ref_date_summary_all}
 \alias{write_ref_date_summary_all}
-\title{Write all-models forecast summary to disk}
+\title{This function generates and writes forecast data
+for all models. Replicates the behavior of the old
+\code{get_forecast_data()} function.}
 \usage{
 write_ref_date_summary_all(
   reference_date,
@@ -16,8 +18,8 @@ write_ref_date_summary_all(
 )
 }
 \arguments{
-\item{reference_date}{character, the reference date for the
-forecast in YYYY-MM-DD format (ISO-8601).}
+\item{reference_date}{character, the reference date for
+the forecast in YYYY-MM-DD format (ISO-8601).}
 
 \item{base_hub_path}{character, path to the forecast hub
 directory.}
@@ -25,25 +27,28 @@ directory.}
 \item{hub_reports_path}{character, path to forecast hub
 reports directory.}
 
-\item{disease}{character, disease name ("covid" or "rsv").}
+\item{disease}{character, disease name ("covid" or
+"rsv").}
 
-\item{horizons_to_include}{integer vector, horizons to include
-in the output. Default: c(0, 1, 2).}
+\item{horizons_to_include}{integer vector, horizons to
+include in the output. Default: c(0, 1, 2).}
 
-\item{excluded_locations}{character vector of location codes to
-exclude from the output. Default: character(0).}
+\item{excluded_locations}{character vector of location
+codes to exclude from the output. Default: character(0).}
 
-\item{output_format}{character, output file format. One of
-"csv", "tsv", or "parquet". Default: "csv".}
+\item{output_format}{character, output file format. One
+of "csv", "tsv", or "parquet". Default: "csv".}
 
-\item{targets}{character vector, target name(s) to filter
-forecasts. If NULL (default), does not filter by target.}
+\item{targets}{character vector, target name(s) to
+filter forecasts. If NULL (default), does not filter by
+target.}
 }
 \value{
-invisibly returns the file path where data was written
+invisibly returns the file path where data was
+written
 }
 \description{
-Convenience function that generates and writes forecast data
-for all models. This replicates the behavior of the legacy
+This function generates and writes forecast data
+for all models. Replicates the behavior of the old
 \code{get_forecast_data()} function.
 }
