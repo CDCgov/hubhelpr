@@ -1,5 +1,3 @@
-# see https://jarl.etiennebacher.com/ for more details
-
 [lint]
 default-exclude = true
 assignment = "<-"
