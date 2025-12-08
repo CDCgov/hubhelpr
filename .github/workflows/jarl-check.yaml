@@ -11,12 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-
-      - name: "Install Jarl"
-        run: |
-          curl --proto '=https' --tlsv1.2 -LsSf \
-            https://github.com/etiennebacher/jarl/releases/latest/download/jarl-installer.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: "Run Jarl"
-        run: jarl check . --fix --output-format github
+      - uses: etiennebacher/setup-jarl@v0.1.0
+        with:
+          args: check . --fix --output-format github

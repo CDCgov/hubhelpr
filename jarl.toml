@@ -1,31 +1,7 @@
-
 [lint]
-select = ["CORR", "SUSP", "PERF", "READ"]
-
+select = []
+extend-select = []
 ignore = []
-
-exclude = [
-    ".git/",
-    ".github/",
-    "renv/",
-    "packrat/",
-    "revdep/",
-    "*.tar.gz",
-    "*.Rcheck/",
-    "**/*.Rd",
-    "*.tmp",
-    "*.temp",
-    "docs/",
-    "_site/",
-    ".cache/",
-    "*_cache/",
-]
-
-
+exclude = []
 default-exclude = true
-
 assignment = "<-"
-
-fixable = ["CORR", "SUSP", "PERF", "READ"]
-
-unfixable = []
