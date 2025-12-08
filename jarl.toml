@@ -1,7 +1,5 @@
+# see https://jarl.etiennebacher.com/ for more details
+
 [lint]
-select = []
-extend-select = []
-ignore = []
-exclude = []
 default-exclude = true
 assignment = "<-"
