@@ -1,5 +1,6 @@
-#' Write forecast summary to disk. This function calls
-#' `summarize_ref_date_forecasts()` and writes the
+#' Write forecast summary to disk.
+#'
+#' This function calls `summarize_ref_date_forecasts()` and writes the
 #' resulting tibble to disk in the specified format.
 #'
 #' @param reference_date character, the reference date for
@@ -25,9 +26,9 @@
 #' include. If NULL (default), includes all models.
 #' @param population_data data frame with columns
 #' "location" and "population".
-#' @param column_selection character vector specifying
-#' which columns to select. Uses tidyselect semantics.
-#' Default: tidyselect::everything().
+#' @param column_selection Columns to include in the output table.
+#' Uses [tidy selection](https://dplyr.tidyverse.org/articles/programming.html).
+#' Default: [tidyselect::everything()].
 #'
 #' @return invisibly returns the file path where data was
 #' written
@@ -53,11 +54,11 @@ write_ref_date_summary <- function(
     reference_date = reference_date,
     base_hub_path = base_hub_path,
     disease = disease,
+    population_data = population_data,
     horizons_to_include = horizons_to_include,
     excluded_locations = excluded_locations,
     targets = targets,
-    model_ids = model_ids,
-    population_data = population_data
+    model_ids = model_ids
   )
 
   summary_data <- summary_data |>
@@ -88,10 +89,10 @@ write_ref_date_summary <- function(
 }
 
 
-#' Write ensemble forecast summary to disk. Function that
-#' generates and writes ensemble-only forecast data. This
-#' replicates the behavior of the old `get_map_data()`
-#' function.
+#' Write ensemble forecast summary to disk.
+#'
+#' Function that generates and writes ensemble-only forecast data. This
+#' replicates the behavior of the old `get_map_data()` function.
 #'
 #' @param reference_date character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
@@ -113,7 +114,7 @@ write_ref_date_summary <- function(
 #' written
 #'
 #' @export
-write_ref_date_summary_ensemble <- function(
+write_ref_date_summary_ens <- function(
   reference_date,
   base_hub_path,
   hub_reports_path,
@@ -148,7 +149,7 @@ write_ref_date_summary_ensemble <- function(
     "target_end_date_formatted",
     "forecast_due_date_formatted",
     "reference_date_formatted",
-    "model_id"
+    model = "model_id"
   ))
 
   write_ref_date_summary(
@@ -168,10 +169,10 @@ write_ref_date_summary_ensemble <- function(
 }
 
 
-#' Write all-models forecast summary to disk. This function
-#' generates and writes forecast data for all models. This
-#' replicates the behavior of the legacy
-#' `get_forecast_data()` function.
+#' Write all-models forecast summary to disk.
+#'
+#' This function generates and writes forecast data for all models. This
+#' replicates the behavior of the legacy `get_forecast_data()` function.
 #'
 #' @param reference_date character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
@@ -211,8 +212,9 @@ write_ref_date_summary_all <- function(
     "location_name",
     "abbreviation",
     "horizon",
+    forecast_date = "reference_date",
     "target_end_date",
-    "model_id",
+    model = "model_id",
     "quantile_0.025",
     "quantile_0.25",
     "quantile_0.5",
@@ -223,10 +225,9 @@ write_ref_date_summary_all <- function(
     "quantile_0.5_rounded",
     "quantile_0.75_rounded",
     "quantile_0.975_rounded",
-    "team_name",
+    forecast_team = "team_name",
     "forecast_due_date",
-    "model_name",
-    "reference_date"
+    model_full_name = "model_name"
   ))
 
   write_ref_date_summary(

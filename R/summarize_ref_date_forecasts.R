@@ -1,5 +1,6 @@
-#' Summarize forecast hub data for a specific reference
-#' date. This function generates a tibble of forecast data
+#' Summarize forecast hub data for a specific reference date.
+#'
+#' This function generates a tibble of forecast data
 #' for a given reference date. It can filter by model IDs;
 #' allows flexibility retrieve all models or specific
 #' subsets (e.g., ensemble only).
@@ -10,6 +11,8 @@
 #' directory.
 #' @param disease character, disease name ("covid" or
 #' "rsv"). Used to derive hub name and file prefix.
+#' @param population_data data frame with columns "location"
+#' and "population". Adds population-based calculations.
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
 #' @param excluded_locations character vector of location
@@ -18,8 +21,6 @@
 #' forecasts. If NULL (default), does not filter by target.
 #' @param model_ids character vector of model IDs to include.
 #' If NULL (default), includes all models.
-#' @param population_data data frame with columns "location"
-#' and "population". Adds population-based calculations.
 #'
 #' @return tibble containing forecast summary data
 #'
@@ -28,17 +29,17 @@ summarize_ref_date_forecasts <- function(
   reference_date,
   base_hub_path,
   disease,
+  population_data,
   horizons_to_include = c(0, 1, 2),
   excluded_locations = character(0),
   targets = NULL,
-  model_ids = NULL,
-  population_data
+  model_ids = NULL
 ) {
   reference_date <- lubridate::as_date(reference_date)
 
   model_metadata <- hubData::load_model_metadata(
     base_hub_path,
-    model_ids = NULL
+    model_ids = model_ids
   )
 
   hub_content <- hubData::connect_hub(base_hub_path)
@@ -137,5 +138,5 @@ summarize_ref_date_forecasts <- function(
       forecast_due_date_formatted = format(.data$forecast_due_date, "%B %d, %Y")
     )
 
-  forecasts_data
+  return(forecasts_data)
 }

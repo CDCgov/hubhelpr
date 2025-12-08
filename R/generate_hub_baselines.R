@@ -246,5 +246,5 @@ generate_hub_baseline <- function(
     )
   )
 
-  invisible()
+  return(invisible())
 }

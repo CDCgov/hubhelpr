@@ -74,5 +74,5 @@ check_changes_for_autoapproval <- function(
     )
   }
 
-  invisible()
+  return(invisible())
 }
