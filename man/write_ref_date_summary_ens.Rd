@@ -2,10 +2,7 @@
 % Please edit documentation in R/write_ref_date_summary.R
 \name{write_ref_date_summary_ens}
 \alias{write_ref_date_summary_ens}
-\title{Write ensemble forecast summary to disk. Function that
-generates and writes ensemble-only forecast data. This
-replicates the behavior of the old \code{get_map_data()}
-function.}
+\title{Write ensemble forecast summary to disk.}
 \usage{
 write_ref_date_summary_ens(
   reference_date,
@@ -47,8 +44,6 @@ invisibly returns the file path where data was
 written
 }
 \description{
-Write ensemble forecast summary to disk. Function that
-generates and writes ensemble-only forecast data. This
-replicates the behavior of the old \code{get_map_data()}
-function.
+Function that generates and writes ensemble-only forecast data. This
+replicates the behavior of the old \code{get_map_data()} function.
 }

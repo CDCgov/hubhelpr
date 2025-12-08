@@ -2,10 +2,7 @@
 % Please edit documentation in R/write_ref_date_summary.R
 \name{write_ref_date_summary_all}
 \alias{write_ref_date_summary_all}
-\title{Write all-models forecast summary to disk. This function
-generates and writes forecast data for all models. This
-replicates the behavior of the legacy
-\code{get_forecast_data()} function.}
+\title{Write all-models forecast summary to disk.}
 \usage{
 write_ref_date_summary_all(
   reference_date,
@@ -52,8 +49,6 @@ invisibly returns the file path where data was
 written
 }
 \description{
-Write all-models forecast summary to disk. This function
-generates and writes forecast data for all models. This
-replicates the behavior of the legacy
-\code{get_forecast_data()} function.
+This function generates and writes forecast data for all models. This
+replicates the behavior of the legacy \code{get_forecast_data()} function.
 }

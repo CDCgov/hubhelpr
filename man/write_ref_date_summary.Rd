@@ -2,9 +2,7 @@
 % Please edit documentation in R/write_ref_date_summary.R
 \name{write_ref_date_summary}
 \alias{write_ref_date_summary}
-\title{Write forecast summary to disk. This function calls
-\code{summarize_ref_date_forecasts()} and writes the
-resulting tibble to disk in the specified format.}
+\title{Write forecast summary to disk.}
 \usage{
 write_ref_date_summary(
   reference_date,
@@ -56,16 +54,15 @@ include. If NULL (default), includes all models.}
 \item{population_data}{data frame with columns
 "location" and "population".}
 
-\item{column_selection}{character vector specifying
-which columns to select. Uses tidyselect semantics.
-Default: tidyselect::everything().}
+\item{column_selection}{Columns to include in the output table.
+Uses \href{https://dplyr.tidyverse.org/articles/programming.html}{tidy selection}.
+Default: \code{\link[tidyselect:everything]{tidyselect::everything()}}.}
 }
 \value{
 invisibly returns the file path where data was
 written
 }
 \description{
-Write forecast summary to disk. This function calls
-\code{summarize_ref_date_forecasts()} and writes the
+This function calls \code{summarize_ref_date_forecasts()} and writes the
 resulting tibble to disk in the specified format.
 }

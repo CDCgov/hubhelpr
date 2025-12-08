@@ -2,21 +2,17 @@
 % Please edit documentation in R/summarize_ref_date_forecasts.R
 \name{summarize_ref_date_forecasts}
 \alias{summarize_ref_date_forecasts}
-\title{Summarize forecast hub data for a specific reference
-date. This function generates a tibble of forecast data
-for a given reference date. It can filter by model IDs;
-allows flexibility retrieve all models or specific
-subsets (e.g., ensemble only).}
+\title{Summarize forecast hub data for a specific reference date.}
 \usage{
 summarize_ref_date_forecasts(
   reference_date,
   base_hub_path,
   disease,
+  population_data,
   horizons_to_include = c(0, 1, 2),
   excluded_locations = character(0),
   targets = NULL,
-  model_ids = NULL,
-  population_data
+  model_ids = NULL
 )
 }
 \arguments{
@@ -29,6 +25,9 @@ directory.}
 \item{disease}{character, disease name ("covid" or
 "rsv"). Used to derive hub name and file prefix.}
 
+\item{population_data}{data frame with columns "location"
+and "population". Adds population-based calculations.}
+
 \item{horizons_to_include}{integer vector, horizons to
 include in the output. Default: c(0, 1, 2).}
 
@@ -40,16 +39,12 @@ forecasts. If NULL (default), does not filter by target.}
 
 \item{model_ids}{character vector of model IDs to include.
 If NULL (default), includes all models.}
-
-\item{population_data}{data frame with columns "location"
-and "population". Adds population-based calculations.}
 }
 \value{
 tibble containing forecast summary data
 }
 \description{
-Summarize forecast hub data for a specific reference
-date. This function generates a tibble of forecast data
+This function generates a tibble of forecast data
 for a given reference date. It can filter by model IDs;
 allows flexibility retrieve all models or specific
 subsets (e.g., ensemble only).
