@@ -7,16 +7,16 @@
 #' description of the current week's hospitalization
 #' forecasts.
 #'
-#' @param reference_date character, the reference date for
+#' @param reference_date Character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
-#' @param disease character, disease name ("covid" or
+#' @param disease Character, disease name ("covid" or
 #' "rsv"). Used to derive hub name, file prefix, and
 #' disease display name.
-#' @param base_hub_path character, path to the forecast hub
-#' directory. Default: "."
-#' @param hub_reports_path character, path to forecast hub
-#' reports directory. Default: "../covidhub-reports"
-#' @param excluded_territories character vector of location
+#' @param base_hub_path Character, path to the forecast hub
+#' directory.
+#' @param hub_reports_path Character, path to forecast hub
+#' reports directory.
+#' @param excluded_locations Character vector of location
 #' codes to exclude from reporting calculations. Default:
 #' character(0).
 #'
@@ -24,12 +24,11 @@
 get_webtext <- function(
   reference_date,
   disease,
-  base_hub_path = ".",
-  hub_reports_path = "../covidhub-reports",
-  excluded_territories = character(0)
+  base_hub_path,
+  hub_reports_path,
+  excluded_locations = character(0)
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
-  checkmate::assert_character(excluded_territories)
 
   reference_date <- lubridate::as_date(reference_date)
 
@@ -46,7 +45,8 @@ get_webtext <- function(
     reference_date
   )
 
-  # could possibly use write_ref_date_summary_ensemble() or summarize_ref_date_forecasts()
+  # could possibly use write_ref_date_summary_ensemble() or
+  # summarize_ref_date_forecasts()?
   ensemble_us_1wk_ahead <- forecasttools::read_tabular(
     fs::path(
       weekly_data_path,
@@ -97,15 +97,25 @@ get_webtext <- function(
 
   desired_weekendingdate <- as.Date(reference_date) - lubridate::dweeks(1)
 
+  disease_abbr <- dplyr::case_match(
+    disease,
+    "covid" ~ "c19",
+    "rsv" ~ "rsv"
+  )
+
+  reporting_column <- glue::glue(
+    "totalconf{disease_abbr}newadmperchosprepabove80pct"
+  )
+
   percent_hosp_reporting_below80 <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "mpgq-jmmr",
-    columns = c("totalconfc19newadmperchosprepabove80pct"),
+    columns = c(reporting_column),
     start_date = "2024-11-09"
   ) |>
     dplyr::mutate(
       weekendingdate = as.Date(.data$weekendingdate),
       report_above_80_lgl = as.logical(
-        as.numeric(.data$totalconfc19newadmperchosprepabove80pct)
+        as.numeric(.data[[reporting_column]])
       ),
       jurisdiction = dplyr::case_match(
         .data$jurisdiction,
@@ -123,7 +133,7 @@ get_webtext <- function(
         "name"
       )
     ) |>
-    dplyr::filter(!(.data$location %in% !!excluded_territories)) |>
+    dplyr::filter(!(.data$location %in% !!excluded_locations)) |>
     dplyr::group_by(.data$jurisdiction) |>
     dplyr::mutate(max_weekendingdate = max(.data$weekendingdate)) |>
     dplyr::ungroup()

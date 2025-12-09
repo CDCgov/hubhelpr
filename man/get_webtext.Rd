@@ -2,32 +2,31 @@
 % Please edit documentation in R/get_webtext.R
 \name{get_webtext}
 \alias{get_webtext}
-\title{Generate text content for forecast hub visualization
-webpage.}
+\title{Generate text content for forecast hub visualization webpage.}
 \usage{
 get_webtext(
   reference_date,
-  base_hub_path = ".",
-  hub_reports_path = "../covidhub-reports",
   disease,
-  excluded_territories = character(0)
+  base_hub_path,
+  hub_reports_path,
+  excluded_locations = character(0)
 )
 }
 \arguments{
-\item{reference_date}{character, the reference date for
+\item{reference_date}{Character, the reference date for
 the forecast in YYYY-MM-DD format (ISO-8601).}
 
-\item{base_hub_path}{character, path to the forecast hub
-directory. Default: "."}
-
-\item{hub_reports_path}{character, path to forecast hub
-reports directory. Default: "../covidhub-reports"}
-
-\item{disease}{character, disease name ("covid" or
+\item{disease}{Character, disease name ("covid" or
 "rsv"). Used to derive hub name, file prefix, and
 disease display name.}
 
-\item{excluded_territories}{character vector of location
+\item{base_hub_path}{Character, path to the forecast hub
+directory.}
+
+\item{hub_reports_path}{Character, path to forecast hub
+reports directory.}
+
+\item{excluded_locations}{Character vector of location
 codes to exclude from reporting calculations. Default:
 character(0).}
 }
