@@ -1,5 +1,4 @@
-#' Generate text content for forecast hub visualization
-#' webpage.
+#' Generate text content for forecast hub visualization webpage.
 #'
 #' This function generates formatted text summaries for the
 #' forecast hub visualization webpage. It processes
@@ -10,13 +9,13 @@
 #'
 #' @param reference_date character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
+#' @param disease character, disease name ("covid" or
+#' "rsv"). Used to derive hub name, file prefix, and
+#' disease display name.
 #' @param base_hub_path character, path to the forecast hub
 #' directory. Default: "."
 #' @param hub_reports_path character, path to forecast hub
 #' reports directory. Default: "../covidhub-reports"
-#' @param disease character, disease name ("covid" or
-#' "rsv"). Used to derive hub name, file prefix, and
-#' disease display name.
 #' @param excluded_territories character vector of location
 #' codes to exclude from reporting calculations. Default:
 #' character(0).
@@ -24,9 +23,9 @@
 #' @export
 get_webtext <- function(
   reference_date,
+  disease,
   base_hub_path = ".",
   hub_reports_path = "../covidhub-reports",
-  disease,
   excluded_territories = character(0)
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
@@ -47,6 +46,7 @@ get_webtext <- function(
     reference_date
   )
 
+  # could possibly use write_ref_date_summary_ensemble() or summarize_ref_date_forecasts()
   ensemble_us_1wk_ahead <- forecasttools::read_tabular(
     fs::path(
       weekly_data_path,
@@ -270,4 +270,6 @@ get_webtext <- function(
   } else {
     cli::cli_abort("File already exists: {output_filepath}")
   }
+
+  return(invisible())
 }
