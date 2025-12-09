@@ -34,5 +34,5 @@ update_authorized_users <- function(base_hub_path) {
     na = "null"
   )
 
-  invisible()
+  return(invisible())
 }

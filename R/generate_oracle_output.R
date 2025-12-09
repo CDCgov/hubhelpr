@@ -108,5 +108,5 @@ generate_oracle_output <- function(hub_path) {
 
   output_file <- fs::path(output_dirpath, "oracle-output", ext = "parquet")
   forecasttools::write_tabular_file(oracle_data, output_file)
-  invisible()
+  return(invisible())
 }

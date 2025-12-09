@@ -152,4 +152,6 @@ update_hub_target_data <- function(
     hubverse_format_nssp_data
   ) |>
     forecasttools::write_tabular_file(output_file)
+
+  return(invisible())
 }

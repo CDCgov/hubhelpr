@@ -84,5 +84,5 @@ check_authorized_users <- function(
   cli::cli_inform(
     "Success: Changes authorized for user '{gh_actor}'."
   )
-  invisible()
+  return(invisible())
 }

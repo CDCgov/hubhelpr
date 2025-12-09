@@ -165,5 +165,5 @@ generate_hub_ensemble <- function(
     median_ensemble_outputs,
     fs::path(output_dirpath, output_filename, ext = "csv")
   )
-  invisible()
+  return(invisible())
 }
