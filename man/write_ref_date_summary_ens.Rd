@@ -44,6 +44,5 @@ invisibly returns the file path where data was
 written
 }
 \description{
-Function that generates and writes ensemble-only forecast data. This
-replicates the behavior of the old \code{get_map_data()} function.
+This function generates and writes ensemble-only forecast data.
 }

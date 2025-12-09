@@ -49,6 +49,5 @@ invisibly returns the file path where data was
 written
 }
 \description{
-This function generates and writes forecast data for all models. This
-replicates the behavior of the legacy \code{get_forecast_data()} function.
+This function generates and writes forecast data for all models.
 }
