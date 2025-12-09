@@ -13,7 +13,7 @@ repos:
 #####
 # Python
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.14.6
+  rev: v0.14.8
   hooks:
     # Sort imports
     - id: ruff
@@ -24,12 +24,6 @@ repos:
     # Run the formatter
     - id: ruff-format
       args: ['--line-length', '79']
-#####
-# R
--   repo: https://github.com/lorenzwalthert/precommit
-    rev: v0.4.3.9017
-    hooks:
-    -   id: lintr
 #####
 # Java
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
