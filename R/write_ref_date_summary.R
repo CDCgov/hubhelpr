@@ -91,8 +91,7 @@ write_ref_date_summary <- function(
 
 #' Write ensemble forecast summary to disk.
 #'
-#' Function that generates and writes ensemble-only forecast data. This
-#' replicates the behavior of the old `get_map_data()` function.
+#' This function generates and writes ensemble-only forecast data.
 #'
 #' @param reference_date character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
@@ -171,8 +170,7 @@ write_ref_date_summary_ens <- function(
 
 #' Write all-models forecast summary to disk.
 #'
-#' This function generates and writes forecast data for all models. This
-#' replicates the behavior of the legacy `get_forecast_data()` function.
+#' This function generates and writes forecast data for all models.
 #'
 #' @param reference_date character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).

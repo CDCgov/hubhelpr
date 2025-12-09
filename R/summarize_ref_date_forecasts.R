@@ -120,6 +120,7 @@ summarize_ref_date_forecasts <- function(
       ),
       forecast_due_date = as.Date(!!reference_date) - 3,
       location_sort_order = ifelse(.data$location_name == "US", 0, 1)
+      # order table with national first, then alphabetically
     ) |>
     dplyr::arrange(.data$location_sort_order, .data$location_name) |>
     dplyr::left_join(
