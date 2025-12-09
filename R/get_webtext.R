@@ -1,100 +1,24 @@
-#' Generate text content for forecast hub visualization webpage.
+#' Check hospital reporting data latency and completeness.
 #'
-#' This function generates formatted text summaries for the
-#' forecast hub visualization webpage. It processes
-#' ensemble forecast data, target hospital admissions data,
-#' and contributing team information to create a text
-#' description of the current week's hospitalization
-#' forecasts.
+#' This function retrieves hospital reporting data from
+#' data.cdc.gov and checks for data latency and reporting
+#' completeness issues. It returns a flag string
+#' describing any reporting issues.
 #'
-#' @param reference_date Character, the reference date for
-#' the forecast in YYYY-MM-DD format (ISO-8601).
+#' @param reference_date Date, the reference date for the
+#' forecast.
 #' @param disease Character, disease name ("covid" or
-#' "rsv"). Used to derive hub name, file prefix, and
-#' disease display name.
-#' @param base_hub_path Character, path to the forecast hub
-#' directory.
-#' @param hub_reports_path Character, path to forecast hub
-#' reports directory.
+#' "rsv").
 #' @param excluded_locations Character vector of location
-#' codes to exclude from reporting calculations. Default:
-#' character(0).
+#' codes to exclude. Default: character(0).
 #'
-#' @export
-get_webtext <- function(
+#' @return Character string describing reporting issues,
+#' or empty string if no issues.
+check_hospital_reporting_latency <- function(
   reference_date,
   disease,
-  base_hub_path,
-  hub_reports_path,
   excluded_locations = character(0)
 ) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
-
-  reference_date <- lubridate::as_date(reference_date)
-
-  hub_name <- get_hub_name(disease)
-  disease_name <- dplyr::case_match(
-    disease,
-    "covid" ~ "COVID-19",
-    "rsv" ~ "RSV"
-  )
-
-  weekly_data_path <- fs::path(
-    hub_reports_path,
-    "weekly-summaries",
-    reference_date
-  )
-
-  # could possibly use write_ref_date_summary_ensemble() or
-  # summarize_ref_date_forecasts()?
-  ensemble_us_1wk_ahead <- forecasttools::read_tabular(
-    fs::path(
-      weekly_data_path,
-      glue::glue("{reference_date}_{disease}_map_data"),
-      ext = "csv"
-    )
-  ) |>
-    dplyr::filter(horizon == 1, location_name == "US")
-
-  target_data <- forecasttools::read_tabular(
-    fs::path(
-      weekly_data_path,
-      glue::glue(
-        "{reference_date}_{disease}_target_hospital_admissions_data"
-      ),
-      ext = "csv"
-    )
-  )
-
-  contributing_teams <- forecasttools::read_tabular(
-    fs::path(
-      weekly_data_path,
-      glue::glue("{reference_date}_{disease}_forecasts_data"),
-      ext = "csv"
-    )
-  ) |>
-    dplyr::filter(model != glue::glue("{hub_name}-ensemble")) |>
-    dplyr::pull(model) |>
-    unique()
-
-  wkly_submissions <- hubData::load_model_metadata(
-    base_hub_path,
-    model_ids = contributing_teams
-  ) |>
-    dplyr::distinct(.data$model_id, .data$designated_model, .keep_all = TRUE) |>
-    dplyr::mutate(
-      team_model_url = glue::glue(
-        "[{team_name} (Model: {model_abbr})]({website_url})"
-      )
-    ) |>
-    dplyr::select(
-      model_id,
-      team_abbr,
-      model_abbr,
-      team_model_url,
-      designated_model
-    )
-
   desired_weekendingdate <- as.Date(reference_date) - lubridate::dweeks(1)
 
   disease_abbr <- dplyr::case_match(
@@ -183,6 +107,111 @@ get_webtext <- function(
     ""
   }
 
+  return(reporting_rate_flag)
+}
+
+
+#' Generate forecast hub webpage text block.
+#'
+#' This function creates formatted text content for
+#' forecast hub visualizations. It processes forecast
+#' data, target data, and team metadata to generate a
+#' text description.
+#'
+#' @param reference_date Character, the reference date for
+#' the forecast in YYYY-MM-DD format (ISO-8601).
+#' @param disease Character, disease name ("covid" or
+#' "rsv").
+#' @param base_hub_path Character, path to the forecast
+#' hub directory.
+#' @param hub_reports_path Character, path to forecast
+#' hub reports directory.
+#' @param excluded_locations Character vector of location
+#' codes to exclude. Default: character(0).
+#'
+#' @return Character string containing the formatted
+#' webpage text.
+#' @export
+generate_webtext_block <- function(
+  reference_date,
+  disease,
+  base_hub_path,
+  hub_reports_path,
+  excluded_locations = character(0)
+) {
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+
+  reference_date <- lubridate::as_date(reference_date)
+
+  hub_name <- get_hub_name(disease)
+  disease_name <- dplyr::case_match(
+    disease,
+    "covid" ~ "COVID-19",
+    "rsv" ~ "RSV"
+  )
+
+  weekly_data_path <- fs::path(
+    hub_reports_path,
+    "weekly-summaries",
+    reference_date
+  )
+
+  # could possibly use write_ref_date_summary_ensemble() or
+  # summarize_ref_date_forecasts()?
+  ensemble_us_1wk_ahead <- forecasttools::read_tabular(
+    fs::path(
+      weekly_data_path,
+      glue::glue("{reference_date}_{disease}_map_data"),
+      ext = "csv"
+    )
+  ) |>
+    dplyr::filter(horizon == 1, location_name == "US")
+
+  target_data <- forecasttools::read_tabular(
+    fs::path(
+      weekly_data_path,
+      glue::glue(
+        "{reference_date}_{disease}_target_hospital_admissions_data"
+      ),
+      ext = "csv"
+    )
+  )
+
+  contributing_teams <- forecasttools::read_tabular(
+    fs::path(
+      weekly_data_path,
+      glue::glue("{reference_date}_{disease}_forecasts_data"),
+      ext = "csv"
+    )
+  ) |>
+    dplyr::filter(model != glue::glue("{hub_name}-ensemble")) |>
+    dplyr::pull(model) |>
+    unique()
+
+  wkly_submissions <- hubData::load_model_metadata(
+    base_hub_path,
+    model_ids = contributing_teams
+  ) |>
+    dplyr::distinct(.data$model_id, .data$designated_model, .keep_all = TRUE) |>
+    dplyr::mutate(
+      team_model_url = glue::glue(
+        "[{team_name} (Model: {model_abbr})]({website_url})"
+      )
+    ) |>
+    dplyr::select(
+      model_id,
+      team_abbr,
+      model_abbr,
+      team_model_url,
+      designated_model
+    )
+
+  reporting_rate_flag <- check_hospital_reporting_latency(
+    reference_date = reference_date,
+    disease = disease,
+    excluded_locations = excluded_locations
+  )
+
   round_to_place <- function(value) {
     if (value >= 1000) {
       rounded_val <- round(value, -2)
@@ -264,6 +293,53 @@ get_webtext <- function(
     "{paste(model_incl_in_hub_ensemble, collapse = '\n')}\n\n",
     "Models not included in the {hub_name} ensemble:\n",
     "{paste(model_not_incl_in_hub_ensemble, collapse = '\n')}"
+  )
+
+  return(web_text)
+}
+
+
+#' Generate and save text content for forecast hub
+#' visualization webpage.
+#'
+#' Light wrapper function that generates formatted text
+#' summaries and saves them to disk.
+#'
+#' @param reference_date Character, the reference date for
+#' the forecast in YYYY-MM-DD format (ISO-8601).
+#' @param disease Character, disease name ("covid" or
+#' "rsv"). Used to derive hub name, file prefix, and
+#' disease display name.
+#' @param base_hub_path Character, path to the forecast hub
+#' directory.
+#' @param hub_reports_path Character, path to forecast hub
+#' reports directory.
+#' @param excluded_locations Character vector of location
+#' codes to exclude from reporting calculations. Default:
+#' character(0).
+#'
+#' @export
+get_webtext <- function(
+  reference_date,
+  disease,
+  base_hub_path,
+  hub_reports_path,
+  excluded_locations = character(0)
+) {
+  reference_date <- lubridate::as_date(reference_date)
+
+  web_text <- generate_webtext_block(
+    reference_date = reference_date,
+    disease = disease,
+    base_hub_path = base_hub_path,
+    hub_reports_path = hub_reports_path,
+    excluded_locations = excluded_locations
+  )
+
+  weekly_data_path <- fs::path(
+    hub_reports_path,
+    "weekly-summaries",
+    reference_date
   )
 
   output_filepath <- fs::path(

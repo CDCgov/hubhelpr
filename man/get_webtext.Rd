@@ -2,7 +2,8 @@
 % Please edit documentation in R/get_webtext.R
 \name{get_webtext}
 \alias{get_webtext}
-\title{Generate text content for forecast hub visualization webpage.}
+\title{Generate and save text content for forecast hub
+visualization webpage.}
 \usage{
 get_webtext(
   reference_date,
@@ -31,10 +32,6 @@ codes to exclude from reporting calculations. Default:
 character(0).}
 }
 \description{
-This function generates formatted text summaries for the
-forecast hub visualization webpage. It processes
-ensemble forecast data, target hospital admissions data,
-and contributing team information to create a text
-description of the current week's hospitalization
-forecasts.
+Light wrapper function that generates formatted text
+summaries and saves them to disk.
 }
