@@ -150,8 +150,6 @@ generate_webtext_block <- function(
     reference_date
   )
 
-  # could possibly use write_ref_date_summary_ensemble() or
-  # summarize_ref_date_forecasts()?
   ensemble_us_1wk_ahead <- forecasttools::read_tabular(
     fs::path(
       weekly_data_path,
