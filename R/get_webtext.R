@@ -33,7 +33,7 @@ check_hospital_reporting_latency <- function(
 
   percent_hosp_reporting_below80 <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "mpgq-jmmr",
-    columns = c(reporting_column),
+    columns = reporting_column,
     start_date = "2024-11-09"
   ) |>
     dplyr::mutate(
@@ -86,15 +86,11 @@ check_hospital_reporting_latency <- function(
   reporting_rate_flag <- if (
     length(latest_reporting_below80$location_name) > 0
   ) {
-    location_list <- if (length(latest_reporting_below80$location_name) < 3) {
-      glue::glue_collapse(latest_reporting_below80$location_name, sep = " and ")
-    } else {
-      glue::glue_collapse(
-        latest_reporting_below80$location_name,
-        sep = ", ",
-        last = ", and "
-      )
-    }
+    location_list <- cli::ansi_collapse(
+      latest_reporting_below80$location_name,
+      sep = ", ",
+      last = ", and "
+    )
 
     glue::glue(
       "The following jurisdictions had <80% of hospitals reporting for ",
