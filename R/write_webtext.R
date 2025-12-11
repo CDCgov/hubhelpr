@@ -83,16 +83,14 @@ check_hospital_reporting_latency <- function(
       !.data$report_above_80_lgl
     )
 
-  reporting_rate_flag <- if (
-    length(latest_reporting_below80$location_name) > 0
-  ) {
+  any_locations_flagged <- nrow(latest_reporting_below80) > 0
+  if (any_locations_flagged) {
     location_list <- cli::ansi_collapse(
       latest_reporting_below80$location_name,
       sep = ", ",
       last = ", and "
     )
-
-    glue::glue(
+    reporting_rate_flag <- glue::glue(
       "The following jurisdictions had <80% of hospitals reporting for ",
       "the most recent week: {location_list}. ",
       "Lower reporting rates could impact forecast validity. Percent ",
@@ -100,7 +98,7 @@ check_hospital_reporting_latency <- function(
       "hospitals reporting complete data to NHSN for a given reporting week.\n\n"
     )
   } else {
-    ""
+    reporting_rate_flag <- ""
   }
 
   return(reporting_rate_flag)
@@ -315,7 +313,7 @@ generate_webtext_block <- function(
 #' character(0).
 #'
 #' @export
-get_webtext <- function(
+write_webtext <- function(
   reference_date,
   disease,
   base_hub_path,
