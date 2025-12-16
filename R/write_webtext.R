@@ -9,7 +9,7 @@
 #' forecast.
 #' @param disease Character, disease name ("covid" or
 #' "rsv").
-#' @param expected_locations Character vector of location
+#' @param included_locations Character vector of location
 #' codes that are expected to report. Default:
 #' character(0).
 #'
@@ -18,7 +18,7 @@
 check_hospital_reporting_latency <- function(
   reference_date,
   disease,
-  expected_locations = character(0)
+  included_locations = character(0)
 ) {
   desired_weekendingdate <- as.Date(reference_date) - lubridate::dweeks(1)
 
@@ -32,9 +32,16 @@ check_hospital_reporting_latency <- function(
     "totalconf{disease_abbr}newadmperchosprepabove80pct"
   )
 
+  included_jurisdictions <- forecasttools::us_location_recode(
+    included_locations,
+    "code",
+    "abbr"
+  )
+
   percent_hosp_reporting_below80 <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "mpgq-jmmr",
     columns = reporting_column,
+    locations = included_jurisdictions,
     start_date = as.character(desired_weekendingdate)
   ) |>
     dplyr::mutate(
@@ -58,10 +65,28 @@ check_hospital_reporting_latency <- function(
         "name"
       )
     ) |>
-    dplyr::filter(.data$location %in% !!expected_locations) |>
     dplyr::group_by(.data$jurisdiction) |>
     dplyr::mutate(max_weekendingdate = max(.data$weekendingdate)) |>
     dplyr::ungroup()
+
+  locations_in_data <- unique(percent_hosp_reporting_below80$location)
+  missing_locations <- setdiff(included_locations, locations_in_data)
+
+  if (length(missing_locations) > 0) {
+    missing_location_names <- forecasttools::us_location_recode(
+      missing_locations,
+      "code",
+      "name"
+    )
+    cli::cli_warn(
+      "
+      Some locations are completely missing from the NHSN data.
+      The reference date is {reference_date}, but {length(missing_locations)}
+      location{?s} had no reporting data:
+      {missing_location_names}.
+    "
+    )
+  }
 
   jurisdiction_w_latency <- percent_hosp_reporting_below80 |>
     dplyr::filter(.data$max_weekendingdate < !!desired_weekendingdate)
@@ -84,10 +109,19 @@ check_hospital_reporting_latency <- function(
       !.data$report_above_80_lgl
     )
 
-  any_locations_flagged <- nrow(latest_reporting_below80) > 0
+  flagged_location_names <- c(
+    latest_reporting_below80$location_name,
+    if (length(missing_locations) > 0) {
+      forecasttools::us_location_recode(missing_locations, "code", "name")
+    } else {
+      character(0)
+    }
+  )
+
+  any_locations_flagged <- length(flagged_location_names) > 0
   if (any_locations_flagged) {
     location_list <- cli::ansi_collapse(
-      latest_reporting_below80$location_name,
+      flagged_location_names,
       sep = ", ",
       last = ", and "
     )
@@ -121,7 +155,7 @@ check_hospital_reporting_latency <- function(
 #' hub directory.
 #' @param hub_reports_path Character, path to forecast
 #' hub reports directory.
-#' @param expected_locations Character vector of location
+#' @param included_locations Character vector of location
 #' codes that are expected to report. Default:
 #' character(0).
 #'
@@ -133,7 +167,7 @@ generate_webtext_block <- function(
   disease,
   base_hub_path,
   hub_reports_path,
-  expected_locations = character(0)
+  included_locations = character(0)
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
@@ -203,7 +237,7 @@ generate_webtext_block <- function(
   reporting_rate_flag <- check_hospital_reporting_latency(
     reference_date = reference_date,
     disease = disease,
-    expected_locations = expected_locations
+    included_locations = included_locations
   )
 
   round_to_place <- function(value) {
@@ -308,7 +342,7 @@ generate_webtext_block <- function(
 #' directory.
 #' @param hub_reports_path Character, path to forecast hub
 #' reports directory.
-#' @param expected_locations Character vector of location
+#' @param included_locations Character vector of location
 #' codes that are expected to report. Default:
 #' character(0).
 #'
@@ -318,7 +352,7 @@ write_webtext <- function(
   disease,
   base_hub_path,
   hub_reports_path,
-  expected_locations = character(0)
+  included_locations = character(0)
 ) {
   reference_date <- lubridate::as_date(reference_date)
 
@@ -327,7 +361,7 @@ write_webtext <- function(
     disease = disease,
     base_hub_path = base_hub_path,
     hub_reports_path = hub_reports_path,
-    expected_locations = expected_locations
+    included_locations = included_locations
   )
 
   weekly_data_path <- fs::path(
