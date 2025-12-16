@@ -10,7 +10,7 @@ write_webtext(
   disease,
   base_hub_path,
   hub_reports_path,
-  excluded_locations = character(0)
+  included_locations = character(0)
 )
 }
 \arguments{
@@ -27,8 +27,8 @@ directory.}
 \item{hub_reports_path}{Character, path to forecast hub
 reports directory.}
 
-\item{excluded_locations}{Character vector of location
-codes to exclude from reporting calculations. Default:
+\item{included_locations}{Character vector of location
+codes that are expected to report. Default:
 character(0).}
 }
 \description{

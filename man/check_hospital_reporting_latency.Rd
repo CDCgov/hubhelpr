@@ -7,7 +7,7 @@
 check_hospital_reporting_latency(
   reference_date,
   disease,
-  excluded_locations = character(0)
+  included_locations = character(0)
 )
 }
 \arguments{
@@ -17,8 +17,9 @@ forecast.}
 \item{disease}{Character, disease name ("covid" or
 "rsv").}
 
-\item{excluded_locations}{Character vector of location
-codes to exclude. Default: character(0).}
+\item{included_locations}{Character vector of location
+codes that are expected to report. Default:
+character(0).}
 }
 \value{
 Character string describing reporting issues,
