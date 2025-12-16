@@ -121,8 +121,9 @@ check_hospital_reporting_latency <- function(
 #' hub directory.
 #' @param hub_reports_path Character, path to forecast
 #' hub reports directory.
-#' @param excluded_locations Character vector of location
-#' codes to exclude. Default: character(0).
+#' @param expected_locations Character vector of location
+#' codes that are expected to report. Default:
+#' character(0).
 #'
 #' @return Character string containing the formatted
 #' webpage text.
@@ -132,7 +133,7 @@ generate_webtext_block <- function(
   disease,
   base_hub_path,
   hub_reports_path,
-  excluded_locations = character(0)
+  expected_locations = character(0)
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
@@ -202,7 +203,7 @@ generate_webtext_block <- function(
   reporting_rate_flag <- check_hospital_reporting_latency(
     reference_date = reference_date,
     disease = disease,
-    excluded_locations = excluded_locations
+    expected_locations = expected_locations
   )
 
   round_to_place <- function(value) {
@@ -307,8 +308,8 @@ generate_webtext_block <- function(
 #' directory.
 #' @param hub_reports_path Character, path to forecast hub
 #' reports directory.
-#' @param excluded_locations Character vector of location
-#' codes to exclude from reporting calculations. Default:
+#' @param expected_locations Character vector of location
+#' codes that are expected to report. Default:
 #' character(0).
 #'
 #' @export
@@ -317,7 +318,7 @@ write_webtext <- function(
   disease,
   base_hub_path,
   hub_reports_path,
-  excluded_locations = character(0)
+  expected_locations = character(0)
 ) {
   reference_date <- lubridate::as_date(reference_date)
 
@@ -326,7 +327,7 @@ write_webtext <- function(
     disease = disease,
     base_hub_path = base_hub_path,
     hub_reports_path = hub_reports_path,
-    excluded_locations = excluded_locations
+    expected_locations = expected_locations
   )
 
   weekly_data_path <- fs::path(
