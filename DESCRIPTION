@@ -2,9 +2,16 @@ Package: hubhelpr
 Title: Helper functions for CDC hubs maintenance
 Version: 0.0.0.9000
 Authors@R:
-    person("Subekshya", "Bidari",
+    c(person("Subekshya", "Bidari",
     email = "zib2@cdc.gov",
-    role = c("aut", "cre"))
+    role = c("aut", "cre")),
+    person("Dylan", "Morris",
+    email = "dzl1@cdc.gov",
+    role = "aut"),
+    person("Trevor", "Martin",
+    email = "upx3@cdc.gov",
+    role = "aut")
+    )
 Description: This package provides functions to help with the maintenance of CDC hubs.
 License: Apache License (>= 2)
 Encoding: UTF-8
