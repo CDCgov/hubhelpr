@@ -9,15 +9,16 @@
 #' forecast.
 #' @param disease Character, disease name ("covid" or
 #' "rsv").
-#' @param excluded_locations Character vector of location
-#' codes to exclude. Default: character(0).
+#' @param expected_locations Character vector of location
+#' codes that are expected to report. Default:
+#' character(0).
 #'
 #' @return Character string describing reporting issues,
 #' or empty string if no issues.
 check_hospital_reporting_latency <- function(
   reference_date,
   disease,
-  excluded_locations = character(0)
+  expected_locations = character(0)
 ) {
   desired_weekendingdate <- as.Date(reference_date) - lubridate::dweeks(1)
 
@@ -34,7 +35,7 @@ check_hospital_reporting_latency <- function(
   percent_hosp_reporting_below80 <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "mpgq-jmmr",
     columns = reporting_column,
-    start_date = "2024-11-09"
+    start_date = as.character(desired_weekendingdate)
   ) |>
     dplyr::mutate(
       weekendingdate = as.Date(.data$weekendingdate),
@@ -57,7 +58,7 @@ check_hospital_reporting_latency <- function(
         "name"
       )
     ) |>
-    dplyr::filter(!(.data$location %in% !!excluded_locations)) |>
+    dplyr::filter(.data$location %in% !!expected_locations) |>
     dplyr::group_by(.data$jurisdiction) |>
     dplyr::mutate(max_weekendingdate = max(.data$weekendingdate)) |>
     dplyr::ungroup()
