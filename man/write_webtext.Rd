@@ -10,7 +10,7 @@ write_webtext(
   disease,
   base_hub_path,
   hub_reports_path,
-  included_locations = character(0)
+  included_locations = hubhelpr::included_locations
 )
 }
 \arguments{
@@ -29,7 +29,7 @@ reports directory.}
 
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default:
-character(0).}
+hubhelpr::included_locations.}
 }
 \description{
 Light wrapper function that generates formatted text

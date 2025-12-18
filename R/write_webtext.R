@@ -11,14 +11,14 @@
 #' "rsv").
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default:
-#' character(0).
+#' hubhelpr::included_locations.
 #'
 #' @return Character string describing reporting issues,
 #' or empty string if no issues.
 check_hospital_reporting_latency <- function(
   reference_date,
   disease,
-  included_locations = character(0)
+  included_locations = hubhelpr::included_locations
 ) {
   desired_weekendingdate <- as.Date(reference_date) - lubridate::dweeks(1)
 
@@ -39,7 +39,7 @@ check_hospital_reporting_latency <- function(
   )
 
   percent_hosp_reporting_below80 <- forecasttools::pull_data_cdc_gov_dataset(
-    dataset = "mpgq-jmmr",
+    dataset = "nhsn_hrd_prelim",
     columns = reporting_column,
     locations = included_jurisdictions,
     start_date = as.character(desired_weekendingdate)
@@ -157,7 +157,7 @@ check_hospital_reporting_latency <- function(
 #' hub reports directory.
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default:
-#' character(0).
+#' hubhelpr::included_locations.
 #'
 #' @return Character string containing the formatted
 #' webpage text.
@@ -167,7 +167,7 @@ generate_webtext_block <- function(
   disease,
   base_hub_path,
   hub_reports_path,
-  included_locations = character(0)
+  included_locations = hubhelpr::included_locations
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
@@ -344,7 +344,7 @@ generate_webtext_block <- function(
 #' reports directory.
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default:
-#' character(0).
+#' hubhelpr::included_locations.
 #'
 #' @export
 write_webtext <- function(
@@ -352,7 +352,7 @@ write_webtext <- function(
   disease,
   base_hub_path,
   hub_reports_path,
-  included_locations = character(0)
+  included_locations = hubhelpr::included_locations
 ) {
   reference_date <- lubridate::as_date(reference_date)
 

@@ -9,7 +9,7 @@ generate_webtext_block(
   disease,
   base_hub_path,
   hub_reports_path,
-  included_locations = character(0)
+  included_locations = hubhelpr::included_locations
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ hub reports directory.}
 
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default:
-character(0).}
+hubhelpr::included_locations.}
 }
 \value{
 Character string containing the formatted

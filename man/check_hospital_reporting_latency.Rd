@@ -7,7 +7,7 @@
 check_hospital_reporting_latency(
   reference_date,
   disease,
-  included_locations = character(0)
+  included_locations = hubhelpr::included_locations
 )
 }
 \arguments{
@@ -19,7 +19,7 @@ forecast.}
 
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default:
-character(0).}
+hubhelpr::included_locations.}
 }
 \value{
 Character string describing reporting issues,
