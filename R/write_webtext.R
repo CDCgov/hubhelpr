@@ -38,11 +38,13 @@ check_hospital_reporting_latency <- function(
     "abbr"
   )
 
+  lookback_date <- desired_weekendingdate - lubridate::weeks(3)
+
   percent_hosp_reporting_below80 <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "nhsn_hrd_prelim",
     columns = reporting_column,
     locations = included_jurisdictions,
-    start_date = as.character(desired_weekendingdate)
+    start_date = as.character(lookback_date)
   ) |>
     dplyr::mutate(
       weekendingdate = as.Date(.data$weekendingdate),
