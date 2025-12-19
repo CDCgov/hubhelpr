@@ -37,6 +37,9 @@ CSV output (default: FALSE).}
 \item{nssp_update_local}{Logical. Whether to update NSSP
 data from local file \code{auxiliary-data/latest.csv}
 (default: FALSE).}
+
+\item{skip_latency_check}{Logical. Whether to skip
+data latency checks (default: FALSE).}
 }
 \value{
 Writes \code{time-series.parquet} and optionally

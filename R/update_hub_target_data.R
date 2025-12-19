@@ -27,6 +27,8 @@ nssp_col_names <- list(
 #' @param nssp_update_local Logical. Whether to update NSSP
 #' data from local file `auxiliary-data/latest.csv`
 #' (default: FALSE).
+#' @param skip_latency_check Logical. Whether to skip
+#' data latency checks (default: FALSE).
 #'
 #' @return Writes `time-series.parquet` and optionally
 #' legacy CSV target data files to the target-data
