@@ -2,34 +2,42 @@
 % Please edit documentation in R/generate_hub_baselines.R
 \name{check_data_latency}
 \alias{check_data_latency}
-\title{Checks data latency in the input epi_df}
+\title{Checks latency of input data.}
 \usage{
 check_data_latency(
-  epi_df,
-  reference_date,
-  desired_max_time_value,
+  data,
+  location_col_name = "geo_value",
+  date_col_name = "time_value",
   target_label,
+  reference_date = NULL,
+  desired_max_time_value = NULL,
   overlatent_err_thresh = 0.2
 )
 }
 \arguments{
-\item{epi_df}{An epi_df object of time series data.}
+\item{data}{Data frame containing target data.}
 
-\item{reference_date}{Date. The reference date for the forecast.}
+\item{location_col_name}{Character. Name of the location column.
+Default is "geo_value".}
+
+\item{date_col_name}{Character. Name of the date column.
+Default is "time_value".}
+
+\item{target_label}{Character. Human-readable label for the target.}
+
+\item{reference_date}{Date. The reference date for forecast.
+Default is the current MMWR epiweek ceiling.}
 
 \item{desired_max_time_value}{Date. The most recent date for which
-observations are expected.}
+observations are expected. Default is one week before the reference_date.}
 
-\item{target_label}{Character. Human-readable label for the target,
-e.g., "Hospital Admissions".}
-
-\item{overlatent_err_thresh}{Numeric. Proportion threshold of locations
-with excess latency to raise an error. Default 0.20 (20\%).}
+\item{overlatent_err_thresh}{Numeric. Proportion threshold for raising error
+vs warning. Default 0.20.}
 }
 \value{
-NULL. Raises a warning if any location has excess latency or
-raises an error if proportion of locations with excess latency exceeds threshold.
+Invisible NULL. Raises warnings or errors
+based on the proportion of locations with excess latency.
 }
 \description{
-Checks data latency in the input epi_df
+Checks latency of input data.
 }

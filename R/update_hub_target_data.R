@@ -39,7 +39,8 @@ update_hub_target_data <- function(
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
   included_locations = hubhelpr::included_locations,
   legacy_file = FALSE,
-  nssp_update_local = FALSE
+  nssp_update_local = FALSE,
+  skip_latency_check = FALSE
 ) {
   if (!disease %in% c("covid", "rsv")) {
     stop("'disease' must be either 'covid' or 'rsv'")
@@ -77,6 +78,15 @@ update_hub_target_data <- function(
 
   hubverse_format_nhsn_data <- nhsn_data |>
     dplyr::select(tidyselect::all_of(hubverse_ts_req_cols))
+
+  if (!skip_latency_check) {
+    check_data_latency(
+      hubverse_format_nhsn_data,
+      location_col_name = "location",
+      date_col_name = "date",
+      target_label = "hospital admissions"
+    )
+  }
 
   if (legacy_file) {
     legacy_file_name <- glue::glue(
@@ -139,6 +149,15 @@ update_hub_target_data <- function(
     dplyr::filter(.data$location %in% !!included_locations) |>
     dplyr::select(dplyr::all_of(hubverse_ts_req_cols)) |>
     dplyr::arrange(.data$date, .data$location)
+
+  if (!skip_latency_check) {
+    check_data_latency(
+      hubverse_format_nssp_data,
+      location_col_name = "location",
+      date_col_name = "date",
+      target_label = "ed visits"
+    )
+  }
 
   output_file <- fs::path(output_dirpath, "time-series", ext = "parquet")
   if (fs::file_exists(output_file)) {

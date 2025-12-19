@@ -22,7 +22,8 @@ purrr::walk(c("covid", "rsv"), function(disease) {
       httptest2::with_mock_dir(mockdir_tests, {
         hubhelpr::update_hub_target_data(
           base_hub_path = base_hub_path,
-          disease = disease
+          disease = disease,
+          skip_latency_check = TRUE
         )
 
         target_ts <- forecasttools::read_tabular_file(output_file)
@@ -50,7 +51,8 @@ test_that("update_hub_target_data errors for unsupported disease", {
   expect_error(
     update_hub_target_data(
       base_hub_path = tempdir(),
-      disease = "flu"
+      disease = "flu",
+      skip_latency_check = TRUE
     ),
     "'disease' must be either 'covid' or 'rsv'"
   )

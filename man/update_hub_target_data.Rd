@@ -11,7 +11,8 @@ update_hub_target_data(
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
   included_locations = hubhelpr::included_locations,
   legacy_file = FALSE,
-  nssp_update_local = FALSE
+  nssp_update_local = FALSE,
+  skip_latency_check = FALSE
 )
 }
 \arguments{
