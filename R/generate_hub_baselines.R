@@ -8,8 +8,11 @@
 #' @param target_label Character. Human-readable label for the target.
 #' @param reference_date Date. The reference date for forecast.
 #' Default is the current MMWR epiweek ceiling.
+#' @param expected_latency Integer. Expected data latency in days.
+#' Default is 1 week (7 days).
 #' @param desired_max_time_value Date. The most recent date for which
-#' observations are expected. Default is one week before the reference_date.
+#' observations are expected. Default is number of days specified by
+#' `expected_latency` before the reference_date.
 #' @param overlatent_err_thresh Numeric. Proportion threshold for raising error
 #' vs warning. Default 0.20.
 #'
@@ -22,6 +25,7 @@ check_data_latency <- function(
   date_col_name = "time_value",
   target_label,
   reference_date = NULL,
+  expected_latency = 7,
   desired_max_time_value = NULL,
   overlatent_err_thresh = 0.20
 ) {
@@ -29,7 +33,7 @@ check_data_latency <- function(
     reference_date <- forecasttools::ceiling_mmwr_epiweek(lubridate::today())
   }
   if (is.null(desired_max_time_value)) {
-    desired_max_time_value <- reference_date - lubridate::dweeks(1)
+    desired_max_time_value <- reference_date - lubridate::days(expected_latency)
   }
 
   latency_tbl <- data |>
