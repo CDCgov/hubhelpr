@@ -6,35 +6,26 @@
 \usage{
 check_data_latency(
   data,
+  target_label,
+  expected_max_time_value,
   location_col_name = "geo_value",
   date_col_name = "time_value",
-  target_label,
-  reference_date = NULL,
-  expected_latency = 7,
-  desired_max_time_value = NULL,
   overlatent_err_thresh = 0.2
 )
 }
 \arguments{
 \item{data}{Data frame containing target data.}
 
+\item{target_label}{Character. Human-readable label for the target.}
+
+\item{expected_max_time_value}{Date. The most recent date for which
+observations are expected.}
+
 \item{location_col_name}{Character. Name of the location column.
 Default is "geo_value".}
 
 \item{date_col_name}{Character. Name of the date column.
 Default is "time_value".}
-
-\item{target_label}{Character. Human-readable label for the target.}
-
-\item{reference_date}{Date. The reference date for forecast.
-Default is the current MMWR epiweek ceiling.}
-
-\item{expected_latency}{Integer. Expected data latency in days.
-Default is 1 week (7 days).}
-
-\item{desired_max_time_value}{Date. The most recent date for which
-observations are expected. Default is number of days specified by
-\code{expected_latency} before the reference_date.}
 
 \item{overlatent_err_thresh}{Numeric. Proportion threshold for raising error
 vs warning. Default 0.20.}

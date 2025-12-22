@@ -11,8 +11,7 @@ update_hub_target_data(
   nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
   included_locations = hubhelpr::included_locations,
   legacy_file = FALSE,
-  nssp_update_local = FALSE,
-  skip_latency_check = FALSE
+  nssp_update_local = FALSE
 )
 }
 \arguments{
@@ -37,9 +36,6 @@ CSV output (default: FALSE).}
 \item{nssp_update_local}{Logical. Whether to update NSSP
 data from local file \code{auxiliary-data/latest.csv}
 (default: FALSE).}
-
-\item{skip_latency_check}{Logical. Whether to skip
-data latency checks (default: FALSE).}
 }
 \value{
 Writes \code{time-series.parquet} and optionally
