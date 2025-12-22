@@ -26,7 +26,7 @@ or "Proportion ED Visits".}
 \item{reference_date}{Date. Reference date for the forecast.}
 
 \item{desired_max_time_value}{Date. Most recent date for which observations are expected.
-Function will error if there is excess latency; see \code{\link[=check_data_latency]{check_data_latency()}}.}
+Function will error if there is excess latency; see \code{\link[=assert_data_up_to_date]{assert_data_up_to_date()}}.}
 
 \item{rng_seed}{Integer. Random seed for reproducibility.}
 }

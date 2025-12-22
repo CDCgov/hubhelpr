@@ -78,7 +78,7 @@ update_hub_target_data <- function(
   hubverse_format_nhsn_data <- nhsn_data |>
     dplyr::select(tidyselect::all_of(hubverse_ts_req_cols))
 
-  check_data_latency(
+  assert_data_up_to_date(
     hubverse_format_nhsn_data,
     location_col_name = "location",
     date_col_name = "date",
@@ -148,7 +148,7 @@ update_hub_target_data <- function(
     dplyr::select(dplyr::all_of(hubverse_ts_req_cols)) |>
     dplyr::arrange(.data$date, .data$location)
 
-  check_data_latency(
+  assert_data_up_to_date(
     hubverse_format_nssp_data,
     location_col_name = "location",
     date_col_name = "date",

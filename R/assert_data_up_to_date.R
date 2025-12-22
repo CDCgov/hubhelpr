@@ -15,7 +15,7 @@
 #' @return Invisible NULL. Raises warnings or errors
 #' based on the proportion of locations with excess latency.
 #' @export
-check_data_latency <- function(
+assert_data_up_to_date <- function(
   data,
   expected_max_time_value,
   target_label = checkmate::vname(data),

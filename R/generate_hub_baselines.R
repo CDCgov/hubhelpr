@@ -8,7 +8,7 @@
 #' or "Proportion ED Visits".
 #' @param reference_date Date. Reference date for the forecast.
 #' @param desired_max_time_value Date. Most recent date for which observations are expected.
-#'  Function will error if there is excess latency; see [check_data_latency()].
+#'  Function will error if there is excess latency; see [assert_data_up_to_date()].
 #' @param rng_seed Integer. Random seed for reproducibility.
 #' @return A data frame of baseline forecasts for the specified target.
 make_baseline_forecast <- function(
@@ -40,7 +40,7 @@ make_baseline_forecast <- function(
     dplyr::select(-c("location", "target")) |>
     epiprocess::as_epi_df()
 
-  check_data_latency(
+  assert_data_up_to_date(
     data = epi_df,
     expected_max_time_value = desired_max_time_value,
     target_label = target_label
