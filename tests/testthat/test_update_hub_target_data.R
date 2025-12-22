@@ -23,7 +23,7 @@ purrr::walk(c("covid", "rsv"), function(disease) {
         hubhelpr::update_hub_target_data(
           base_hub_path = base_hub_path,
           disease = disease,
-          skip_latency_check = TRUE
+          as_of = lubridate::as_date("2025-08-18"),
         )
 
         target_ts <- forecasttools::read_tabular_file(output_file)
@@ -51,8 +51,7 @@ test_that("update_hub_target_data errors for unsupported disease", {
   expect_error(
     update_hub_target_data(
       base_hub_path = tempdir(),
-      disease = "flu",
-      skip_latency_check = TRUE
+      disease = "flu"
     ),
     "'disease' must be either 'covid' or 'rsv'"
   )
