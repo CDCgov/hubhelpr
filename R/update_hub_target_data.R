@@ -82,7 +82,6 @@ update_hub_target_data <- function(
     hubverse_format_nhsn_data,
     location_col_name = "location",
     date_col_name = "date",
-    target_label = "hospital admissions",
     expected_max_time_value = forecasttools::floor_mmwr_epiweek(as_of) -
       lubridate::days(1)
   )
@@ -153,7 +152,6 @@ update_hub_target_data <- function(
     hubverse_format_nssp_data,
     location_col_name = "location",
     date_col_name = "date",
-    target_label = "ed visits",
     expected_max_time_value = forecasttools::floor_mmwr_epiweek(as_of) -
       lubridate::days(1)
   )

@@ -1,9 +1,10 @@
 #' Checks latency of input data.
 #'
 #' @param data Data frame containing target data.
-#' @param target_label Character. Human-readable label for the target.
 #' @param expected_max_time_value Date. The most recent date for which
 #' observations are expected.
+#' @param target_label Character. Human-readable label for the target.
+#' Default is the variable name of the data object.
 #' @param location_col_name Character. Name of the location column.
 #' Default is "geo_value".
 #' @param date_col_name Character. Name of the date column.
@@ -16,8 +17,8 @@
 #' @export
 check_data_latency <- function(
   data,
-  target_label,
   expected_max_time_value,
+  target_label = checkmate::vname(data),
   location_col_name = "geo_value",
   date_col_name = "time_value",
   overlatent_err_thresh = 0.20
@@ -29,11 +30,7 @@ check_data_latency <- function(
       .groups = "drop"
     ) |>
     dplyr::mutate(
-      excess_latency = pmax(
-        as.integer(expected_max_time_value - .data$latest_date) %/% 7L,
-        0L
-      ),
-      has_excess_latency = .data$excess_latency > 0L
+      has_excess_latency = .data$latest_date < expected_max_time_value
     )
 
   prop_locs_overlatent <- mean(latency_tbl$has_excess_latency)

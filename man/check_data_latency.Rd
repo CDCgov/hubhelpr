@@ -6,8 +6,8 @@
 \usage{
 check_data_latency(
   data,
-  target_label,
   expected_max_time_value,
+  target_label = checkmate::vname(data),
   location_col_name = "geo_value",
   date_col_name = "time_value",
   overlatent_err_thresh = 0.2
@@ -16,10 +16,11 @@ check_data_latency(
 \arguments{
 \item{data}{Data frame containing target data.}
 
-\item{target_label}{Character. Human-readable label for the target.}
-
 \item{expected_max_time_value}{Date. The most recent date for which
 observations are expected.}
+
+\item{target_label}{Character. Human-readable label for the target.
+Default is the variable name of the data object.}
 
 \item{location_col_name}{Character. Name of the location column.
 Default is "geo_value".}
