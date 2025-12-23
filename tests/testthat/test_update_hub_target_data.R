@@ -22,7 +22,8 @@ purrr::walk(c("covid", "rsv"), function(disease) {
       httptest2::with_mock_dir(mockdir_tests, {
         hubhelpr::update_hub_target_data(
           base_hub_path = base_hub_path,
-          disease = disease
+          disease = disease,
+          as_of = lubridate::as_date("2025-08-18"),
         )
 
         target_ts <- forecasttools::read_tabular_file(output_file)

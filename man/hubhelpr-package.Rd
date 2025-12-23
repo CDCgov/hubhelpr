@@ -11,5 +11,11 @@ This package provides functions to help with the maintenance of CDC hubs.
 \author{
 \strong{Maintainer}: Subekshya Bidari \email{zib2@cdc.gov}
 
+Authors:
+\itemize{
+  \item Dylan Morris \email{dzl1@cdc.gov}
+  \item Trevor Martin \email{upx3@cdc.gov}
+}
+
 }
 \keyword{internal}

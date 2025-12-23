@@ -1,64 +1,3 @@
-#' Checks data latency in the input epi_df
-#'
-#' @param epi_df An epi_df object of time series data.
-#' @param reference_date Date. The reference date for the forecast.
-#' @param desired_max_time_value Date. The most recent date for which
-#' observations are expected.
-#' @param target_label Character. Human-readable label for the target,
-#' e.g., "Hospital Admissions".
-#' @param overlatent_err_thresh Numeric. Proportion threshold of locations
-#' with excess latency to raise an error. Default 0.20 (20%).
-#' @return NULL. Raises a warning if any location has excess latency or
-#' raises an error if proportion of locations with excess latency exceeds threshold.
-check_data_latency <- function(
-  epi_df,
-  reference_date,
-  desired_max_time_value,
-  target_label,
-  overlatent_err_thresh = 0.20
-) {
-  excess_latency_tbl <- epi_df |>
-    tidyr::drop_na(.data$observation) |>
-    dplyr::group_by(.data$geo_value) |>
-    dplyr::summarize(
-      max_time_value = max(.data$time_value),
-      .groups = "drop"
-    ) |>
-    dplyr::mutate(
-      excess_latency = pmax(
-        as.integer(desired_max_time_value - .data$max_time_value) %/% 7L,
-        0L
-      ),
-      has_excess_latency = .data$excess_latency > 0L
-    )
-
-  prop_locs_overlatent <- mean(excess_latency_tbl$has_excess_latency)
-
-  if (prop_locs_overlatent > overlatent_err_thresh) {
-    cli::cli_abort(
-      paste0(
-        "{target_label} forecast: More than ",
-        "{100 * overlatent_err_thresh}% of locations have excess latency. ",
-        "The reference date is {reference_date}, so we desire observations ",
-        "at least through {desired_max_time_value}. However, ",
-        "{nrow(excess_latency_tbl |> dplyr::filter(.data$has_excess_latency))} ",
-        "location{?s} had excess latency."
-      )
-    )
-  } else if (prop_locs_overlatent > 0) {
-    cli::cli_warn(
-      paste0(
-        "{target_label} forecast: Some locations have excess latency. ",
-        "The reference date is {reference_date}, so we desire observations ",
-        "at least through {desired_max_time_value}. However, ",
-        "{nrow(excess_latency_tbl |> dplyr::filter(.data$has_excess_latency))} ",
-        "location{?s} had excess latency."
-      )
-    )
-  }
-}
-
-
 #' Create a hub formatted baseline forecast for a single target
 #'
 #' @param target_data Data frame of target time series. Must include `date`,
@@ -69,7 +8,7 @@ check_data_latency <- function(
 #' or "Proportion ED Visits".
 #' @param reference_date Date. Reference date for the forecast.
 #' @param desired_max_time_value Date. Most recent date for which observations are expected.
-#'  Function will error if there is excess latency; see [check_data_latency()].
+#'  Function will error if there is excess latency; see [assert_data_up_to_date()].
 #' @param rng_seed Integer. Random seed for reproducibility.
 #' @return A data frame of baseline forecasts for the specified target.
 make_baseline_forecast <- function(
@@ -101,11 +40,10 @@ make_baseline_forecast <- function(
     dplyr::select(-c("location", "target")) |>
     epiprocess::as_epi_df()
 
-  check_data_latency(
-    epi_df,
-    reference_date,
-    desired_max_time_value,
-    target_label
+  assert_data_up_to_date(
+    data = epi_df,
+    expected_max_time_value = desired_max_time_value,
+    target_label = target_label
   )
 
   args_list <- epipredict::cdc_baseline_args_list(aheads = 1:4, nsims = 1e5)
@@ -195,7 +133,7 @@ generate_hub_baseline <- function(
   checkmate::assert_scalar(disease)
   checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
   reference_date <- lubridate::as_date(reference_date)
-  desired_max_time_value <- reference_date - 7L
+  desired_max_time_value <- reference_date - lubridate::weeks(1)
   dow_supplied <- lubridate::wday(reference_date, week_start = 7, label = FALSE)
   rng_seed <- as.integer((59460707 + as.numeric(reference_date)) %% 2e9)
   if (dow_supplied != 7) {

@@ -78,6 +78,14 @@ update_hub_target_data <- function(
   hubverse_format_nhsn_data <- nhsn_data |>
     dplyr::select(tidyselect::all_of(hubverse_ts_req_cols))
 
+  assert_data_up_to_date(
+    hubverse_format_nhsn_data,
+    location_col_name = "location",
+    date_col_name = "date",
+    expected_max_time_value = forecasttools::floor_mmwr_epiweek(as_of) -
+      lubridate::days(1)
+  )
+
   if (legacy_file) {
     legacy_file_name <- glue::glue(
       "{disease}-hospital-admissions.csv"
@@ -139,6 +147,14 @@ update_hub_target_data <- function(
     dplyr::filter(.data$location %in% !!included_locations) |>
     dplyr::select(dplyr::all_of(hubverse_ts_req_cols)) |>
     dplyr::arrange(.data$date, .data$location)
+
+  assert_data_up_to_date(
+    hubverse_format_nssp_data,
+    location_col_name = "location",
+    date_col_name = "date",
+    expected_max_time_value = forecasttools::floor_mmwr_epiweek(as_of) -
+      lubridate::days(1)
+  )
 
   output_file <- fs::path(output_dirpath, "time-series", ext = "parquet")
   if (fs::file_exists(output_file)) {
