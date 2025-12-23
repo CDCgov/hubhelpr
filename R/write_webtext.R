@@ -38,13 +38,11 @@ check_hospital_reporting_latency <- function(
     "abbr"
   )
 
-  lookback_date <- desired_weekendingdate - lubridate::weeks(3)
-
   percent_hosp_reporting_below80 <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "nhsn_hrd_prelim",
     columns = reporting_column,
     locations = included_jurisdictions,
-    start_date = as.character(lookback_date)
+    start_date = as.character(desired_weekendingdate)
   ) |>
     dplyr::mutate(
       weekendingdate = as.Date(.data$weekendingdate),
@@ -66,10 +64,7 @@ check_hospital_reporting_latency <- function(
         "abbr",
         "name"
       )
-    ) |>
-    dplyr::group_by(.data$jurisdiction) |>
-    dplyr::mutate(max_weekendingdate = max(.data$weekendingdate)) |>
-    dplyr::ungroup()
+    )
 
   locations_in_data <- unique(percent_hosp_reporting_below80$location)
   missing_locations <- setdiff(included_locations, locations_in_data)
@@ -82,25 +77,11 @@ check_hospital_reporting_latency <- function(
     )
     cli::cli_warn(
       "
-      Some locations are completely missing from the NHSN data.
-      The reference date is {reference_date}, but {length(missing_locations)}
+      Some locations are missing from the NHSN data for the desired week.
+      The reference date is {reference_date}, we expect data at least
+      through {desired_weekendingdate}. However, {length(missing_locations)}
       location{?s} had no reporting data:
       {missing_location_names}.
-    "
-    )
-  }
-
-  jurisdiction_w_latency <- percent_hosp_reporting_below80 |>
-    dplyr::filter(.data$max_weekendingdate < !!desired_weekendingdate)
-
-  if (nrow(jurisdiction_w_latency) > 0) {
-    cli::cli_warn(
-      "
-      Some locations have missing reported data for the most recent week.
-      The reference date is {reference_date}, we expect data at least
-      through {desired_weekendingdate}. However, {nrow(jurisdiction_w_latency)}
-      location{?s} did not have reporting through that date:
-      {jurisdiction_w_latency$location_name}.
     "
     )
   }
