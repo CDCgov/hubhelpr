@@ -133,7 +133,7 @@ generate_hub_baseline <- function(
   checkmate::assert_scalar(disease)
   checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
   reference_date <- lubridate::as_date(reference_date)
-  desired_max_time_value <- reference_date - lubridate::dweeks(1)
+  desired_max_time_value <- reference_date - lubridate::weeks(1)
   dow_supplied <- lubridate::wday(reference_date, week_start = 7, label = FALSE)
   rng_seed <- as.integer((59460707 + as.numeric(reference_date)) %% 2e9)
   if (dow_supplied != 7) {
