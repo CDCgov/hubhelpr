@@ -38,11 +38,19 @@ check_hospital_reporting_latency <- function(
     "abbr"
   )
 
+  # convert "US" to "USA" for API compatibility
+  included_jurisdictions <- dplyr::case_match(
+    included_jurisdictions,
+    "US" ~ "USA",
+    .default = included_jurisdictions
+  )
+
   percent_hosp_reporting_below80 <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "nhsn_hrd_prelim",
     columns = reporting_column,
     locations = included_jurisdictions,
-    start_date = as.character(desired_weekendingdate)
+    start_date = as.character(desired_weekendingdate),
+    end_date = as.character(desired_weekendingdate)
   ) |>
     dplyr::mutate(
       weekendingdate = as.Date(.data$weekendingdate),
@@ -84,21 +92,18 @@ check_hospital_reporting_latency <- function(
       {missing_location_names}.
     "
     )
+  } else {
+    missing_location_names <- NULL
   }
 
   latest_reporting_below80 <- percent_hosp_reporting_below80 |>
     dplyr::filter(
-      .data$weekendingdate == max(.data$weekendingdate),
       !.data$report_above_80_lgl
     )
 
   flagged_location_names <- c(
     latest_reporting_below80$location_name,
-    if (length(missing_locations) > 0) {
-      forecasttools::us_location_recode(missing_locations, "code", "name")
-    } else {
-      character(0)
-    }
+    missing_location_names
   )
 
   any_locations_flagged <- length(flagged_location_names) > 0
@@ -298,7 +303,7 @@ generate_webtext_block <- function(
     "{first_target_data_date} through {last_target_data_date} and forecasted ",
     "new {disease_name} hospital admissions per week for this week and the next ",
     "2 weeks through {target_end_date_2wk_ahead}.\n\n",
-    "{reporting_rate_flag}\n",
+    "{reporting_rate_flag}",
     "Contributing teams and models:\n\n",
     "Models included in the {hub_name} ensemble:\n",
     "{paste(model_incl_in_hub_ensemble, collapse = '\n')}\n\n",
