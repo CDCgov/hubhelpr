@@ -2,25 +2,25 @@
 on:
   pull_request:
 
-name: format-suggest.yaml
+name: "Format Suggest"
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
   format-suggest:
-    name: format-suggest
+    name: "format-suggest"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Install
+      - name: "Install"
         uses: posit-dev/setup-air@v1
 
-      - name: Format
+      - name: "Format"
         run: air format .
 
-      - name: Suggest
+      - name: "Suggest"
         uses: reviewdog/action-suggester@v1
         with:
           level: error
