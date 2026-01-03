@@ -108,6 +108,9 @@ write_ref_date_summary <- function(
 #' codes to exclude from the output. Default: character(0).
 #' @param output_format character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
+#' @param targets character vector, target name(s) to
+#' filter forecasts. If NULL (default), does not filter by
+#' target.
 #'
 #' @return invisibly returns the file path where data was
 #' written
@@ -121,7 +124,8 @@ write_ref_date_summary_ens <- function(
   horizons_to_include = c(0, 1, 2),
   population_data,
   excluded_locations = character(0),
-  output_format = "csv"
+  output_format = "csv",
+  targets = NULL
 ) {
   hub_name <- get_hub_name(disease)
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
@@ -160,7 +164,7 @@ write_ref_date_summary_ens <- function(
     horizons_to_include = horizons_to_include,
     excluded_locations = excluded_locations,
     output_format = output_format,
-    targets = NULL,
+    targets = targets,
     model_ids = ensemble_model_name,
     population_data = population_data,
     column_selection = ensemble_columns
