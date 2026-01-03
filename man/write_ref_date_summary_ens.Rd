@@ -12,7 +12,8 @@ write_ref_date_summary_ens(
   horizons_to_include = c(0, 1, 2),
   population_data,
   excluded_locations = character(0),
-  output_format = "csv"
+  output_format = "csv",
+  targets = NULL
 )
 }
 \arguments{
@@ -38,6 +39,10 @@ codes to exclude from the output. Default: character(0).}
 
 \item{output_format}{character, output file format. One
 of "csv", "tsv", or "parquet". Default: "csv".}
+
+\item{targets}{character vector, target name(s) to
+filter forecasts. If NULL (default), does not filter by
+target.}
 }
 \value{
 invisibly returns the file path where data was
