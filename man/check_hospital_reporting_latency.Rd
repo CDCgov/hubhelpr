@@ -18,7 +18,7 @@ forecast.}
 "rsv").}
 
 \item{included_locations}{Character vector of location
-codes that are expected to report. Default:
+codes that are expected to report. Default
 hubhelpr::included_locations.}
 }
 \value{

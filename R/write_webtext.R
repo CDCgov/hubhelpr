@@ -10,7 +10,7 @@
 #' @param disease Character, disease name ("covid" or
 #' "rsv").
 #' @param included_locations Character vector of location
-#' codes that are expected to report. Default:
+#' codes that are expected to report. Default
 #' hubhelpr::included_locations.
 #'
 #' @return Character string describing reporting issues,
@@ -144,7 +144,7 @@ check_hospital_reporting_latency <- function(
 #' @param hub_reports_path Character, path to forecast
 #' hub reports directory.
 #' @param included_locations Character vector of location
-#' codes that are expected to report. Default:
+#' codes that are expected to report. Default
 #' hubhelpr::included_locations.
 #'
 #' @return Character string containing the formatted
@@ -331,7 +331,7 @@ generate_webtext_block <- function(
 #' @param hub_reports_path Character, path to forecast hub
 #' reports directory.
 #' @param included_locations Character vector of location
-#' codes that are expected to report. Default:
+#' codes that are expected to report. Default
 #' hubhelpr::included_locations.
 #'
 #' @export
