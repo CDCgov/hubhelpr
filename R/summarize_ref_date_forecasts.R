@@ -101,7 +101,7 @@ summarize_ref_date_forecasts <- function(
     ) |>
     dplyr::left_join(
       population_data,
-      by = c("location_name" = "location")
+      by = "location"
     ) |>
     dplyr::mutate(
       population = as.numeric(.data$population),
@@ -114,7 +114,12 @@ summarize_ref_date_forecasts <- function(
     ) |>
     dplyr::mutate(
       dplyr::across(
-        tidyselect::starts_with("quantile_"),
+        tidyselect::ends_with("_per100k"),
+        ~ round(.x, 2),
+        .names = "{.col}_rounded"
+      ),
+      dplyr::across(
+        tidyselect::ends_with("_count"),
         round,
         .names = "{.col}_rounded"
       ),
