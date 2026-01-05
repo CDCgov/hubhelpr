@@ -8,6 +8,14 @@
 \description{
 This package provides functions to help with the maintenance of CDC hubs.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://cdcgov.github.io/hubhelpr/}
+  \item \url{https://github.com/cdcgov/hubhelpr}
+}
+
+}
 \author{
 \strong{Maintainer}: Subekshya Bidari \email{zib2@cdc.gov}
 
