@@ -7,6 +7,7 @@
 generate_webtext_block(
   reference_date,
   disease,
+  target,
   base_hub_path,
   hub_reports_path,
   included_locations = hubhelpr::included_locations
@@ -18,6 +19,9 @@ the forecast in YYYY-MM-DD format (ISO-8601).}
 
 \item{disease}{Character, disease name ("covid" or
 "rsv").}
+
+\item{target}{Character, target name (e.g.,
+"wk inc covid hosp" or "wk inc covid prop ed visits").}
 
 \item{base_hub_path}{Character, path to the forecast
 hub directory.}
