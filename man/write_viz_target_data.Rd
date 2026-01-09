@@ -34,11 +34,14 @@ hubhelpr::included_locations.}
 }
 \value{
 Invisibly returns file path where data was
-written.
+written. File is named
+{reference_date}_{disease}_target_data.csv.
 }
 \description{
 This function reads target data from the hub's
-time-series file, filters to the latest vintage and
-specified target, and writes it to the weekly-summaries
-directory for use by the visualization webpage.
+time-series file using hubData, filters to the latest
+vintage and specified target, and writes it to the
+weekly-summaries directory for use by the visualization
+webpage. Output includes columns: week_ending_date,
+location, location_name, target, and value.
 }

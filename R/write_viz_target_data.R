@@ -1,9 +1,11 @@
 #' Write target data for visualization to disk.
 #'
 #' This function reads target data from the hub's
-#' time-series file, filters to the latest vintage and
-#' specified target, and writes it to the weekly-summaries
-#' directory for use by the visualization webpage.
+#' time-series file using hubData, filters to the latest
+#' vintage and specified target, and writes it to the
+#' weekly-summaries directory for use by the visualization
+#' webpage. Output includes columns: week_ending_date,
+#' location, location_name, target, and value.
 #'
 #' @param reference_date Character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
@@ -19,7 +21,8 @@
 #' hubhelpr::included_locations.
 #'
 #' @return Invisibly returns file path where data was
-#' written.
+#' written. File is named
+#' {reference_date}_{disease}_target_data.csv.
 #'
 #' @export
 write_viz_target_data <- function(
@@ -52,17 +55,19 @@ write_viz_target_data <- function(
         "code",
         "name"
       ),
-      # rename "United States" to "US" for consistency
+      # rename "United States" to "US"
       location_name = dplyr::case_match(
         .data$location_name,
         "United States" ~ "US",
         .default = .data$location_name
-      )
+      ),
+      target = !!target
     ) |>
     dplyr::select(
       week_ending_date = "date",
       "location",
       "location_name",
+      "target",
       value = "observation"
     )
 
@@ -72,9 +77,7 @@ write_viz_target_data <- function(
     "weekly-summaries",
     reference_date
   )
-  output_filename <- glue::glue(
-    "{reference_date}_{disease}_target_hospital_admissions_data"
-  )
+  output_filename <- glue::glue("{reference_date}_{disease}_target_data")
   output_filepath <- fs::path(
     output_folder_path,
     output_filename,
