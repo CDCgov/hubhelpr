@@ -139,6 +139,8 @@ check_hospital_reporting_latency <- function(
 #' the forecast in YYYY-MM-DD format (ISO-8601).
 #' @param disease Character, disease name ("covid" or
 #' "rsv").
+#' @param target Character, target name (e.g.,
+#' "wk inc covid hosp" or "wk inc covid prop ed visits").
 #' @param base_hub_path Character, path to the forecast
 #' hub directory.
 #' @param hub_reports_path Character, path to forecast
@@ -153,11 +155,15 @@ check_hospital_reporting_latency <- function(
 generate_webtext_block <- function(
   reference_date,
   disease,
+  target,
   base_hub_path,
   hub_reports_path,
   included_locations = hubhelpr::included_locations
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+
+  is_hosp_target <- grepl("hosp", target)
+  is_ed_visits_target <- grepl("ed visits", target)
 
   reference_date <- lubridate::as_date(reference_date)
 
@@ -183,12 +189,29 @@ generate_webtext_block <- function(
   ) |>
     dplyr::filter(horizon == 1, location_name == "US")
 
+  # target-specific file suffixes
+  target_data_suffixes <- list(
+    hosp = "target_hospital_admissions_data",
+    ed_visits = "target_ed_visits_data"
+  )
+
+  # determine target type key for file lookup
+  target_type_key <- dplyr::case_when(
+    is_hosp_target ~ "hosp",
+    is_ed_visits_target ~ "ed_visits",
+    .default = NA_character_
+  )
+
+  if (is.na(target_type_key)) {
+    cli::cli_abort("Unknown target type: {target}")
+  }
+
+  target_data_suffix <- target_data_suffixes[[target_type_key]]
+
   target_data <- forecasttools::read_tabular(
     fs::path(
       weekly_data_path,
-      glue::glue(
-        "{reference_date}_{disease}_target_hospital_admissions_data"
-      ),
+      glue::glue("{reference_date}_{disease}_{target_data_suffix}"),
       ext = "csv"
     )
   )
@@ -222,11 +245,15 @@ generate_webtext_block <- function(
       designated_model
     )
 
-  reporting_rate_flag <- check_hospital_reporting_latency(
-    reference_date = reference_date,
-    disease = disease,
-    included_locations = included_locations
-  )
+  if (is_hosp_target) {
+    reporting_rate_flag <- check_hospital_reporting_latency(
+      reference_date = reference_date,
+      disease = disease,
+      included_locations = included_locations
+    )
+  } else {
+    reporting_rate_flag <- ""
+  }
 
   round_to_place <- function(value) {
     if (value >= 1000) {
@@ -282,26 +309,63 @@ generate_webtext_block <- function(
       week_end_date_formatted = format(week_ending_date, "%B %d, %Y")
     )
 
-  last_reported_admissions <- round(last_reported_target_data$value, -2)
+  last_reported_value <- last_reported_target_data$value
+
+  # target-specific text and formatting configuration
+  target_config <- list(
+    hosp = list(
+      target_description = "new weekly laboratory-confirmed {disease_name} hospital admissions",
+      target_short = "{disease_name} hospital admissions",
+      data_source = "U.S. hospitals",
+      value_unit = "",
+      format_value = function(x) round(x, -2),
+      format_forecast = function(x) round_to_place(x)
+    ),
+    ed_visits = list(
+      target_description = "the proportion of emergency department visits due to {disease_name}",
+      target_short = "{disease_name} ED visit proportions",
+      data_source = "NSSP data",
+      value_unit = "%",
+      format_value = function(x) round(x * 100, 2),
+      format_forecast = function(x) round(x * 100, 2)
+    )
+  )
+
+  config <- target_config[[target_type_key]]
+
+  # format values based on target
+  forecast_value <- config$format_forecast(
+    ensemble_us_1wk_ahead$quantile_0.5_count
+  )
+  lower_value <- config$format_forecast(
+    ensemble_us_1wk_ahead$quantile_0.025_count
+  )
+  upper_value <- config$format_forecast(
+    ensemble_us_1wk_ahead$quantile_0.975_count
+  )
+  last_reported <- config$format_value(last_reported_value)
+  value_unit <- config$value_unit
+  target_description <- glue::glue(config$target_description)
+  target_short <- glue::glue(config$target_short)
+  data_source <- config$data_source
 
   web_text <- glue::glue(
-    "The {hub_name} ensemble's one-week-ahead forecast predicts that the number ",
-    "of new weekly laboratory-confirmed {disease_name} hospital admissions will be ",
-    "approximately {median_forecast_1wk_ahead} nationally, with ",
-    "{lower_95ci_forecast_1wk_ahead} to {upper_95ci_forecast_1wk_ahead} ",
-    "laboratory confirmed {disease_name} hospital admissions likely reported in the ",
-    "week ending {target_end_date_1wk_ahead}. This is compared to the ",
-    "{last_reported_admissions} admissions reported for the week ",
+    "The {hub_name} ensemble's one-week-ahead forecast predicts that ",
+    "{target_description} will be ",
+    "approximately {forecast_value}{value_unit} nationally, with ",
+    "{lower_value}{value_unit} to {upper_value}{value_unit} ",
+    "likely reported in the week ending {target_end_date_1wk_ahead}. ",
+    "This is compared to the {last_reported}{value_unit} reported for the week ",
     "ending {last_reported_target_data$week_end_date_formatted}, the most ",
-    "recent week of reporting from U.S. hospitals.\n\n",
-    "Reported and forecasted new {disease_name} hospital admissions as of ",
+    "recent week of {data_source}.\n\n",
+    "Reported and forecasted {target_short} as of ",
     "{forecast_due_date}. This week, {weekly_num_teams} modeling groups ",
     "contributed {weekly_num_models} forecasts that were eligible for inclusion ",
     "in the ensemble forecasts for at least one jurisdiction.\n\n",
-    "The figure shows the number of new laboratory-confirmed {disease_name} hospital ",
-    "admissions reported in the United States each week from ",
+    "The figure shows {target_description} ",
+    "reported in the United States each week from ",
     "{first_target_data_date} through {last_target_data_date} and forecasted ",
-    "new {disease_name} hospital admissions per week for this week and the next ",
+    "{target_short} per week for this week and the next ",
     "2 weeks through {target_end_date_2wk_ahead}.\n\n",
     "{reporting_rate_flag}",
     "Contributing teams and models:\n\n",
@@ -326,6 +390,8 @@ generate_webtext_block <- function(
 #' @param disease Character, disease name ("covid" or
 #' "rsv"). Used to derive hub name, file prefix, and
 #' disease display name.
+#' @param target Character, target name (e.g.,
+#' "wk inc covid hosp" or "wk inc covid prop ed visits").
 #' @param base_hub_path Character, path to the forecast hub
 #' directory.
 #' @param hub_reports_path Character, path to forecast hub
@@ -338,6 +404,7 @@ generate_webtext_block <- function(
 write_webtext <- function(
   reference_date,
   disease,
+  target,
   base_hub_path,
   hub_reports_path,
   included_locations = hubhelpr::included_locations
@@ -347,6 +414,7 @@ write_webtext <- function(
   web_text <- generate_webtext_block(
     reference_date = reference_date,
     disease = disease,
+    target = target,
     base_hub_path = base_hub_path,
     hub_reports_path = hub_reports_path,
     included_locations = included_locations
