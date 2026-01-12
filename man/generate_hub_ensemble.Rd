@@ -8,7 +8,8 @@ generate_hub_ensemble(
   base_hub_path,
   reference_date,
   disease,
-  ensemble_targets = c("hosp")
+  ensemble_targets = c("hosp"),
+  output_format = "csv"
 )
 }
 \arguments{
@@ -20,6 +21,9 @@ generate_hub_ensemble(
 
 \item{ensemble_targets}{A vector specifying targets to generate ensemble
 forecasts for, e.g., c("hosp", "prop ed visits"). Defaults to "hosp".}
+
+\item{output_format}{Character, output file format. One of "csv",
+"tsv", or "parquet". Default: "csv".}
 }
 \value{
 NULL. Writes ensemble forecast file to hub's model-output directory.
