@@ -35,14 +35,7 @@ check_hospital_reporting_latency <- function(
   included_jurisdictions <- forecasttools::us_location_recode(
     included_locations,
     "code",
-    "abbr"
-  )
-
-  # convert "US" to "USA" for API compatibility
-  included_jurisdictions <- dplyr::case_match(
-    included_jurisdictions,
-    "US" ~ "USA",
-    .default = included_jurisdictions
+    "hrd"
   )
 
   percent_hosp_reporting_below80 <- forecasttools::pull_data_cdc_gov_dataset(
@@ -57,19 +50,14 @@ check_hospital_reporting_latency <- function(
       report_above_80_lgl = as.logical(
         as.numeric(.data[[reporting_column]])
       ),
-      jurisdiction = dplyr::case_match(
-        .data$jurisdiction,
-        "USA" ~ "US",
-        .default = .data$jurisdiction
-      ),
       location = forecasttools::us_location_recode(
         .data$jurisdiction,
-        "abbr",
+        "hrd",
         "code"
       ),
       location_name = forecasttools::us_location_recode(
         .data$jurisdiction,
-        "abbr",
+        "hrd",
         "name"
       )
     )

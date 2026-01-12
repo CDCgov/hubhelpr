@@ -64,10 +64,9 @@ update_hub_target_data <- function(
     dplyr::mutate(
       date = lubridate::as_date(.data$weekendingdate),
       observation = as.numeric(.data[[nhsn_col_name]]),
-      jurisdiction = stringr::str_replace(.data$jurisdiction, "USA", "US"),
       location = forecasttools::us_location_recode(
         .data$jurisdiction,
-        "abbr",
+        "hrd",
         "code"
       ),
       as_of = !!as_of,
