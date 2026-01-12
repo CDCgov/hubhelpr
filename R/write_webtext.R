@@ -129,7 +129,7 @@ check_hospital_reporting_latency <- function(
 #' "rsv").
 #' @param base_hub_path Character, path to the forecast
 #' hub directory.
-#' @param weekly_data_path Character, path to the directory 
+#' @param weekly_data_path Character, path to the directory
 #' with weekly summary files.
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
