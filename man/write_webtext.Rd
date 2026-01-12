@@ -10,7 +10,8 @@ write_webtext(
   disease,
   base_hub_path,
   hub_reports_path,
-  included_locations = hubhelpr::included_locations
+  included_locations = hubhelpr::included_locations,
+  input_format = "csv"
 )
 }
 \arguments{
@@ -30,6 +31,10 @@ reports directory.}
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default
 hubhelpr::included_locations.}
+
+\item{input_format}{Character, input file format for
+reading summary data files. One of "csv", "tsv", or
+"parquet". Default: "csv".}
 }
 \description{
 Light wrapper function that generates formatted text
