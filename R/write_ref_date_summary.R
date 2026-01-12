@@ -214,6 +214,7 @@ write_ref_date_summary_all <- function(
     "location_name",
     "abbreviation",
     "horizon",
+    "target",
     forecast_date = "reference_date",
     "target_end_date",
     model = "model_id",
