@@ -15,7 +15,8 @@
 #' reports directory.
 #' @param disease Character, disease name ("covid" or "rsv").
 #' @param target Character, target name to filter
-#' (e.g., "wk inc covid hosp").
+#' (e.g., "wk inc covid hosp"). If NULL (default), all
+#' targets are included.
 #' @param included_locations Character vector of location
 #' codes to include in the output. Default
 #' hubhelpr::included_locations.
@@ -30,7 +31,7 @@ write_viz_target_data <- function(
   base_hub_path,
   hub_reports_path,
   disease,
-  target,
+  target = NULL,
   included_locations = hubhelpr::included_locations
 ) {
   reference_date <- lubridate::as_date(reference_date)
@@ -41,10 +42,12 @@ write_viz_target_data <- function(
   target_data <- target_timeseries |>
     forecasttools::hub_target_data_as_of(as_of = "latest") |>
     dplyr::filter(
-      .data$target == !!target,
       .data$location %in% !!included_locations
     ) |>
-    dplyr::collect()
+    dplyr::collect() |>
+    dplyr::filter(
+      forecasttools::nullable_comparison(.data$target, "==", !!target)
+    )
 
   # add location name and format columns
 
@@ -60,8 +63,7 @@ write_viz_target_data <- function(
         .data$location_name,
         "United States" ~ "US",
         .default = .data$location_name
-      ),
-      target = !!target
+      )
     ) |>
     dplyr::select(
       week_ending_date = "date",
