@@ -4,4 +4,4 @@ population_data <- readr::read_csv(
 ) |>
   dplyr::select("location", "population")
 
-  usethis::use_data(population_data, overwrite = TRUE)
+usethis::use_data(population_data, overwrite = TRUE)
