@@ -10,7 +10,7 @@ write_ref_date_summary_all(
   hub_reports_path,
   disease,
   horizons_to_include = c(0, 1, 2),
-  population_data,
+  population_data = population_data,
   excluded_locations = character(0),
   output_format = "csv",
   targets = NULL
@@ -32,7 +32,7 @@ reports directory.}
 include in the output. Default: c(0, 1, 2).}
 
 \item{population_data}{data frame with columns
-"location" and "population".}
+"location" and "population". Default: \link{population_data}.}
 
 \item{excluded_locations}{character vector of location
 codes to exclude from the output. Default: character(0).}

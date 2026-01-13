@@ -16,7 +16,7 @@ write_ref_date_summary(
   targets = NULL,
   model_ids = NULL,
   population_data,
-  column_selection = NULL
+  column_selection = tidyselect::everything()
 )
 }
 \arguments{
@@ -54,10 +54,9 @@ include. If NULL (default), includes all models.}
 \item{population_data}{data frame with columns
 "location" and "population".}
 
-\item{column_selection}{Character vector of column names to
-include in the output table. Supports column renaming via
-named elements (e.g., \code{c(new_name = "old_name")}).
-If NULL (default), includes all columns.}
+\item{column_selection}{Columns to include in the output
+table. Accepts tidyselect expressions. Default:
+\code{\link[tidyselect:everything]{tidyselect::everything()}}.}
 }
 \value{
 invisibly returns the file path where data was
