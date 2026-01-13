@@ -7,10 +7,10 @@
 generate_webtext_block(
   reference_date,
   disease,
-  target,
   base_hub_path,
   hub_reports_path,
   included_locations = hubhelpr::included_locations,
+  targets = NULL,
   input_format = "csv"
 )
 }
@@ -21,9 +21,6 @@ the forecast in YYYY-MM-DD format (ISO-8601).}
 \item{disease}{Character, disease name ("covid" or
 "rsv").}
 
-\item{target}{Character, target name (e.g.,
-"wk inc covid hosp" or "wk inc covid prop ed visits").}
-
 \item{base_hub_path}{Character, path to the forecast
 hub directory.}
 
@@ -33,6 +30,11 @@ hub reports directory.}
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default
 hubhelpr::included_locations.}
+
+\item{targets}{Character vector of target names to
+generate text for (e.g., "wk inc covid hosp"). If NULL
+(default), generates text for all targets present in
+the data.}
 
 \item{input_format}{Character, input file format for
 reading summary data files. One of "csv", "tsv", or
@@ -46,5 +48,7 @@ webpage text.
 This function creates formatted text content for
 forecast hub visualizations. It processes forecast
 data, target data, and team metadata to generate a
-text description.
+text description. If targets is NULL, generates text
+for all targets present in the data. Otherwise,
+generates text only for specified targets.
 }

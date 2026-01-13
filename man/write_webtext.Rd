@@ -8,10 +8,10 @@ visualization webpage.}
 write_webtext(
   reference_date,
   disease,
-  target,
   base_hub_path,
   hub_reports_path,
   included_locations = hubhelpr::included_locations,
+  targets = NULL,
   input_format = "csv"
 )
 }
@@ -23,9 +23,6 @@ the forecast in YYYY-MM-DD format (ISO-8601).}
 "rsv"). Used to derive hub name, file prefix, and
 disease display name.}
 
-\item{target}{Character, target name (e.g.,
-"wk inc covid hosp" or "wk inc covid prop ed visits").}
-
 \item{base_hub_path}{Character, path to the forecast hub
 directory.}
 
@@ -35,6 +32,11 @@ reports directory.}
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default
 hubhelpr::included_locations.}
+
+\item{targets}{Character vector of target names to
+generate text for (e.g., "wk inc covid hosp"). If NULL
+(default), generates text for all targets present in
+the data.}
 
 \item{input_format}{Character, input file format for
 reading summary data files. One of "csv", "tsv", or

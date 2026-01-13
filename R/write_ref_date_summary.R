@@ -83,9 +83,9 @@ write_ref_date_summary <- function(
 
   if (!fs::file_exists(output_filepath)) {
     forecasttools::write_tabular(summary_data, output_filepath)
-    cli::cli_inform("File saved as: {output_filepath}")
+    cli::cli_inform("File saved as: {output_filepath}.")
   } else {
-    cli::cli_abort("File already exists: {output_filepath}")
+    cli::cli_abort("File already exists: {output_filepath}.")
   }
 
   invisible(output_filepath)
