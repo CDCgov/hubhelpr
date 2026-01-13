@@ -1,6 +1,7 @@
-#' Get hub name for a given disease.
+#' Get hub display name for a given disease.
 #'
-#' Converts disease identifier to proper hub name format.
+#' Converts disease identifier to hub display name format used for
+#' identifying hub-baseline and hub-ensemble.
 #'
 #' @param disease Character. Disease identifier ("covid" or "rsv").
 #' @return Character. Hub name (e.g., "CovidHub", "RSVHub").
@@ -15,9 +16,9 @@ get_hub_name <- function(disease) {
   ))
 }
 
-#' Get GitHub repository path for a given disease.
+#' Get GitHub repository name for a given disease.
 #'
-#' Converts disease identifier to corresponding GitHub repository path.
+#' Converts disease identifier to corresponding GitHub repository name.
 #'
 #' @param disease Character. Disease identifier ("covid" or "rsv").
 #' @return Character. GitHub repository name.

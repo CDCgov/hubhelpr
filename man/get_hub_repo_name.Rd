@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{get_hub_repo_name}
 \alias{get_hub_repo_name}
-\title{Get GitHub repository path for a given disease.}
+\title{Get GitHub repository name for a given disease.}
 \usage{
 get_hub_repo_name(disease)
 }
@@ -13,5 +13,5 @@ get_hub_repo_name(disease)
 Character. GitHub repository name.
 }
 \description{
-Converts disease identifier to corresponding GitHub repository path.
+Converts disease identifier to corresponding GitHub repository name.
 }
