@@ -9,6 +9,8 @@
 *.bin
 *.xls
 *.xlsx
+# allow extdata
+!inst/extdata/*.csv
 
 # Documents
 *.doc
