@@ -26,10 +26,9 @@
 #' include. If NULL (default), includes all models.
 #' @param population_data data frame with columns
 #' "location" and "population".
-#' @param column_selection Character vector of column names to
-#' include in the output table. Supports column renaming via
-#' named elements (e.g., `c(new_name = "old_name")`).
-#' If NULL (default), includes all columns.
+#' @param column_selection Columns to include in the output
+#' table. Accepts tidyselect expressions. Default:
+#' [tidyselect::everything()].
 #'
 #' @return invisibly returns the file path where data was
 #' written
@@ -47,7 +46,7 @@ write_ref_date_summary <- function(
   targets = NULL,
   model_ids = NULL,
   population_data,
-  column_selection = NULL
+  column_selection = tidyselect::everything()
 ) {
   reference_date <- lubridate::as_date(reference_date)
 
@@ -62,10 +61,8 @@ write_ref_date_summary <- function(
     model_ids = model_ids
   )
 
-  if (!is.null(column_selection)) {
-    summary_data <- summary_data |>
-      dplyr::select(tidyselect::all_of(column_selection))
-  }
+  summary_data <- summary_data |>
+    dplyr::select({{ column_selection }})
 
   output_folder_path <- fs::path(
     hub_reports_path,
