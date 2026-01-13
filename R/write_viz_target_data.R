@@ -2,7 +2,7 @@
 #'
 #' This function reads target data from the hub's
 #' time-series file using hubData, filters to the latest
-#' vintage and specified target, and writes it to the
+#' vintage and specified targets, and writes it to the
 #' weekly-summaries directory for use by the visualization
 #' webpage. Output includes columns: week_ending_date,
 #' location, location_name, target, and value.
@@ -14,16 +14,17 @@
 #' @param hub_reports_path Character, path to forecast hub
 #' reports directory.
 #' @param disease Character, disease name ("covid" or "rsv").
-#' @param target Character, target name to filter
+#' @param targets Character vector of target names to filter
 #' (e.g., "wk inc covid hosp"). If NULL (default), all
 #' targets are included.
 #' @param included_locations Character vector of location
 #' codes to include in the output. Default
 #' hubhelpr::included_locations.
+#' @param output_format Character, output file format. One
+#' of "csv", "tsv", or "parquet". Default: "csv".
 #'
 #' @return Invisibly returns file path where data was
-#' written. File is named
-#' {reference_date}_{disease}_target_data.csv.
+#' written.
 #'
 #' @export
 write_viz_target_data <- function(
@@ -31,25 +32,21 @@ write_viz_target_data <- function(
   base_hub_path,
   hub_reports_path,
   disease,
-  target = NULL,
-  included_locations = hubhelpr::included_locations
+  targets = NULL,
+  included_locations = hubhelpr::included_locations,
+  output_format = "csv"
 ) {
   reference_date <- lubridate::as_date(reference_date)
 
-  # connect to hub's target timeseries and get latest vintage
-
-  target_timeseries <- hubData::connect_target_timeseries(base_hub_path)
-  target_data <- target_timeseries |>
+  target_data <- hubData::connect_target_timeseries(base_hub_path) |>
     forecasttools::hub_target_data_as_of(as_of = "latest") |>
-    dplyr::filter(
-      .data$location %in% !!included_locations
-    ) |>
-    dplyr::collect() |>
-    dplyr::filter(
-      forecasttools::nullable_comparison(.data$target, "==", !!target)
-    )
+    dplyr::filter(.data$location %in% !!included_locations) |>
+    dplyr::collect()
 
-  # add location name and format columns
+  if (!is.null(targets)) {
+    target_data <- target_data |>
+      dplyr::filter(.data$target %in% !!targets)
+  }
 
   target_data <- target_data |>
     dplyr::mutate(
@@ -58,11 +55,10 @@ write_viz_target_data <- function(
         "code",
         "name"
       ),
-      # rename "United States" to "US"
-      location_name = dplyr::case_match(
-        .data$location_name,
-        "United States" ~ "US",
-        .default = .data$location_name
+      observation = dplyr::if_else(
+        grepl("ed visits", .data$target),
+        round(.data$observation, 4),
+        .data$observation
       )
     ) |>
     dplyr::select(
@@ -83,16 +79,16 @@ write_viz_target_data <- function(
   output_filepath <- fs::path(
     output_folder_path,
     output_filename,
-    ext = "csv"
+    ext = output_format
   )
 
   fs::dir_create(output_folder_path)
 
   if (!fs::file_exists(output_filepath)) {
     forecasttools::write_tabular(target_data, output_filepath)
-    cli::cli_inform("File saved as: {output_filepath}")
+    cli::cli_inform("File saved as: {output_filepath}.")
   } else {
-    cli::cli_abort("File already exists: {output_filepath}")
+    cli::cli_abort("File already exists: {output_filepath}.")
   }
 
   invisible(output_filepath)

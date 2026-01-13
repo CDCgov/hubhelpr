@@ -9,8 +9,9 @@ write_viz_target_data(
   base_hub_path,
   hub_reports_path,
   disease,
-  target,
-  included_locations = hubhelpr::included_locations
+  targets = NULL,
+  included_locations = hubhelpr::included_locations,
+  output_format = "csv"
 )
 }
 \arguments{
@@ -25,22 +26,25 @@ reports directory.}
 
 \item{disease}{Character, disease name ("covid" or "rsv").}
 
-\item{target}{Character, target name to filter
-(e.g., "wk inc covid hosp").}
+\item{targets}{Character vector of target names to filter
+(e.g., "wk inc covid hosp"). If NULL (default), all
+targets are included.}
 
 \item{included_locations}{Character vector of location
 codes to include in the output. Default
 hubhelpr::included_locations.}
+
+\item{output_format}{Character, output file format. One
+of "csv", "tsv", or "parquet". Default: "csv".}
 }
 \value{
 Invisibly returns file path where data was
-written. File is named
-{reference_date}_{disease}_target_data.csv.
+written.
 }
 \description{
 This function reads target data from the hub's
 time-series file using hubData, filters to the latest
-vintage and specified target, and writes it to the
+vintage and specified targets, and writes it to the
 weekly-summaries directory for use by the visualization
 webpage. Output includes columns: week_ending_date,
 location, location_name, target, and value.
