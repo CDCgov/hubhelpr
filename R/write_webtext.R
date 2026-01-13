@@ -159,10 +159,7 @@ generate_target_text_block <- function(
   )
 
   # format date variables
-  target_end_date_1wk_ahead <- format(
-    as.Date(ensemble_data$target_end_date),
-    "%B %d, %Y"
-  )
+  target_end_date_1wk_ahead <- ensemble_data$target_end_date_formatted
   target_end_date_2wk_ahead <- format(
     as.Date(ensemble_data$target_end_date) + lubridate::weeks(1),
     "%B %d, %Y"
@@ -439,10 +436,7 @@ generate_webtext_block <- function(
   model_not_incl_in_hub_ensemble <- not_designated$team_model_url
 
   # get forecast due date from first available ensemble data
-  forecast_due_date <- format(
-    as.Date(ensemble_data$forecast_due_date[1]),
-    "%B %d, %Y"
-  )
+  forecast_due_date <- ensemble_data$forecast_due_date_formatted[1]
 
   # shared section: team contributions and model list
   shared_text <- glue::glue(
