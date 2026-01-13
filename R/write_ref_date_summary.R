@@ -26,9 +26,10 @@
 #' include. If NULL (default), includes all models.
 #' @param population_data data frame with columns
 #' "location" and "population".
-#' @param column_selection Columns to include in the output table.
-#' Uses [tidy selection](https://dplyr.tidyverse.org/articles/programming.html).
-#' Default: [tidyselect::everything()].
+#' @param column_selection Character vector of column names to
+#' include in the output table. Supports column renaming via
+#' named elements (e.g., `c(new_name = "old_name")`).
+#' If NULL (default), includes all columns.
 #'
 #' @return invisibly returns the file path where data was
 #' written
@@ -46,7 +47,7 @@ write_ref_date_summary <- function(
   targets = NULL,
   model_ids = NULL,
   population_data,
-  column_selection = tidyselect::everything()
+  column_selection = NULL
 ) {
   reference_date <- lubridate::as_date(reference_date)
 
@@ -61,8 +62,10 @@ write_ref_date_summary <- function(
     model_ids = model_ids
   )
 
-  summary_data <- summary_data |>
-    dplyr::select({{ column_selection }})
+  if (!is.null(column_selection)) {
+    summary_data <- summary_data |>
+      dplyr::select(tidyselect::all_of(column_selection))
+  }
 
   output_folder_path <- fs::path(
     hub_reports_path,
@@ -130,7 +133,7 @@ write_ref_date_summary_ens <- function(
   hub_name <- get_hub_name(disease)
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
 
-  ensemble_columns <- tidyselect::all_of(c(
+  ensemble_columns <- c(
     "location_name",
     "horizon",
     "quantile_0.025_per100k",
@@ -153,7 +156,7 @@ write_ref_date_summary_ens <- function(
     "forecast_due_date_formatted",
     "reference_date_formatted",
     model = "model_id"
-  ))
+  )
 
   write_ref_date_summary(
     reference_date = reference_date,
@@ -210,10 +213,11 @@ write_ref_date_summary_all <- function(
   output_format = "csv",
   targets = NULL
 ) {
-  all_models_columns <- tidyselect::all_of(c(
+  all_models_columns <- c(
     "location_name",
     "abbreviation",
     "horizon",
+    "target",
     forecast_date = "reference_date",
     "target_end_date",
     model = "model_id",
@@ -230,7 +234,7 @@ write_ref_date_summary_all <- function(
     forecast_team = "team_name",
     "forecast_due_date",
     model_full_name = "model_name"
-  ))
+  )
 
   write_ref_date_summary(
     reference_date = reference_date,

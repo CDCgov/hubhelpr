@@ -10,7 +10,8 @@ generate_webtext_block(
   target,
   base_hub_path,
   hub_reports_path,
-  included_locations = hubhelpr::included_locations
+  included_locations = hubhelpr::included_locations,
+  input_format = "csv"
 )
 }
 \arguments{
@@ -32,6 +33,10 @@ hub reports directory.}
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default
 hubhelpr::included_locations.}
+
+\item{input_format}{Character, input file format for
+reading summary data files. One of "csv", "tsv", or
+"parquet". Default: "csv".}
 }
 \value{
 Character string containing the formatted

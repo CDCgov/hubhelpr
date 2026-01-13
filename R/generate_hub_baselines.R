@@ -122,13 +122,16 @@ make_baseline_forecast <- function(
 #' @param as_of As of date to filter to, as an object
 #' coercible by as.Date(), or "latest" to filter to the
 #' most recent available vintage. Default "latest".
+#' @param output_format Character, output file format. One of "csv",
+#' "tsv", or "parquet". Default: "csv".
 #' @return NULL. Writes baseline forecast file to hub's model-output directory.
 #' @export
 generate_hub_baseline <- function(
   base_hub_path,
   reference_date,
   disease,
-  as_of = "latest"
+  as_of = "latest",
+  output_format = "csv"
 ) {
   checkmate::assert_scalar(disease)
   checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
@@ -180,7 +183,7 @@ generate_hub_baseline <- function(
     fs::path(
       output_dirpath,
       glue::glue("{reference_date}-{baseline_model_name}"),
-      ext = "csv"
+      ext = output_format
     )
   )
 

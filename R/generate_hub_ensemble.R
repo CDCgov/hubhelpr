@@ -75,13 +75,16 @@ ensemble_by_target <- function(
 #' @param disease Disease name ("covid" or "rsv").
 #' @param ensemble_targets A vector specifying targets to generate ensemble
 #' forecasts for, e.g., c("hosp", "prop ed visits"). Defaults to "hosp".
+#' @param output_format Character, output file format. One of "csv",
+#' "tsv", or "parquet". Default: "csv".
 #' @return NULL. Writes ensemble forecast file to hub's model-output directory.
 #' @export
 generate_hub_ensemble <- function(
   base_hub_path,
   reference_date,
   disease,
-  ensemble_targets = c("hosp")
+  ensemble_targets = c("hosp"),
+  output_format = "csv"
 ) {
   checkmate::assert_scalar(disease)
   checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
@@ -142,7 +145,7 @@ generate_hub_ensemble <- function(
     fs::path(
       weekly_model_submissions_path,
       glue::glue("{reference_date}-models-submitted-to-hub"),
-      ext = "csv"
+      ext = output_format
     )
   )
 
@@ -163,7 +166,7 @@ generate_hub_ensemble <- function(
 
   forecasttools::write_tabular(
     median_ensemble_outputs,
-    fs::path(output_dirpath, output_filename, ext = "csv")
+    fs::path(output_dirpath, output_filename, ext = output_format)
   )
   return(invisible())
 }

@@ -35,14 +35,7 @@ check_hospital_reporting_latency <- function(
   included_jurisdictions <- forecasttools::us_location_recode(
     included_locations,
     "code",
-    "abbr"
-  )
-
-  # convert "US" to "USA" for API compatibility
-  included_jurisdictions <- dplyr::case_match(
-    included_jurisdictions,
-    "US" ~ "USA",
-    .default = included_jurisdictions
+    "hrd"
   )
 
   percent_hosp_reporting_below80 <- forecasttools::pull_data_cdc_gov_dataset(
@@ -57,19 +50,14 @@ check_hospital_reporting_latency <- function(
       report_above_80_lgl = as.logical(
         as.numeric(.data[[reporting_column]])
       ),
-      jurisdiction = dplyr::case_match(
-        .data$jurisdiction,
-        "USA" ~ "US",
-        .default = .data$jurisdiction
-      ),
       location = forecasttools::us_location_recode(
         .data$jurisdiction,
-        "abbr",
+        "hrd",
         "code"
       ),
       location_name = forecasttools::us_location_recode(
         .data$jurisdiction,
-        "abbr",
+        "hrd",
         "name"
       )
     )
@@ -148,6 +136,9 @@ check_hospital_reporting_latency <- function(
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
+#' @param input_format Character, input file format for
+#' reading summary data files. One of "csv", "tsv", or
+#' "parquet". Default: "csv".
 #'
 #' @return Character string containing the formatted
 #' webpage text.
@@ -158,7 +149,8 @@ generate_webtext_block <- function(
   target,
   base_hub_path,
   hub_reports_path,
-  included_locations = hubhelpr::included_locations
+  included_locations = hubhelpr::included_locations,
+  input_format = "csv"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
@@ -184,7 +176,7 @@ generate_webtext_block <- function(
     fs::path(
       weekly_data_path,
       glue::glue("{reference_date}_{disease}_map_data"),
-      ext = "csv"
+      ext = input_format
     )
   ) |>
     dplyr::filter(horizon == 1, location_name == "US")
@@ -220,7 +212,7 @@ generate_webtext_block <- function(
     fs::path(
       weekly_data_path,
       glue::glue("{reference_date}_{disease}_forecasts_data"),
-      ext = "csv"
+      ext = input_format
     )
   ) |>
     dplyr::filter(model != glue::glue("{hub_name}-ensemble")) |>
@@ -399,6 +391,9 @@ generate_webtext_block <- function(
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
+#' @param input_format Character, input file format for
+#' reading summary data files. One of "csv", "tsv", or
+#' "parquet". Default: "csv".
 #'
 #' @export
 write_webtext <- function(
@@ -407,7 +402,8 @@ write_webtext <- function(
   target,
   base_hub_path,
   hub_reports_path,
-  included_locations = hubhelpr::included_locations
+  included_locations = hubhelpr::included_locations,
+  input_format = "csv"
 ) {
   reference_date <- lubridate::as_date(reference_date)
 
@@ -417,7 +413,8 @@ write_webtext <- function(
     target = target,
     base_hub_path = base_hub_path,
     hub_reports_path = hub_reports_path,
-    included_locations = included_locations
+    included_locations = included_locations,
+    input_format = input_format
   )
 
   weekly_data_path <- fs::path(
