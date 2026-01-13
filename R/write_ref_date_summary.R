@@ -46,7 +46,7 @@ write_ref_date_summary <- function(
   targets = NULL,
   model_ids = NULL,
   population_data,
-  column_selection = everything()
+  column_selection = tidyselect::everything()
 ) {
   reference_date <- lubridate::as_date(reference_date)
 
