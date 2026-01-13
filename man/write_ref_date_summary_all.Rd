@@ -32,7 +32,7 @@ reports directory.}
 include in the output. Default: c(0, 1, 2).}
 
 \item{population_data}{data frame with columns
-"location" and "population". Default: population_data.}
+"location" and "population". Default: \link{population_data}.}
 
 \item{excluded_locations}{character vector of location
 codes to exclude from the output. Default: character(0).}

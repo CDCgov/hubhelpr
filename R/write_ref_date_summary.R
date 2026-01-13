@@ -62,10 +62,8 @@ write_ref_date_summary <- function(
     model_ids = model_ids
   )
 
-  if (!is.null(column_selection)) {
-    summary_data <- summary_data |>
-      dplyr::select(tidyselect::all_of(column_selection))
-  }
+  summary_data <- summary_data |>
+    dplyr::select({{ column_selection }})
 
   output_folder_path <- fs::path(
     hub_reports_path,
