@@ -16,7 +16,7 @@ write_ref_date_summary(
   targets = NULL,
   model_ids = NULL,
   population_data,
-  column_selection = everything()
+  column_selection = tidyselect::everything()
 )
 }
 \arguments{
