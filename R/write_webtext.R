@@ -337,7 +337,7 @@ write_webtext <- function(
   weekly_data_path <- fs::path(
     hub_reports_path,
     "weekly-summaries",
-    get_hub_repo(disease),
+    get_hub_repo_name(disease),
     reference_date
   )
 
