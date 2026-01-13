@@ -70,7 +70,7 @@ write_ref_date_summary <- function(
   output_folder_path <- fs::path(
     hub_reports_path,
     "weekly-summaries",
-    get_hub_repo(disease),
+    get_hub_repo_name(disease),
     reference_date
   )
   output_filename <- glue::glue("{reference_date}_{disease}_{file_suffix}")
