@@ -189,7 +189,7 @@ write_ref_date_summary_ens <- function(
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
-#' "location" and "population". Default: population_data.
+#' "location" and "population". Default: [population_data].
 #' @param excluded_locations character vector of location
 #' codes to exclude from the output. Default: character(0).
 #' @param output_format character, output file format. One
