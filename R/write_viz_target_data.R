@@ -36,19 +36,13 @@ write_viz_target_data <- function(
   included_locations = hubhelpr::included_locations,
   output_format = "csv"
 ) {
-  reference_date <- lubridate::as_date(reference_date)
-
   target_data <- hubData::connect_target_timeseries(base_hub_path) |>
     forecasttools::hub_target_data_as_of(as_of = "latest") |>
     dplyr::filter(.data$location %in% !!included_locations) |>
-    dplyr::collect()
-
-  if (!is.null(targets)) {
-    target_data <- target_data |>
-      dplyr::filter(.data$target %in% !!targets)
-  }
-
-  target_data <- target_data |>
+    dplyr::collect() |>
+    dplyr::filter(
+      forecasttools::nullable_comparison(.data$target, "%in%", !!targets)
+    ) |>
     dplyr::mutate(
       location_name = forecasttools::us_location_recode(
         .data$location,
@@ -73,6 +67,7 @@ write_viz_target_data <- function(
   output_folder_path <- fs::path(
     hub_reports_path,
     "weekly-summaries",
+    get_hub_repo(disease),
     reference_date
   )
   output_filename <- glue::glue("{reference_date}_{disease}_target_data")
