@@ -64,10 +64,9 @@ update_hub_target_data <- function(
     dplyr::mutate(
       date = lubridate::as_date(.data$weekendingdate),
       observation = as.numeric(.data[[nhsn_col_name]]),
-      jurisdiction = stringr::str_replace(.data$jurisdiction, "USA", "US"),
       location = forecasttools::us_location_recode(
         .data$jurisdiction,
-        "abbr",
+        "hrd",
         "code"
       ),
       as_of = !!as_of,
@@ -122,7 +121,7 @@ update_hub_target_data <- function(
       dplyr::select(
         "week_end",
         "geography",
-        dplyr::all_of(nssp_col_name)
+        tidyselect::all_of(nssp_col_name)
       )
   } else {
     raw_nssp_data <- forecasttools::pull_data_cdc_gov_dataset(
@@ -145,7 +144,7 @@ update_hub_target_data <- function(
       target = glue::glue("wk inc {disease} prop ed visits")
     ) |>
     dplyr::filter(.data$location %in% !!included_locations) |>
-    dplyr::select(dplyr::all_of(hubverse_ts_req_cols)) |>
+    dplyr::select(tidyselect::all_of(hubverse_ts_req_cols)) |>
     dplyr::arrange(.data$date, .data$location)
 
   assert_data_up_to_date(
