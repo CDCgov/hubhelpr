@@ -123,7 +123,7 @@ write_ref_date_summary_ens <- function(
   hub_reports_path,
   disease,
   horizons_to_include = c(0, 1, 2),
-  population_data = population_data,
+  population_data = hubhelpr::population_data,
   excluded_locations = character(0),
   output_format = "csv",
   targets = NULL
