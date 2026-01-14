@@ -106,7 +106,7 @@ check_hospital_reporting_latency <- function(
       "the most recent week: {location_list}. ",
       "Lower reporting rates could impact forecast validity. Percent ",
       "of hospitals reporting is calculated based on the number of active ",
-      "hospitals reporting complete data to NHSN for a given reporting week.\n\n"
+      "hospitals reporting complete data to NHSN for a given reporting week."
     )
   } else {
     reporting_rate_flag <- ""
@@ -122,7 +122,7 @@ check_hospital_reporting_latency <- function(
 #' text block for a single target type.
 #'
 #' @param config List containing target-specific text and
-#' formatting configuration (target_description,
+#' formatting configuration (section_header, target_description,
 #' target_short, data_source, value_unit, format_value,
 #' format_forecast).
 #' @param ensemble_data Data frame of ensemble forecast
@@ -133,6 +133,8 @@ check_hospital_reporting_latency <- function(
 #' @param disease_name Character, formatted disease name
 #' (e.g., "COVID-19").
 #' @param hub_name Character, hub name.
+#' @param contributing_teams_text Character, formatted text
+#' listing contributing teams and models for this target.
 #' @param reporting_rate_flag Character, reporting rate
 #' flag text (only applicable for hosp target).
 #'
@@ -145,6 +147,7 @@ generate_target_text_block <- function(
   target_data,
   disease_name,
   hub_name,
+  contributing_teams_text,
   reporting_rate_flag = ""
 ) {
   # format forecast values based on target config
@@ -173,6 +176,8 @@ generate_target_text_block <- function(
     "%B %d, %Y"
   )
 
+  forecast_due_date <- ensemble_data$forecast_due_date_formatted
+
   # get last reported value
   last_reported_target_data <- target_data |>
     dplyr::filter(
@@ -188,23 +193,44 @@ generate_target_text_block <- function(
   target_description <- glue::glue(config$target_description)
   target_short <- glue::glue(config$target_short)
   data_source <- config$data_source
+  section_header <- config$section_header
 
-  target_text <- glue::glue(
-    "The {hub_name} ensemble's one-week-ahead forecast predicts that ",
-    "{target_description} will be ",
-    "approximately {forecast_value}{value_unit} nationally, with ",
-    "{lower_value}{value_unit} to {upper_value}{value_unit} ",
-    "likely reported in the week ending {target_end_date_1wk_ahead}. ",
-    "This is compared to the {last_reported}{value_unit} reported for the week ",
-    "ending {last_reported_target_data$week_end_date_formatted}, the most ",
-    "recent week of {data_source}.\n\n",
-    "The figure shows {target_description} ",
-    "reported in the United States each week from ",
-    "{first_target_data_date} through {last_target_data_date} and forecasted ",
-    "{target_short} per week for this week and the next ",
-    "2 weeks through {target_end_date_2wk_ahead}.\n\n",
-    "{reporting_rate_flag}"
+  # build points by bullet
+  bullets <- c(
+    glue::glue(
+      "The {hub_name} ensemble's one-week-ahead forecast predicts that ",
+      "{target_description} will be ",
+      "approximately {forecast_value}{value_unit} nationally, with ",
+      "{lower_value}{value_unit} to {upper_value}{value_unit} ",
+      "likely reported in the week ending {target_end_date_1wk_ahead}."
+    ),
+    glue::glue(
+      "This is compared to the {last_reported}{value_unit} reported for the week ",
+      "ending {last_reported_target_data$week_end_date_formatted}, the most ",
+      "recent week of {data_source}."
+    ),
+    glue::glue(
+      "Reported and forecasted data as of {forecast_due_date}."
+    ),
+    glue::glue(
+      "The figure shows {target_description} ",
+      "reported in the United States each week from ",
+      "{first_target_data_date} through {last_target_data_date} and forecasted ",
+      "{target_short} per week for this week and the next ",
+      "2 weeks through {target_end_date_2wk_ahead}."
+    )
   )
+
+  # add reporting rate flag if present (hosp only)
+  if (nchar(reporting_rate_flag) > 0) {
+    bullets <- c(bullets, reporting_rate_flag)
+  }
+
+  bullets <- c(bullets, contributing_teams_text)
+
+  # format as bullet list with section header
+  bullet_text <- paste0("* ", bullets, collapse = "\n")
+  target_text <- glue::glue("## {section_header}\n\n{bullet_text}\n")
 
   return(target_text)
 }
@@ -287,18 +313,13 @@ generate_webtext_block <- function(
   )
 
   # read forecasts data for contributing teams
-  contributing_teams <- forecasttools::read_tabular(
+  all_forecasts_data <- forecasttools::read_tabular(
     fs::path(
       weekly_data_path,
       glue::glue("{reference_date}_{disease}_forecasts_data"),
       ext = input_format
     )
-  ) |>
-    dplyr::filter(.data$model != glue::glue("{hub_name}-ensemble")) |>
-    dplyr::pull(.data$model) |>
-    unique()
-
-  # determine available targets from ensemble data
+  )
   available_targets <- unique(ensemble_data$target)
 
   # if targets is NULL, use all available targets
@@ -319,7 +340,6 @@ generate_webtext_block <- function(
     cli::cli_abort("No valid targets to process.")
   }
 
-  # mapping from target name patterns to target type keys
   get_target_type_key <- function(target_name) {
     dplyr::case_when(
       grepl("hosp", target_name) ~ "hosp",
@@ -328,9 +348,9 @@ generate_webtext_block <- function(
     )
   }
 
-  # target-specific text and formatting configuration
   target_config <- list(
     hosp = list(
+      section_header = "Hospital Admissions",
       target_description = "new weekly laboratory-confirmed {disease_name} hospital admissions",
       target_short = "{disease_name} hospital admissions",
       data_source = "NHSN data",
@@ -339,6 +359,7 @@ generate_webtext_block <- function(
       format_forecast = function(x) round_to_place(x)
     ),
     ed_visits = list(
+      section_header = "ED Visits",
       target_description = "the proportion of emergency department visits due to {disease_name}",
       target_short = "{disease_name} ED visit proportions",
       data_source = "NSSP data",
@@ -348,17 +369,35 @@ generate_webtext_block <- function(
     )
   )
 
-  # get hospital reporting rate flag (only applies to hosp target)
+  # get hospital reporting rate flag (hosp target only)
   hosp_target_present <- any(grepl("hosp", targets_to_process))
   if (hosp_target_present) {
-    reporting_rate_flag <- check_hospital_reporting_latency(
-      reference_date = reference_date,
-      disease = disease,
-      included_locations = included_locations
+    reporting_rate_flag <- tryCatch(
+      check_hospital_reporting_latency(
+        reference_date = reference_date,
+        disease = disease,
+        included_locations = included_locations
+      ),
+      error = function(e) {
+        cli::cli_warn("Could not retrieve hospital reporting data: {e$message}")
+        return("")
+      }
     )
   } else {
     reporting_rate_flag <- ""
   }
+
+  # load all model metadata
+  all_model_metadata <- hubData::load_model_metadata(base_hub_path) |>
+    dplyr::distinct(.data$model_id, .keep_all = TRUE) |>
+    dplyr::filter(.data$designated_model) |>
+    dplyr::mutate(
+      team_model_text = dplyr::if_else(
+        !is.na(.data$website_url) & nchar(.data$website_url) > 0,
+        glue::glue("[{team_name} (Model: {model_abbr})]({website_url})"),
+        glue::glue("{team_name} (Model: {model_abbr})")
+      )
+    )
 
   # generate text block for each target
   target_text_blocks <- purrr::map_chr(targets_to_process, function(target) {
@@ -386,6 +425,21 @@ generate_webtext_block <- function(
       return("")
     }
 
+    # get contributing teams for this target
+    target_contributing_models <- all_forecasts_data |>
+      dplyr::filter(
+        .data$target == !!target,
+        .data$model != glue::glue("{hub_name}-ensemble")
+      ) |>
+      dplyr::pull(.data$model) |>
+      unique()
+
+    contributing_teams_text <- all_model_metadata |>
+      dplyr::filter(.data$model_id %in% target_contributing_models) |>
+      dplyr::pull(.data$team_model_text) |>
+      paste(collapse = ", ") |>
+      (\(x) glue::glue("Contributing teams and models: {x}"))()
+
     # only include reporting flag for hosp target
     flag_for_target <- if (target_type_key == "hosp") {
       reporting_rate_flag
@@ -399,59 +453,16 @@ generate_webtext_block <- function(
       target_data = target_ts_data,
       disease_name = disease_name,
       hub_name = hub_name,
+      contributing_teams_text = contributing_teams_text,
       reporting_rate_flag = flag_for_target
     )
   })
 
   # combine target text blocks
-  combined_target_text <- paste(
+  web_text <- paste(
     target_text_blocks[target_text_blocks != ""],
     collapse = "\n"
   )
-
-  # get contributing teams info
-  weekly_submissions <- hubData::load_model_metadata(
-    base_hub_path,
-    model_ids = contributing_teams
-  ) |>
-    dplyr::distinct(.data$model_id, .data$designated_model, .keep_all = TRUE) |>
-    dplyr::mutate(
-      team_model_url = glue::glue(
-        "[{team_name} (Model: {model_abbr})]({website_url})"
-      )
-    ) |>
-    dplyr::select(
-      "model_id",
-      "team_abbr",
-      "model_abbr",
-      "team_model_url",
-      "designated_model"
-    )
-
-  designated <- weekly_submissions[weekly_submissions$designated_model, ]
-  not_designated <- weekly_submissions[!weekly_submissions$designated_model, ]
-  weekly_num_teams <- length(unique(designated$team_abbr))
-  weekly_num_models <- length(unique(designated$model_abbr))
-  model_incl_in_hub_ensemble <- designated$team_model_url
-  model_not_incl_in_hub_ensemble <- not_designated$team_model_url
-
-  # get forecast due date from first available ensemble data
-  forecast_due_date <- ensemble_data$forecast_due_date_formatted[1]
-
-  # shared section: team contributions and model list
-  shared_text <- glue::glue(
-    "Reported and forecasted data as of ",
-    "{forecast_due_date}. This week, {weekly_num_teams} modeling groups ",
-    "contributed {weekly_num_models} forecasts that were eligible for inclusion ",
-    "in the ensemble forecasts for at least one jurisdiction.\n\n",
-    "Contributing teams and models:\n\n",
-    "Models included in the {hub_name} ensemble:\n",
-    "{paste(model_incl_in_hub_ensemble, collapse = '\n')}\n\n",
-    "Models not included in the {hub_name} ensemble:\n",
-    "{paste(model_not_incl_in_hub_ensemble, collapse = '\n')}"
-  )
-
-  web_text <- paste(combined_target_text, shared_text, sep = "\n")
 
   return(web_text)
 }
