@@ -8,7 +8,7 @@ generate_webtext_block(
   reference_date,
   disease,
   base_hub_path,
-  hub_reports_path,
+  weekly_data_path,
   included_locations = hubhelpr::included_locations,
   targets = NULL,
   input_format = "csv"
@@ -24,8 +24,8 @@ the forecast in YYYY-MM-DD format (ISO-8601).}
 \item{base_hub_path}{Character, path to the forecast
 hub directory.}
 
-\item{hub_reports_path}{Character, path to forecast
-hub reports directory.}
+\item{weekly_data_path}{Character, path to the directory
+with weekly summary files.}
 
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default

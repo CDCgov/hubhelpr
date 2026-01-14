@@ -251,8 +251,8 @@ generate_target_text_block <- function(
 #' "rsv").
 #' @param base_hub_path Character, path to the forecast
 #' hub directory.
-#' @param hub_reports_path Character, path to forecast
-#' hub reports directory.
+#' @param weekly_data_path Character, path to the directory
+#' with weekly summary files.
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
@@ -271,7 +271,7 @@ generate_webtext_block <- function(
   reference_date,
   disease,
   base_hub_path,
-  hub_reports_path,
+  weekly_data_path,
   included_locations = hubhelpr::included_locations,
   targets = NULL,
   input_format = "csv"
@@ -519,6 +519,7 @@ write_webtext <- function(
   weekly_data_path <- fs::path(
     hub_reports_path,
     "weekly-summaries",
+    get_hub_repo_name(disease),
     reference_date
   )
 
@@ -528,7 +529,14 @@ write_webtext <- function(
     ext = "md"
   )
 
-  fs::dir_create(weekly_data_path)
+  web_text <- generate_webtext_block(
+    reference_date = reference_date,
+    disease = disease,
+    base_hub_path = base_hub_path,
+    weekly_data_path = weekly_data_path,
+    included_locations = included_locations,
+    input_format = input_format
+  )
 
   if (!fs::file_exists(output_filepath)) {
     writeLines(web_text, output_filepath)

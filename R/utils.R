@@ -16,6 +16,24 @@ get_hub_name <- function(disease) {
 }
 
 
+#' Get GitHub repository name for a given disease.
+#'
+#' Converts disease identifier to corresponding GitHub repository name.
+#'
+#' @param disease Character. Disease identifier ("covid" or "rsv").
+#' @return Character. GitHub repository name.
+#' @export
+get_hub_repo_name <- function(disease) {
+  checkmate::assert_scalar(disease)
+  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+
+  return(dplyr::case_when(
+    disease == "covid" ~ "covid19-forecast-hub",
+    disease == "rsv" ~ "rsv-forecast-hub"
+  ))
+}
+
+
 #' Round a value to an appropriate place.
 #'
 #' Rounds values based on magnitude: to nearest 100 for

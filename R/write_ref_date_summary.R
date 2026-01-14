@@ -26,10 +26,9 @@
 #' include. If NULL (default), includes all models.
 #' @param population_data data frame with columns
 #' "location" and "population".
-#' @param column_selection Character vector of column names to
-#' include in the output table. Supports column renaming via
-#' named elements (e.g., `c(new_name = "old_name")`).
-#' If NULL (default), includes all columns.
+#' @param column_selection Columns to include in the output
+#' table. Accepts tidyselect expressions. Default:
+#' [tidyselect::everything()].
 #'
 #' @return invisibly returns the file path where data was
 #' written
@@ -47,7 +46,7 @@ write_ref_date_summary <- function(
   targets = NULL,
   model_ids = NULL,
   population_data,
-  column_selection = NULL
+  column_selection = tidyselect::everything()
 ) {
   reference_date <- lubridate::as_date(reference_date)
 
@@ -62,14 +61,13 @@ write_ref_date_summary <- function(
     model_ids = model_ids
   )
 
-  if (!is.null(column_selection)) {
-    summary_data <- summary_data |>
-      dplyr::select(tidyselect::all_of(column_selection))
-  }
+  summary_data <- summary_data |>
+    dplyr::select({{ column_selection }})
 
   output_folder_path <- fs::path(
     hub_reports_path,
     "weekly-summaries",
+    get_hub_repo_name(disease),
     reference_date
   )
   output_filename <- glue::glue("{reference_date}_{disease}_{file_suffix}")
@@ -106,7 +104,7 @@ write_ref_date_summary <- function(
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
-#' "location" and "population".
+#' "location" and "population". Default: population_data.
 #' @param excluded_locations character vector of location
 #' codes to exclude from the output. Default: character(0).
 #' @param output_format character, output file format. One
@@ -125,7 +123,7 @@ write_ref_date_summary_ens <- function(
   hub_reports_path,
   disease,
   horizons_to_include = c(0, 1, 2),
-  population_data,
+  population_data = population_data,
   excluded_locations = character(0),
   output_format = "csv",
   targets = NULL
@@ -189,7 +187,7 @@ write_ref_date_summary_ens <- function(
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
-#' "location" and "population".
+#' "location" and "population". Default: [population_data].
 #' @param excluded_locations character vector of location
 #' codes to exclude from the output. Default: character(0).
 #' @param output_format character, output file format. One
@@ -208,7 +206,7 @@ write_ref_date_summary_all <- function(
   hub_reports_path,
   disease,
   horizons_to_include = c(0, 1, 2),
-  population_data,
+  population_data = population_data,
   excluded_locations = character(0),
   output_format = "csv",
   targets = NULL
