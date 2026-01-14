@@ -228,13 +228,13 @@ generate_webtext_block <- function(
   # generate variables used in the web text
 
   median_forecast_1wk_ahead <- round_to_place(
-    ensemble_us_1wk_ahead$quantile_0.5_count
+    ensemble_us_1wk_ahead$quantile_0.5
   )
   lower_95ci_forecast_1wk_ahead <- round_to_place(
-    ensemble_us_1wk_ahead$quantile_0.025_count
+    ensemble_us_1wk_ahead$quantile_0.025
   )
   upper_95ci_forecast_1wk_ahead <- round_to_place(
-    ensemble_us_1wk_ahead$quantile_0.975_count
+    ensemble_us_1wk_ahead$quantile_0.975
   )
 
   designated <- wkly_submissions[wkly_submissions$designated_model, ]
