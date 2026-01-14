@@ -9,10 +9,10 @@ get_hub_name <- function(disease) {
   checkmate::assert_scalar(disease)
   checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
 
-  return(dplyr::case_when(
+  dplyr::case_when(
     disease == "covid" ~ "CovidHub",
     disease == "rsv" ~ "RSVHub"
-  ))
+  )
 }
 
 
@@ -27,10 +27,10 @@ get_hub_repo_name <- function(disease) {
   checkmate::assert_scalar(disease)
   checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
 
-  return(dplyr::case_when(
+  dplyr::case_when(
     disease == "covid" ~ "covid19-forecast-hub",
     disease == "rsv" ~ "rsv-forecast-hub"
-  ))
+  )
 }
 
 
