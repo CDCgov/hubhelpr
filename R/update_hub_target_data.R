@@ -90,6 +90,13 @@ update_hub_target_data <- function(
       "{disease}-hospital-admissions.csv"
     )
     nhsn_data |>
+      dplyr::mutate(
+        jurisdiction = forecasttools::us_location_recode(
+          .data$jurisdiction,
+          "hrd",
+          "abbr"
+        )
+      ) |>
       dplyr::rename(
         value = "observation",
         state = "jurisdiction"
