@@ -364,8 +364,8 @@ generate_webtext_block <- function(
       target_short = "{disease_name} ED visit proportions",
       data_source = "NSSP data",
       value_unit = "%",
-      format_value = function(x) round(x * 100, 2),
-      format_forecast = function(x) round(x * 100, 2)
+      format_value = function(x) round(x * 100, 1),
+      format_forecast = function(x) round(x * 100, 1)
     )
   )
 
