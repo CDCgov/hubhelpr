@@ -103,9 +103,8 @@ summarize_ref_date_forecasts <- function(
       dplyr::across(
         tidyselect::starts_with("quantile_"),
         ~ dplyr::case_when(
-          stringr::str_ends(.data$target, "hosp") ~
-            .x / .data$population * 100000,
-          stringr::str_ends(.data$target, "prop ed visits") ~ NA_real_
+          is_hosp_target(.data$target) ~ .x / .data$population * 100000,
+          is_ed_target(.data$target) ~ NA_real_
         ),
         .names = "{.col}_per100k"
       )
@@ -120,8 +119,8 @@ summarize_ref_date_forecasts <- function(
         tidyselect::starts_with("quantile_") &
           !tidyselect::contains("_per100k"),
         ~ dplyr::case_when(
-          stringr::str_ends(.data$target, "hosp") ~ round(.x),
-          stringr::str_ends(.data$target, "prop ed visits") ~ round(.x, 4)
+          is_hosp_target(.data$target) ~ round(.x),
+          is_ed_target(.data$target) ~ round(.x, 4)
         ),
         .names = "{.col}_rounded"
       ),
