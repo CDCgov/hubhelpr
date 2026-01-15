@@ -107,10 +107,7 @@ summarize_ref_date_forecasts <- function(
       population = as.numeric(.data$population),
       quantile_0.025_per100k = .data$quantile_0.025 / .data$population * 100000,
       quantile_0.5_per100k = .data$quantile_0.5 / .data$population * 100000,
-      quantile_0.975_per100k = .data$quantile_0.975 / .data$population * 100000,
-      quantile_0.025_count = .data$quantile_0.025,
-      quantile_0.5_count = .data$quantile_0.5,
-      quantile_0.975_count = .data$quantile_0.975
+      quantile_0.975_per100k = .data$quantile_0.975 / .data$population * 100000
     ) |>
     dplyr::mutate(
       dplyr::across(
@@ -118,11 +115,9 @@ summarize_ref_date_forecasts <- function(
         ~ round(.x, 2),
         .names = "{.col}_rounded"
       ),
-      dplyr::across(
-        tidyselect::ends_with("_count"),
-        round,
-        .names = "{.col}_rounded"
-      ),
+      quantile_0.025_rounded = round(.data$quantile_0.025),
+      quantile_0.5_rounded = round(.data$quantile_0.5),
+      quantile_0.975_rounded = round(.data$quantile_0.975),
       forecast_due_date = as.Date(!!reference_date) - 3,
       location_sort_order = ifelse(.data$location_name == "US", 0, 1)
       # order table with national first, then alphabetically
