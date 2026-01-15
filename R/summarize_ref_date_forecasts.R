@@ -92,22 +92,23 @@ summarize_ref_date_forecasts <- function(
         "abbr"
       )
     ) |>
-    dplyr::mutate(
-      location_name = dplyr::case_match(
-        .data$location_name,
-        "United States" ~ "US",
-        .default = .data$location_name
-      )
-    ) |>
     dplyr::left_join(
       population_data,
       by = "location"
     ) |>
     dplyr::mutate(
-      population = as.numeric(.data$population),
-      quantile_0.025_per100k = .data$quantile_0.025 / .data$population * 100000,
-      quantile_0.5_per100k = .data$quantile_0.5 / .data$population * 100000,
-      quantile_0.975_per100k = .data$quantile_0.975 / .data$population * 100000
+      population = as.numeric(.data$population)
+    ) |>
+    dplyr::mutate(
+      dplyr::across(
+        tidyselect::starts_with("quantile_"),
+        ~ dplyr::case_when(
+          stringr::str_ends(.data$target, "hosp") ~
+            .x / .data$population * 100000,
+          stringr::str_ends(.data$target, "prop ed visits") ~ NA_real_
+        ),
+        .names = "{.col}_per100k"
+      )
     ) |>
     dplyr::mutate(
       dplyr::across(
@@ -115,11 +116,17 @@ summarize_ref_date_forecasts <- function(
         ~ round(.x, 2),
         .names = "{.col}_rounded"
       ),
-      quantile_0.025_rounded = round(.data$quantile_0.025),
-      quantile_0.5_rounded = round(.data$quantile_0.5),
-      quantile_0.975_rounded = round(.data$quantile_0.975),
+      dplyr::across(
+        tidyselect::starts_with("quantile_") &
+          !tidyselect::contains("_per100k"),
+        ~ dplyr::case_when(
+          stringr::str_ends(.data$target, "hosp") ~ round(.x),
+          stringr::str_ends(.data$target, "prop ed visits") ~ round(.x, 4)
+        ),
+        .names = "{.col}_rounded"
+      ),
       forecast_due_date = as.Date(!!reference_date) - 3,
-      location_sort_order = ifelse(.data$location_name == "US", 0, 1)
+      location_sort_order = ifelse(.data$location_name == "United States", 0, 1)
       # order table with national first, then alphabetically
     ) |>
     dplyr::arrange(.data$location_sort_order, .data$location_name) |>
