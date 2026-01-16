@@ -49,6 +49,9 @@ round_to_place <- function(value) {
     value >= 10 ~ round(value, -1),
     .default = round(value, 0)
   )
+}
+
+
 #' Check if target is a hospital admissions count.
 #'
 #' Helper function to identify targets that end with "hosp".
