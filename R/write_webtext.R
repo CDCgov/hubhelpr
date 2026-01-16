@@ -503,14 +503,6 @@ write_webtext <- function(
       "Invalid reference_date. Must be a valid date in YYYY-MM-DD format."
     )
   }
-  checkmate::assert_string(disease)
-  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
-  checkmate::assert_string(base_hub_path)
-  checkmate::assert_directory_exists(base_hub_path)
-  checkmate::assert_string(hub_reports_path)
-  checkmate::assert_directory_exists(hub_reports_path)
-  checkmate::assert_choice(input_format, choices = c("csv", "tsv", "parquet"))
-  checkmate::assert_character(included_locations, min.len = 1)
 
   weekly_data_path <- fs::path(
     hub_reports_path,
