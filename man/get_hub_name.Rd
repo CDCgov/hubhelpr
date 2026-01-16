@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{get_hub_name}
 \alias{get_hub_name}
-\title{Get hub name for a given disease.}
+\title{Get hub display name for a given disease.}
 \usage{
 get_hub_name(disease)
 }
@@ -14,5 +14,6 @@ or "rsv").}
 Character. Hub name (e.g., "CovidHub", "RSVHub").
 }
 \description{
-Converts disease identifier to proper hub name format.
+Converts disease identifier to hub display name format
+used for identifying hub-baseline and hub-ensemble.
 }
