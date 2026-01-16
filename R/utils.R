@@ -49,4 +49,24 @@ round_to_place <- function(value) {
     value >= 10 ~ round(value, -1),
     .default = round(value, 0)
   )
+#' Check if target is a hospital admissions count.
+#'
+#' Helper function to identify targets that end with "hosp".
+#'
+#' @param target Character. Target name to check.
+#' @return Logical. TRUE if target ends with "hosp", FALSE otherwise.
+#' @export
+is_hosp_target <- function(target) {
+  stringr::str_ends(target, "hosp")
+}
+
+#' Check if target is an emergency department visits proportion.
+#'
+#' Helper function to identify targets that end with "prop ed visits".
+#'
+#' @param target Character. Target name to check.
+#' @return Logical. TRUE if target ends with "prop ed visits", FALSE otherwise.
+#' @export
+is_ed_target <- function(target) {
+  stringr::str_ends(target, "prop ed visits")
 }
