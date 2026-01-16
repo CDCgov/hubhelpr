@@ -326,40 +326,6 @@ generate_webtext_block <- function(
     cli::cli_abort("No valid targets to process.")
   }
 
-  generate_target_config <- function(target, disease) {
-    disease_name <- get_disease_name(disease)
-
-    if (is_hosp_target(target)) {
-      config <- list(
-        section_header = "Hospital Admissions",
-        target_description = glue::glue(
-          "new weekly laboratory-confirmed {disease_name} hospital admissions"
-        ),
-        target_short = glue::glue("{disease_name} hospital admissions"),
-        data_source = "NHSN data",
-        value_unit = "",
-        format_value = function(x) round(x, -2),
-        format_forecast = function(x) round_to_place(x)
-      )
-    } else if (is_ed_target(target)) {
-      config <- list(
-        section_header = "ED Visits",
-        target_description = glue::glue(
-          "the proportion of emergency department visits due to {disease_name}"
-        ),
-        target_short = glue::glue("{disease_name} ED visit proportions"),
-        data_source = "NSSP data",
-        value_unit = "%",
-        format_value = function(x) round(x * 100, 1),
-        format_forecast = function(x) round(x * 100, 1)
-      )
-    } else {
-      return(NULL)
-    }
-
-    return(config)
-  }
-
   # get hospital reporting rate flag (hosp target only)
   hosp_target_present <- any(sapply(targets_to_process, is_hosp_target))
   if (hosp_target_present) {
@@ -392,21 +358,18 @@ generate_webtext_block <- function(
 
   # generate text block for each target
   target_text_blocks <- purrr::map_chr(targets_to_process, function(target) {
-    config <- generate_target_config(target, disease)
+    config <- generate_target_webtext_config(target, disease)
 
     if (is.null(config)) {
       cli::cli_warn("Unknown target type for: {target}, skipping.")
       return("")
     }
 
-    ensemble_model_name <- glue::glue("{hub_name}-ensemble")
-
     target_ensemble <- ensemble_data |>
       dplyr::filter(
         .data$target == !!target,
         .data$horizon == 1,
-        .data$location_name == "United States",
-        .data$model == ensemble_model_name
+        .data$location_name == "United States"
       )
 
     target_ts_data <- all_target_data |>
