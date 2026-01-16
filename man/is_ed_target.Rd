@@ -2,7 +2,8 @@
 % Please edit documentation in R/utils.R
 \name{is_ed_target}
 \alias{is_ed_target}
-\title{Check if target is an emergency department visits proportion.}
+\title{Check if target is an emergency department visits
+proportion.}
 \usage{
 is_ed_target(target)
 }
@@ -10,8 +11,10 @@ is_ed_target(target)
 \item{target}{Character. Target name to check.}
 }
 \value{
-Logical. TRUE if target ends with "prop ed visits", FALSE otherwise.
+Logical. TRUE if target ends with "prop ed
+visits", FALSE otherwise.
 }
 \description{
-Helper function to identify targets that end with "prop ed visits".
+Helper function to identify targets that end with
+"prop ed visits".
 }

@@ -497,7 +497,6 @@ write_webtext <- function(
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 ) {
-
   reference_date <- lubridate::as_date(reference_date)
   if (is.na(reference_date)) {
     cli::cli_abort(

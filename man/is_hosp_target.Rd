@@ -10,7 +10,8 @@ is_hosp_target(target)
 \item{target}{Character. Target name to check.}
 }
 \value{
-Logical. TRUE if target ends with "hosp", FALSE otherwise.
+Logical. TRUE if target ends with "hosp", FALSE
+otherwise.
 }
 \description{
 Helper function to identify targets that end with "hosp".

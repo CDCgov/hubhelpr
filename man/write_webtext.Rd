@@ -10,8 +10,8 @@ write_webtext(
   disease,
   base_hub_path,
   hub_reports_path,
+  output_path = NULL,
   included_locations = hubhelpr::included_locations,
-  targets = NULL,
   input_format = "csv"
 )
 }
@@ -19,9 +19,8 @@ write_webtext(
 \item{reference_date}{Character, the reference date for
 the forecast in YYYY-MM-DD format (ISO-8601).}
 
-\item{disease}{Character, disease name ("covid" or
-"rsv"). Used to derive hub name, file prefix, and
-disease display name.}
+\item{disease}{Character, disease name (e.g. "covid" or
+"rsv").}
 
 \item{base_hub_path}{Character, path to the forecast hub
 directory.}
@@ -29,20 +28,20 @@ directory.}
 \item{hub_reports_path}{Character, path to forecast hub
 reports directory.}
 
+\item{output_path}{Character, path to save the webtext
+file. If NULL (default), saves to
+hub_reports_path/weekly-summaries/{hub_repo_name}/{reference_date}/
+{reference_date}_{disease}_webtext.md.}
+
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default
 hubhelpr::included_locations.}
-
-\item{targets}{Character vector of target names to
-generate text for (e.g., "wk inc covid hosp"). If NULL
-(default), generates text for all targets present in
-the data.}
 
 \item{input_format}{Character, input file format for
 reading summary data files. One of "csv", "tsv", or
 "parquet". Default: "csv".}
 }
 \description{
-Light wrapper function that generates formatted text
-summaries and saves them to disk.
+Generates formatted text summary for a single disease
+and saves it to disk. Run separately for each disease.
 }

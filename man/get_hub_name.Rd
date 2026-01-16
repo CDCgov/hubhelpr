@@ -7,7 +7,8 @@
 get_hub_name(disease)
 }
 \arguments{
-\item{disease}{Character. Disease identifier ("covid" or "rsv").}
+\item{disease}{Character. Disease identifier ("covid"
+or "rsv").}
 }
 \value{
 Character. Hub name (e.g., "CovidHub", "RSVHub").
