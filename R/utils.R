@@ -1,6 +1,7 @@
-#' Get hub name for a given disease.
+#' Get hub display name for a given disease.
 #'
-#' Converts disease identifier to proper hub name format.
+#' Converts disease identifier to hub display name format
+#' used for identifying hub-baseline and hub-ensemble.
 #'
 #' @param disease Character. Disease identifier ("covid"
 #' or "rsv").
