@@ -130,8 +130,6 @@ check_hospital_reporting_latency <- function(
 #' target.
 #' @param target_data Data frame of target time series
 #' data filtered to this target.
-#' @param disease_name Character, formatted disease name
-#' (e.g., "COVID-19").
 #' @param hub_name Character, hub name.
 #' @param contributing_teams_text Character, formatted text
 #' listing contributing teams and models for this target.
@@ -145,20 +143,19 @@ generate_target_text_block <- function(
   config,
   ensemble_data,
   target_data,
-  disease_name,
   hub_name,
   contributing_teams_text,
   reporting_rate_flag = ""
 ) {
   # format forecast values based on target config
   forecast_value <- config$format_forecast(
-    ensemble_data$quantile_0.5_count
+    ensemble_data$quantile_0.5
   )
   lower_value <- config$format_forecast(
-    ensemble_data$quantile_0.025_count
+    ensemble_data$quantile_0.025
   )
   upper_value <- config$format_forecast(
-    ensemble_data$quantile_0.975_count
+    ensemble_data$quantile_0.975
   )
 
   # format date variables
@@ -190,8 +187,8 @@ generate_target_text_block <- function(
 
   last_reported <- config$format_value(last_reported_target_data$value)
   value_unit <- config$value_unit
-  target_description <- glue::glue(config$target_description)
-  target_short <- glue::glue(config$target_short)
+  target_description <- config$target_description
+  target_short <- config$target_short
   data_source <- config$data_source
   section_header <- config$section_header
 
@@ -282,17 +279,6 @@ generate_webtext_block <- function(
   reference_date <- lubridate::as_date(reference_date)
 
   hub_name <- get_hub_name(disease)
-  disease_name <- dplyr::case_match(
-    disease,
-    "covid" ~ "COVID-19",
-    "rsv" ~ "RSV"
-  )
-
-  weekly_data_path <- fs::path(
-    hub_reports_path,
-    "weekly-summaries",
-    reference_date
-  )
 
   # read ensemble forecast data
   ensemble_data <- forecasttools::read_tabular(
@@ -340,37 +326,42 @@ generate_webtext_block <- function(
     cli::cli_abort("No valid targets to process.")
   }
 
-  get_target_type_key <- function(target_name) {
-    dplyr::case_when(
-      grepl("hosp", target_name) ~ "hosp",
-      grepl("ed visits", target_name) ~ "ed_visits",
-      .default = NA_character_
-    )
+  generate_target_config <- function(target, disease) {
+    disease_name <- get_disease_name(disease)
+
+    if (is_hosp_target(target)) {
+      config <- list(
+        section_header = "Hospital Admissions",
+        target_description = glue::glue(
+          "new weekly laboratory-confirmed {disease_name} hospital admissions"
+        ),
+        target_short = glue::glue("{disease_name} hospital admissions"),
+        data_source = "NHSN data",
+        value_unit = "",
+        format_value = function(x) round(x, -2),
+        format_forecast = function(x) round_to_place(x)
+      )
+    } else if (is_ed_target(target)) {
+      config <- list(
+        section_header = "ED Visits",
+        target_description = glue::glue(
+          "the proportion of emergency department visits due to {disease_name}"
+        ),
+        target_short = glue::glue("{disease_name} ED visit proportions"),
+        data_source = "NSSP data",
+        value_unit = "%",
+        format_value = function(x) round(x * 100, 1),
+        format_forecast = function(x) round(x * 100, 1)
+      )
+    } else {
+      return(NULL)
+    }
+
+    return(config)
   }
 
-  target_config <- list(
-    hosp = list(
-      section_header = "Hospital Admissions",
-      target_description = "new weekly laboratory-confirmed {disease_name} hospital admissions",
-      target_short = "{disease_name} hospital admissions",
-      data_source = "NHSN data",
-      value_unit = "",
-      format_value = function(x) round(x, -2),
-      format_forecast = function(x) round_to_place(x)
-    ),
-    ed_visits = list(
-      section_header = "ED Visits",
-      target_description = "the proportion of emergency department visits due to {disease_name}",
-      target_short = "{disease_name} ED visit proportions",
-      data_source = "NSSP data",
-      value_unit = "%",
-      format_value = function(x) round(x * 100, 1),
-      format_forecast = function(x) round(x * 100, 1)
-    )
-  )
-
   # get hospital reporting rate flag (hosp target only)
-  hosp_target_present <- any(grepl("hosp", targets_to_process))
+  hosp_target_present <- any(sapply(targets_to_process, is_hosp_target))
   if (hosp_target_present) {
     reporting_rate_flag <- tryCatch(
       check_hospital_reporting_latency(
@@ -401,20 +392,21 @@ generate_webtext_block <- function(
 
   # generate text block for each target
   target_text_blocks <- purrr::map_chr(targets_to_process, function(target) {
-    target_type_key <- get_target_type_key(target)
+    config <- generate_target_config(target, disease)
 
-    if (is.na(target_type_key)) {
+    if (is.null(config)) {
       cli::cli_warn("Unknown target type for: {target}, skipping.")
       return("")
     }
 
-    config <- target_config[[target_type_key]]
+    ensemble_model_name <- glue::glue("{hub_name}-ensemble")
 
     target_ensemble <- ensemble_data |>
       dplyr::filter(
         .data$target == !!target,
         .data$horizon == 1,
-        .data$location_name == "US"
+        .data$location_name == "United States",
+        .data$model == ensemble_model_name
       )
 
     target_ts_data <- all_target_data |>
@@ -441,7 +433,7 @@ generate_webtext_block <- function(
       (\(x) glue::glue("Contributing teams and models: {x}"))()
 
     # only include reporting flag for hosp target
-    flag_for_target <- if (target_type_key == "hosp") {
+    flag_for_target <- if (is_hosp_target(target)) {
       reporting_rate_flag
     } else {
       ""
@@ -451,18 +443,20 @@ generate_webtext_block <- function(
       config = config,
       ensemble_data = target_ensemble,
       target_data = target_ts_data,
-      disease_name = disease_name,
       hub_name = hub_name,
       contributing_teams_text = contributing_teams_text,
       reporting_rate_flag = flag_for_target
     )
   })
 
-  # combine target text blocks
-  web_text <- paste(
+  disease_display_name <- get_disease_name(disease)
+
+  # combine target text blocks with H1 disease header
+  target_sections <- paste(
     target_text_blocks[target_text_blocks != ""],
-    collapse = "\n"
+    collapse = "\n\n"
   )
+  web_text <- glue::glue("# {disease_display_name}\n\n{target_sections}")
 
   return(web_text)
 }
@@ -471,25 +465,24 @@ generate_webtext_block <- function(
 #' Generate and save text content for forecast hub
 #' visualization webpage.
 #'
-#' Light wrapper function that generates formatted text
-#' summaries and saves them to disk.
+#' Generates formatted text summary for a single disease
+#' and saves it to disk. Run separately for each disease.
 #'
 #' @param reference_date Character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
-#' @param disease Character, disease name ("covid" or
-#' "rsv"). Used to derive hub name, file prefix, and
-#' disease display name.
+#' @param disease Character, disease name (e.g. "covid" or
+#' "rsv").
 #' @param base_hub_path Character, path to the forecast hub
 #' directory.
 #' @param hub_reports_path Character, path to forecast hub
 #' reports directory.
+#' @param output_path Character, path to save the webtext
+#' file. If NULL (default), saves to
+#' hub_reports_path/weekly-summaries/{hub_repo_name}/{reference_date}/
+#' {reference_date}_{disease}_webtext.md.
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
-#' @param targets Character vector of target names to
-#' generate text for (e.g., "wk inc covid hosp"). If NULL
-#' (default), generates text for all targets present in
-#' the data.
 #' @param input_format Character, input file format for
 #' reading summary data files. One of "csv", "tsv", or
 #' "parquet". Default: "csv".
@@ -500,21 +493,25 @@ write_webtext <- function(
   disease,
   base_hub_path,
   hub_reports_path,
+  output_path = NULL,
   included_locations = hubhelpr::included_locations,
-  targets = NULL,
   input_format = "csv"
 ) {
-  reference_date <- lubridate::as_date(reference_date)
 
-  web_text <- generate_webtext_block(
-    reference_date = reference_date,
-    disease = disease,
-    base_hub_path = base_hub_path,
-    hub_reports_path = hub_reports_path,
-    included_locations = included_locations,
-    targets = targets,
-    input_format = input_format
-  )
+  reference_date <- lubridate::as_date(reference_date)
+  if (is.na(reference_date)) {
+    cli::cli_abort(
+      "Invalid reference_date. Must be a valid date in YYYY-MM-DD format."
+    )
+  }
+  checkmate::assert_string(disease)
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+  checkmate::assert_string(base_hub_path)
+  checkmate::assert_directory_exists(base_hub_path)
+  checkmate::assert_string(hub_reports_path)
+  checkmate::assert_directory_exists(hub_reports_path)
+  checkmate::assert_choice(input_format, choices = c("csv", "tsv", "parquet"))
+  checkmate::assert_character(included_locations, min.len = 1)
 
   weekly_data_path <- fs::path(
     hub_reports_path,
@@ -523,12 +520,14 @@ write_webtext <- function(
     reference_date
   )
 
-  output_filepath <- fs::path(
-    weekly_data_path,
-    glue::glue("{reference_date}_webtext"),
-    ext = "md"
-  )
+  if (!fs::dir_exists(weekly_data_path)) {
+    cli::cli_abort(
+      "Weekly data directory does not exist: {weekly_data_path}. ",
+      "Run write_ref_date_summary() first to generate the data files."
+    )
+  }
 
+  # generate webtext
   web_text <- generate_webtext_block(
     reference_date = reference_date,
     disease = disease,
@@ -538,12 +537,27 @@ write_webtext <- function(
     input_format = input_format
   )
 
-  if (!fs::file_exists(output_filepath)) {
-    writeLines(web_text, output_filepath)
-    cli::cli_inform("Webtext saved as: {output_filepath}.")
-  } else {
-    cli::cli_abort("File already exists: {output_filepath}.")
+  if (is.null(web_text) || nchar(web_text) == 0) {
+    cli::cli_abort("No webtext generated for {disease}.")
   }
+
+  # determine output path
+  if (is.null(output_path)) {
+    output_path <- fs::path(
+      weekly_data_path,
+      glue::glue("{reference_date}_{disease}_webtext"),
+      ext = "md"
+    )
+  }
+
+  checkmate::assert_string(output_path)
+
+  if (fs::file_exists(output_path)) {
+    cli::cli_abort("File already exists: {output_path}.")
+  }
+
+  writeLines(web_text, output_path)
+  cli::cli_inform("Webtext saved as: {output_path}.")
 
   return(invisible())
 }

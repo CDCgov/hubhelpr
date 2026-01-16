@@ -2,7 +2,8 @@
 #'
 #' Converts disease identifier to proper hub name format.
 #'
-#' @param disease Character. Disease identifier ("covid" or "rsv").
+#' @param disease Character. Disease identifier ("covid"
+#' or "rsv").
 #' @return Character. Hub name (e.g., "CovidHub", "RSVHub").
 #' @export
 get_hub_name <- function(disease) {
@@ -18,9 +19,11 @@ get_hub_name <- function(disease) {
 
 #' Get GitHub repository name for a given disease.
 #'
-#' Converts disease identifier to corresponding GitHub repository name.
+#' Converts disease identifier to corresponding GitHub
+#' repository name.
 #'
-#' @param disease Character. Disease identifier ("covid" or "rsv").
+#' @param disease Character. Disease identifier ("covid"
+#' or "rsv").
 #' @return Character. GitHub repository name.
 #' @export
 get_hub_repo_name <- function(disease) {
@@ -30,6 +33,26 @@ get_hub_repo_name <- function(disease) {
   dplyr::case_when(
     disease == "covid" ~ "covid19-forecast-hub",
     disease == "rsv" ~ "rsv-forecast-hub"
+  )
+}
+
+
+#' Get display name for a given disease.
+#'
+#' Converts disease identifier to human-readable display
+#' name.
+#'
+#' @param disease Character. Disease identifier ("covid"
+#' or "rsv").
+#' @return Character. Display name (e.g., "COVID-19", "RSV").
+#' @export
+get_disease_name <- function(disease) {
+  checkmate::assert_scalar(disease)
+  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+
+  dplyr::case_when(
+    disease == "covid" ~ "COVID-19",
+    disease == "rsv" ~ "RSV"
   )
 }
 
@@ -57,18 +80,22 @@ round_to_place <- function(value) {
 #' Helper function to identify targets that end with "hosp".
 #'
 #' @param target Character. Target name to check.
-#' @return Logical. TRUE if target ends with "hosp", FALSE otherwise.
+#' @return Logical. TRUE if target ends with "hosp", FALSE
+#' otherwise.
 #' @export
 is_hosp_target <- function(target) {
   stringr::str_ends(target, "hosp")
 }
 
-#' Check if target is an emergency department visits proportion.
+#' Check if target is an emergency department visits
+#' proportion.
 #'
-#' Helper function to identify targets that end with "prop ed visits".
+#' Helper function to identify targets that end with
+#' "prop ed visits".
 #'
 #' @param target Character. Target name to check.
-#' @return Logical. TRUE if target ends with "prop ed visits", FALSE otherwise.
+#' @return Logical. TRUE if target ends with "prop ed
+#' visits", FALSE otherwise.
 #' @export
 is_ed_target <- function(target) {
   stringr::str_ends(target, "prop ed visits")
