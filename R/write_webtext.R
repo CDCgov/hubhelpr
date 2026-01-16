@@ -287,7 +287,11 @@ generate_webtext_block <- function(
       glue::glue("{reference_date}_{disease}_map_data"),
       ext = input_format
     )
-  )
+  ) |>
+    dplyr::filter(
+      .data$horizon == 1,
+      .data$location_name == "United States"
+    )
 
   # read unified target data file
   all_target_data <- forecasttools::read_tabular(
@@ -366,11 +370,7 @@ generate_webtext_block <- function(
     }
 
     target_ensemble <- ensemble_data |>
-      dplyr::filter(
-        .data$target == !!target,
-        .data$horizon == 1,
-        .data$location_name == "United States"
-      )
+      dplyr::filter(.data$target == !!target)
 
     target_ts_data <- all_target_data |>
       dplyr::filter(.data$target == !!target)
