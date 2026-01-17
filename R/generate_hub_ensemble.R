@@ -14,7 +14,8 @@ task_id_cols <- c(
 #' @param weekly_forecasts Data frame of forecasts for the week.
 #' @param target_name Character. Name of the target to ensemble,
 #' e.g., "wk inc covid hosp".
-#' @param ensemble_model_id Character. Model_id to assign to the ensemble output.
+#' @param ensemble_model_id Character. Model_id to assign to the ensemble
+#' output.
 #' @param ensemble_output_type Output type to ensemble. Default "quantile".
 #' @param ensemble_agg_fun Aggregation function to use. Default "median".
 #' @return A data frame of ensemble forecasts for the specified target.
@@ -74,7 +75,7 @@ ensemble_by_target <- function(
 #' @param reference_date Reference date (should be a Saturday).
 #' @param disease Disease name ("covid" or "rsv").
 #' @param ensemble_targets A vector specifying targets to generate ensemble
-#' forecasts for, e.g., c("hosp", "prop ed visits"). Defaults to "hosp".
+#' forecasts for. Defaults to c("hosp", "prop ed visits").
 #' @param output_format Character, output file format. One of "csv",
 #' "tsv", or "parquet". Default: "csv".
 #' @return NULL. Writes ensemble forecast file to hub's model-output directory.
@@ -83,7 +84,7 @@ generate_hub_ensemble <- function(
   base_hub_path,
   reference_date,
   disease,
-  ensemble_targets = c("hosp"),
+  ensemble_targets = c("hosp", "prop ed visits"),
   output_format = "csv"
 ) {
   checkmate::assert_scalar(disease)

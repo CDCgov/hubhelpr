@@ -8,7 +8,7 @@ generate_hub_ensemble(
   base_hub_path,
   reference_date,
   disease,
-  ensemble_targets = c("hosp"),
+  ensemble_targets = c("hosp", "prop ed visits"),
   output_format = "csv"
 )
 }
@@ -20,7 +20,7 @@ generate_hub_ensemble(
 \item{disease}{Disease name ("covid" or "rsv").}
 
 \item{ensemble_targets}{A vector specifying targets to generate ensemble
-forecasts for, e.g., c("hosp", "prop ed visits"). Defaults to "hosp".}
+forecasts for. Defaults to c("hosp", "prop ed visits").}
 
 \item{output_format}{Character, output file format. One of "csv",
 "tsv", or "parquet". Default: "csv".}
