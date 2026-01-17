@@ -238,9 +238,7 @@ generate_target_text_block <- function(
 #' This function creates formatted text content for
 #' forecast hub visualizations. It processes forecast
 #' data, target data, and team metadata to generate a
-#' text description. If targets is NULL, generates text
-#' for all targets present in the data. Otherwise,
-#' generates text only for specified targets.
+#' text description for the specified targets.
 #'
 #' @param reference_date Character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
@@ -250,13 +248,11 @@ generate_target_text_block <- function(
 #' hub directory.
 #' @param weekly_data_path Character, path to the directory
 #' with weekly summary files.
+#' @param targets Character vector of target names to
+#' generate text for (e.g., "wk inc covid hosp").
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
-#' @param targets Character vector of target names to
-#' generate text for (e.g., "wk inc covid hosp"). If NULL
-#' (default), generates text for all targets present in
-#' the data.
 #' @param input_format Character, input file format for
 #' reading summary data files. One of "csv", "tsv", or
 #' "parquet". Default: "csv".
@@ -269,8 +265,8 @@ generate_webtext_block <- function(
   disease,
   base_hub_path,
   weekly_data_path,
+  targets,
   included_locations = hubhelpr::included_locations,
-  targets = NULL,
   input_format = "csv"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
@@ -312,40 +308,17 @@ generate_webtext_block <- function(
   )
   available_targets <- unique(ensemble_data$target)
 
-  # if targets is NULL, use all available targets
-  if (is.null(targets)) {
-    targets_to_process <- available_targets
-  } else {
-    # validate requested targets exist in data
-    missing_targets <- setdiff(targets, available_targets)
-    if (length(missing_targets) > 0) {
-      cli::cli_warn(
-        "Requested target{?s} not found in data: {missing_targets}."
-      )
-    }
-    targets_to_process <- intersect(targets, available_targets)
-  }
-
-  if (length(targets_to_process) == 0) {
-    cli::cli_abort("No valid targets to process.")
-  }
-
-  # get hospital reporting rate flag (hosp target only)
-  hosp_target_present <- any(sapply(targets_to_process, is_hosp_target))
-  if (hosp_target_present) {
-    reporting_rate_flag <- tryCatch(
-      check_hospital_reporting_latency(
-        reference_date = reference_date,
-        disease = disease,
-        included_locations = included_locations
-      ),
-      error = function(e) {
-        cli::cli_warn("Could not retrieve hospital reporting data: {e$message}")
-        return("")
-      }
+  # validate requested targets exist in data
+  missing_targets <- setdiff(targets, available_targets)
+  if (length(missing_targets) > 0) {
+    cli::cli_warn(
+      "Requested target{?s} not found in data: {missing_targets}."
     )
-  } else {
-    reporting_rate_flag <- ""
+  }
+  targets <- intersect(targets, available_targets)
+
+  if (length(targets) == 0) {
+    cli::cli_abort("No valid targets to process.")
   }
 
   # load all model metadata
@@ -361,11 +334,10 @@ generate_webtext_block <- function(
     )
 
   # generate text block for each target
-  target_text_blocks <- purrr::map_chr(targets_to_process, function(target) {
+  target_text_blocks <- purrr::map_chr(targets, function(target) {
     config <- generate_target_webtext_config(target, disease)
 
     if (is.null(config)) {
-      cli::cli_warn("Unknown target type for: {target}, skipping.")
       return("")
     }
 
@@ -395,9 +367,21 @@ generate_webtext_block <- function(
       paste(collapse = ", ") |>
       (\(x) glue::glue("Contributing teams and models: {x}"))()
 
-    # only include reporting flag for hosp target
-    flag_for_target <- if (is_hosp_target(target)) {
-      reporting_rate_flag
+    # get hospital reporting flag for hosp targets only
+    reporting_rate_flag <- if (is_hosp_target(target)) {
+      tryCatch(
+        check_hospital_reporting_latency(
+          reference_date = reference_date,
+          disease = disease,
+          included_locations = included_locations
+        ),
+        error = function(e) {
+          cli::cli_warn(
+            "Could not retrieve hospital reporting data: {e$message}"
+          )
+          return("")
+        }
+      )
     } else {
       ""
     }
@@ -408,7 +392,7 @@ generate_webtext_block <- function(
       target_data = target_ts_data,
       hub_name = hub_name,
       contributing_teams_text = contributing_teams_text,
-      reporting_rate_flag = flag_for_target
+      reporting_rate_flag = reporting_rate_flag
     )
   })
 
@@ -433,16 +417,13 @@ generate_webtext_block <- function(
 #'
 #' @param reference_date Character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
-#' @param disease Character, disease name (e.g. "covid" or
-#' "rsv").
+#' @param disease Character, disease name ("covid" or "rsv").
 #' @param base_hub_path Character, path to the forecast hub
 #' directory.
 #' @param hub_reports_path Character, path to forecast hub
 #' reports directory.
-#' @param output_path Character, path to save the webtext
-#' file. If NULL (default), saves to
-#' hub_reports_path/weekly-summaries/{hub_repo_name}/{reference_date}/
-#' {reference_date}_{disease}_webtext.md.
+#' @param targets Character vector of target names to
+#' generate text for (e.g., "wk inc covid hosp").
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
@@ -456,15 +437,13 @@ write_webtext <- function(
   disease,
   base_hub_path,
   hub_reports_path,
-  output_path = NULL,
+  targets,
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 ) {
   reference_date <- lubridate::as_date(reference_date)
   if (is.na(reference_date)) {
-    cli::cli_abort(
-      "Invalid reference_date. Must be a valid date in YYYY-MM-DD format."
-    )
+    cli::cli_abort("Invalid reference_date format.")
   }
 
   weekly_data_path <- fs::path(
@@ -474,37 +453,21 @@ write_webtext <- function(
     reference_date
   )
 
-  if (!fs::dir_exists(weekly_data_path)) {
-    cli::cli_abort(
-      "Weekly data directory does not exist: {weekly_data_path}. ",
-      "Run write_ref_date_summary() first to generate the data files."
-    )
-  }
-
-  # generate webtext
   web_text <- generate_webtext_block(
     reference_date = reference_date,
     disease = disease,
     base_hub_path = base_hub_path,
     weekly_data_path = weekly_data_path,
+    targets = targets,
     included_locations = included_locations,
     input_format = input_format
   )
 
-  if (is.null(web_text) || nchar(web_text) == 0) {
-    cli::cli_abort("No webtext generated for {disease}.")
-  }
-
-  # determine output path
-  if (is.null(output_path)) {
-    output_path <- fs::path(
-      weekly_data_path,
-      glue::glue("{reference_date}_{disease}_webtext"),
-      ext = "md"
-    )
-  }
-
-  checkmate::assert_string(output_path)
+  output_path <- fs::path(
+    weekly_data_path,
+    glue::glue("{reference_date}_{disease}_webtext"),
+    ext = "md"
+  )
 
   if (fs::file_exists(output_path)) {
     cli::cli_abort("File already exists: {output_path}.")

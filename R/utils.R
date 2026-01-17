@@ -115,6 +115,7 @@ generate_target_webtext_config <- function(target, disease) {
       format_forecast = function(x) round(x * 100, 1)
     )
   } else {
+    cli::cli_warn("Unknown target type for: {target}, skipping.")
     return(NULL)
   }
 

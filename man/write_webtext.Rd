@@ -10,7 +10,7 @@ write_webtext(
   disease,
   base_hub_path,
   hub_reports_path,
-  output_path = NULL,
+  targets,
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 )
@@ -19,8 +19,7 @@ write_webtext(
 \item{reference_date}{Character, the reference date for
 the forecast in YYYY-MM-DD format (ISO-8601).}
 
-\item{disease}{Character, disease name (e.g. "covid" or
-"rsv").}
+\item{disease}{Character, disease name ("covid" or "rsv").}
 
 \item{base_hub_path}{Character, path to the forecast hub
 directory.}
@@ -28,10 +27,8 @@ directory.}
 \item{hub_reports_path}{Character, path to forecast hub
 reports directory.}
 
-\item{output_path}{Character, path to save the webtext
-file. If NULL (default), saves to
-hub_reports_path/weekly-summaries/{hub_repo_name}/{reference_date}/
-{reference_date}_{disease}_webtext.md.}
+\item{targets}{Character vector of target names to
+generate text for (e.g., "wk inc covid hosp").}
 
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default
