@@ -118,53 +118,101 @@ check_hospital_reporting_latency <- function(
 
 #' Generate webtext for a single target.
 #'
-#' Internal helper function that generates the forecast
-#' text block for a single target type.
+#' Internal helper function that processes one target,
+#' filtering data, gathering contributing teams, and
+#' generating the formatted text block.
 #'
-#' @param config List containing target-specific text and
-#' formatting configuration (section_header, target_description,
-#' target_short, data_source, value_unit, format_value,
-#' format_forecast).
-#' @param ensemble_data Data frame of ensemble forecast
-#' data filtered to horizon 1 and US location for this
-#' target.
-#' @param target_data Data frame of target time series
-#' data filtered to this target.
+#' @param target Character, the target name.
+#' @param disease Character, disease name.
+#' @param ensemble_data Data frame of ensemble forecast data.
+#' @param all_target_data Data frame of target time series data.
+#' @param all_forecasts_data Data frame of all forecasts data.
+#' @param all_model_metadata Data frame of model metadata.
 #' @param hub_name Character, hub name.
-#' @param teams_in_ensemble_text Character, formatted text
-#' listing teams and models included in the ensemble.
-#' @param teams_not_in_ensemble_text Character, formatted text
-#' listing teams and models not included in the ensemble.
-#' @param reporting_rate_flag Character, reporting rate
-#' flag text (only applicable for hosp target).
+#' @param reference_date Date, the reference date.
+#' @param included_locations Character vector of location codes.
 #'
 #' @return Character string containing the target-specific
-#' webtext block.
-#' @noRd
+#' webtext block, or empty string if no data found.
+#'
 generate_target_text_block <- function(
-  config,
+  target,
+  disease,
   ensemble_data,
-  target_data,
+  all_target_data,
+  all_forecasts_data,
+  all_model_metadata,
   hub_name,
-  teams_in_ensemble_text,
-  teams_not_in_ensemble_text = "",
-  reporting_rate_flag = ""
+  reference_date,
+  included_locations
 ) {
+  config <- generate_target_webtext_config(target, disease)
+
+  target_ensemble <- ensemble_data |>
+    dplyr::filter(.data$target == !!target)
+
+  target_data <- all_target_data |>
+    dplyr::filter(.data$target == !!target)
+
+  # get contributing teams for this target
+  target_contributing_models <- all_forecasts_data |>
+    dplyr::filter(
+      .data$target == !!target,
+      .data$model != glue::glue("{hub_name}-ensemble")
+    ) |>
+    dplyr::pull(.data$model) |>
+    unique()
+
+  # split contributing teams by designated_model status
+  contributing_metadata <- all_model_metadata |>
+    dplyr::filter(.data$model_id %in% target_contributing_models)
+
+  teams_in_ensemble <- contributing_metadata |>
+    dplyr::filter(.data$designated_model) |>
+    dplyr::pull(.data$team_model_text)
+
+  teams_not_in_ensemble <- contributing_metadata |>
+    dplyr::filter(!.data$designated_model) |>
+    dplyr::pull(.data$team_model_text)
+
+  teams_in_ensemble_text <- if (length(teams_in_ensemble) > 0) {
+    glue::glue(
+      "Contributing teams and models in the ensemble: ",
+      "{paste(teams_in_ensemble, collapse = ', ')}"
+    )
+  } else {
+    "Contributing teams and models in the ensemble: None"
+  }
+
+  teams_not_in_ensemble_text <- if (length(teams_not_in_ensemble) > 0) {
+    glue::glue(
+      "Contributing teams and models not in the ensemble: ",
+      "{paste(teams_not_in_ensemble, collapse = ', ')}"
+    )
+  } else {
+    ""
+  }
+
+  # get hospital reporting flag for hosp targets only
+  reporting_rate_flag <- if (is_hosp_target(target)) {
+    check_hospital_reporting_latency(
+      reference_date = reference_date,
+      disease = disease,
+      included_locations = included_locations
+    )
+  } else {
+    ""
+  }
+
   # format forecast values based on target config
-  forecast_value <- config$format_forecast(
-    ensemble_data$quantile_0.5
-  )
-  lower_value <- config$format_forecast(
-    ensemble_data$quantile_0.025
-  )
-  upper_value <- config$format_forecast(
-    ensemble_data$quantile_0.975
-  )
+  forecast_value <- config$format_forecast(target_ensemble$quantile_0.5)
+  lower_value <- config$format_forecast(target_ensemble$quantile_0.025)
+  upper_value <- config$format_forecast(target_ensemble$quantile_0.975)
 
   # format date variables
-  target_end_date_1wk_ahead <- ensemble_data$target_end_date_formatted
+  target_end_date_1wk_ahead <- target_ensemble$target_end_date_formatted
   target_end_date_2wk_ahead <- format(
-    as.Date(ensemble_data$target_end_date) + lubridate::weeks(1),
+    as.Date(target_ensemble$target_end_date) + lubridate::weeks(1),
     "%B %d, %Y"
   )
   first_target_data_date <- format(
@@ -175,8 +223,7 @@ generate_target_text_block <- function(
     as.Date(max(target_data$week_ending_date)),
     "%B %d, %Y"
   )
-
-  forecast_due_date <- ensemble_data$forecast_due_date_formatted
+  forecast_due_date <- target_ensemble$forecast_due_date_formatted
 
   # get last reported value
   last_reported_target_data <- target_data |>
@@ -195,7 +242,6 @@ generate_target_text_block <- function(
   data_source <- config$data_source
   section_header <- config$section_header
 
-  # build points by bullet
   bullets <- c(
     glue::glue(
       "The {hub_name} ensemble's one-week-ahead forecast predicts that ",
@@ -313,7 +359,6 @@ generate_webtext_block <- function(
       ext = input_format
     )
   )
-  available_targets <- unique(ensemble_data$target)
 
   # load all model metadata (including non-designated models)
   all_model_metadata <- hubData::load_model_metadata(base_hub_path) |>
@@ -327,88 +372,18 @@ generate_webtext_block <- function(
     )
 
   # generate text block for each target
-  target_text_blocks <- purrr::map_chr(targets, function(target) {
-    config <- generate_target_webtext_config(target, disease)
-
-    target_ensemble <- ensemble_data |>
-      dplyr::filter(.data$target == !!target)
-
-    target_ts_data <- all_target_data |>
-      dplyr::filter(.data$target == !!target)
-
-    if (nrow(target_ensemble) == 0 || nrow(target_ts_data) == 0) {
-      cli::cli_warn("No data found for target: {target}, skipping.")
-      return("")
-    }
-
-    # get contributing teams for this target
-    target_contributing_models <- all_forecasts_data |>
-      dplyr::filter(
-        .data$target == !!target,
-        .data$model != glue::glue("{hub_name}-ensemble")
-      ) |>
-      dplyr::pull(.data$model) |>
-      unique()
-
-    # split contributing teams by designated_model status
-    contributing_metadata <- all_model_metadata |>
-      dplyr::filter(.data$model_id %in% target_contributing_models)
-
-    teams_in_ensemble <- contributing_metadata |>
-      dplyr::filter(.data$designated_model) |>
-      dplyr::pull(.data$team_model_text)
-
-    teams_not_in_ensemble <- contributing_metadata |>
-      dplyr::filter(!.data$designated_model) |>
-      dplyr::pull(.data$team_model_text)
-
-    teams_in_ensemble_text <- if (length(teams_in_ensemble) > 0) {
-      paste(teams_in_ensemble, collapse = ", ") |>
-        (\(x) {
-          glue::glue("Contributing teams and models in the ensemble: {x}")
-        })()
-    } else {
-      "Contributing teams and models in the ensemble: None"
-    }
-
-    teams_not_in_ensemble_text <- if (length(teams_not_in_ensemble) > 0) {
-      paste(teams_not_in_ensemble, collapse = ", ") |>
-        (\(x) {
-          glue::glue("Contributing teams and models not in the ensemble: {x}")
-        })()
-    } else {
-      ""
-    }
-
-    # get hospital reporting flag for hosp targets only
-    reporting_rate_flag <- if (is_hosp_target(target)) {
-      tryCatch(
-        check_hospital_reporting_latency(
-          reference_date = reference_date,
-          disease = disease,
-          included_locations = included_locations
-        ),
-        error = function(e) {
-          cli::cli_warn(
-            "Could not retrieve hospital reporting data: {e$message}"
-          )
-          return("")
-        }
-      )
-    } else {
-      ""
-    }
-
-    generate_target_text_block(
-      config = config,
-      ensemble_data = target_ensemble,
-      target_data = target_ts_data,
-      hub_name = hub_name,
-      teams_in_ensemble_text = teams_in_ensemble_text,
-      teams_not_in_ensemble_text = teams_not_in_ensemble_text,
-      reporting_rate_flag = reporting_rate_flag
-    )
-  })
+  target_text_blocks <- purrr::map_chr(
+    targets,
+    generate_target_text_block,
+    disease = disease,
+    ensemble_data = ensemble_data,
+    all_target_data = all_target_data,
+    all_forecasts_data = all_forecasts_data,
+    all_model_metadata = all_model_metadata,
+    hub_name = hub_name,
+    reference_date = reference_date,
+    included_locations = included_locations
+  )
 
   disease_display_name <- get_disease_name(disease)
 
