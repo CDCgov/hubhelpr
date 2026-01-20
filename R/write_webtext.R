@@ -131,8 +131,10 @@ check_hospital_reporting_latency <- function(
 #' @param target_data Data frame of target time series
 #' data filtered to this target.
 #' @param hub_name Character, hub name.
-#' @param contributing_teams_text Character, formatted text
-#' listing contributing teams and models for this target.
+#' @param teams_in_ensemble_text Character, formatted text
+#' listing teams and models included in the ensemble.
+#' @param teams_not_in_ensemble_text Character, formatted text
+#' listing teams and models not included in the ensemble.
 #' @param reporting_rate_flag Character, reporting rate
 #' flag text (only applicable for hosp target).
 #'
@@ -144,7 +146,8 @@ generate_target_text_block <- function(
   ensemble_data,
   target_data,
   hub_name,
-  contributing_teams_text,
+  teams_in_ensemble_text,
+  teams_not_in_ensemble_text = "",
   reporting_rate_flag = ""
 ) {
   # format forecast values based on target config
@@ -223,7 +226,11 @@ generate_target_text_block <- function(
     bullets <- c(bullets, reporting_rate_flag)
   }
 
-  bullets <- c(bullets, contributing_teams_text)
+  # add contributing teams
+  bullets <- c(bullets, teams_in_ensemble_text)
+  if (nchar(teams_not_in_ensemble_text) > 0) {
+    bullets <- c(bullets, teams_not_in_ensemble_text)
+  }
 
   # format as bullet list with section header
   bullet_text <- paste0("* ", bullets, collapse = "\n")
@@ -321,10 +328,9 @@ generate_webtext_block <- function(
     cli::cli_abort("No valid targets to process.")
   }
 
-  # load all model metadata
+  # load all model metadata (including non-designated models)
   all_model_metadata <- hubData::load_model_metadata(base_hub_path) |>
     dplyr::distinct(.data$model_id, .keep_all = TRUE) |>
-    dplyr::filter(.data$designated_model) |>
     dplyr::mutate(
       team_model_text = dplyr::if_else(
         !is.na(.data$website_url) & nchar(.data$website_url) > 0,
@@ -361,11 +367,35 @@ generate_webtext_block <- function(
       dplyr::pull(.data$model) |>
       unique()
 
-    contributing_teams_text <- all_model_metadata |>
-      dplyr::filter(.data$model_id %in% target_contributing_models) |>
-      dplyr::pull(.data$team_model_text) |>
-      paste(collapse = ", ") |>
-      (\(x) glue::glue("Contributing teams and models: {x}"))()
+    # split contributing teams by designated_model status
+    contributing_metadata <- all_model_metadata |>
+      dplyr::filter(.data$model_id %in% target_contributing_models)
+
+    teams_in_ensemble <- contributing_metadata |>
+      dplyr::filter(.data$designated_model) |>
+      dplyr::pull(.data$team_model_text)
+
+    teams_not_in_ensemble <- contributing_metadata |>
+      dplyr::filter(!.data$designated_model) |>
+      dplyr::pull(.data$team_model_text)
+
+    teams_in_ensemble_text <- if (length(teams_in_ensemble) > 0) {
+      paste(teams_in_ensemble, collapse = ", ") |>
+        (\(x) {
+          glue::glue("Contributing teams and models in the ensemble: {x}")
+        })()
+    } else {
+      "Contributing teams and models in the ensemble: None"
+    }
+
+    teams_not_in_ensemble_text <- if (length(teams_not_in_ensemble) > 0) {
+      paste(teams_not_in_ensemble, collapse = ", ") |>
+        (\(x) {
+          glue::glue("Contributing teams and models not in the ensemble: {x}")
+        })()
+    } else {
+      ""
+    }
 
     # get hospital reporting flag for hosp targets only
     reporting_rate_flag <- if (is_hosp_target(target)) {
@@ -391,7 +421,8 @@ generate_webtext_block <- function(
       ensemble_data = target_ensemble,
       target_data = target_ts_data,
       hub_name = hub_name,
-      contributing_teams_text = contributing_teams_text,
+      teams_in_ensemble_text = teams_in_ensemble_text,
+      teams_not_in_ensemble_text = teams_not_in_ensemble_text,
       reporting_rate_flag = reporting_rate_flag
     )
   })
