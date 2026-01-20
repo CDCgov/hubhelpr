@@ -175,33 +175,13 @@ generate_target_text_block <- function(
     dplyr::filter(!.data$designated_model) |>
     dplyr::pull(.data$team_model_text)
 
-  teams_in_ensemble_text <- if (length(teams_in_ensemble) > 0) {
-    glue::glue(
-      "Contributing teams and models in the ensemble: ",
-      "{paste(teams_in_ensemble, collapse = ', ')}"
-    )
-  } else {
-    "Contributing teams and models in the ensemble: None"
-  }
-
-  teams_not_in_ensemble_text <- if (length(teams_not_in_ensemble) > 0) {
-    glue::glue(
-      "Contributing teams and models not in the ensemble: ",
-      "{paste(teams_not_in_ensemble, collapse = ', ')}"
-    )
-  } else {
-    ""
-  }
-
   # get hospital reporting flag for hosp targets only
-  reporting_rate_flag <- if (is_hosp_target(target)) {
-    check_hospital_reporting_latency(
+  if (is_hosp_target(target)) {
+    reporting_rate_flag <- check_hospital_reporting_latency(
       reference_date = reference_date,
       disease = disease,
       included_locations = included_locations
     )
-  } else {
-    ""
   }
 
   # format forecast values based on target config
@@ -264,18 +244,19 @@ generate_target_text_block <- function(
       "{first_target_data_date} through {last_target_data_date} and forecasted ",
       "{target_short} per week for this week and the next ",
       "2 weeks through {target_end_date_2wk_ahead}."
+    ),
+    glue::glue(
+      "Contributing teams and models in the ensemble: ",
+      "{paste(teams_in_ensemble, collapse = ', ')}"
+    ),
+    glue::glue(
+      "Contributing teams and models not in the ensemble: ",
+      "{paste(teams_not_in_ensemble, collapse = ', ')}"
     )
   )
 
-  # add reporting rate flag if present (hosp only)
-  if (nchar(reporting_rate_flag) > 0) {
+  if (is_hosp_target(target)) {
     bullets <- c(bullets, reporting_rate_flag)
-  }
-
-  # add contributing teams
-  bullets <- c(bullets, teams_in_ensemble_text)
-  if (nchar(teams_not_in_ensemble_text) > 0) {
-    bullets <- c(bullets, teams_not_in_ensemble_text)
   }
 
   # format as bullet list with section header
