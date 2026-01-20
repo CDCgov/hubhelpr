@@ -331,8 +331,6 @@ generate_webtext_block <- function(
   target_text_blocks <- purrr::map_chr(targets, function(target) {
     config <- generate_target_webtext_config(target, disease)
 
-    if (is.null(config)) {
-      return("")
     }
 
     target_ensemble <- ensemble_data |>
