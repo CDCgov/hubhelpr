@@ -315,18 +315,6 @@ generate_webtext_block <- function(
   )
   available_targets <- unique(ensemble_data$target)
 
-  # validate requested targets exist in data
-  missing_targets <- setdiff(targets, available_targets)
-  if (length(missing_targets) > 0) {
-    cli::cli_warn(
-      "Requested target{?s} not found in data: {missing_targets}."
-    )
-  }
-  targets <- intersect(targets, available_targets)
-
-  if (length(targets) == 0) {
-    cli::cli_abort("No valid targets to process.")
-  }
 
   # load all model metadata (including non-designated models)
   all_model_metadata <- hubData::load_model_metadata(base_hub_path) |>
