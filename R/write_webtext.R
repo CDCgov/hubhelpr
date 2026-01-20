@@ -315,7 +315,6 @@ generate_webtext_block <- function(
   )
   available_targets <- unique(ensemble_data$target)
 
-
   # load all model metadata (including non-designated models)
   all_model_metadata <- hubData::load_model_metadata(base_hub_path) |>
     dplyr::distinct(.data$model_id, .keep_all = TRUE) |>
@@ -330,8 +329,6 @@ generate_webtext_block <- function(
   # generate text block for each target
   target_text_blocks <- purrr::map_chr(targets, function(target) {
     config <- generate_target_webtext_config(target, disease)
-
-    }
 
     target_ensemble <- ensemble_data |>
       dplyr::filter(.data$target == !!target)
