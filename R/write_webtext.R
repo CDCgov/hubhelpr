@@ -175,14 +175,6 @@ generate_target_text_block <- function(
     dplyr::filter(!.data$designated_model) |>
     dplyr::pull(.data$team_model_text)
 
-  # get hospital reporting flag for hosp targets only
-  if (is_hosp_target(target)) {
-    reporting_rate_flag <- check_hospital_reporting_latency(
-      reference_date = reference_date,
-      disease = disease,
-      included_locations = included_locations
-    )
-  }
 
   # format forecast values based on target config
   forecast_value <- config$format_forecast(target_ensemble$quantile_0.5)
@@ -256,7 +248,12 @@ generate_target_text_block <- function(
   )
 
   if (is_hosp_target(target)) {
-    bullets <- c(bullets, reporting_rate_flag)
+    reporting_rate_flag = check_hospital_reporting_latency(
+      reference_date = reference_date,
+      disease = disease,
+      included_locations = included_locations
+    )
+  bullets <- c(bullets, reporting_rate_flag)
   }
 
   # format as bullet list with section header
