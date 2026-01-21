@@ -175,7 +175,6 @@ generate_target_text_block <- function(
     dplyr::filter(!.data$designated_model) |>
     dplyr::pull(.data$team_model_text)
 
-
   # format forecast values based on target config
   forecast_value <- config$format_forecast(target_ensemble$quantile_0.5)
   lower_value <- config$format_forecast(target_ensemble$quantile_0.025)
@@ -253,7 +252,7 @@ generate_target_text_block <- function(
       disease = disease,
       included_locations = included_locations
     )
-  bullets <- c(bullets, reporting_rate_flag)
+    bullets <- c(bullets, reporting_rate_flag)
   }
 
   # format as bullet list with section header
