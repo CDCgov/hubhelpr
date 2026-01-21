@@ -342,10 +342,7 @@ generate_webtext_block <- function(
   all_model_metadata <- hubData::load_model_metadata(base_hub_path) |>
     dplyr::distinct(.data$model_id, .keep_all = TRUE) |>
     dplyr::mutate(
-      team_model_text = dplyr::if_else(
-        !is.na(.data$website_url) & nchar(.data$website_url) > 0,
-        glue::glue("[{team_name} (Model: {model_abbr})]({website_url})"),
-        glue::glue("{team_name} (Model: {model_abbr})")
+      team_model_text = glue::glue("[{team_name} (Model: {model_abbr})]({website_url})"
       )
     )
 
