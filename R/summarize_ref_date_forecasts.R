@@ -100,6 +100,9 @@ summarize_ref_date_forecasts <- function(
       population = as.numeric(.data$population)
     ) |>
     dplyr::mutate(
+      target_data_type = get_target_data_type(.data$target)
+    ) |>
+    dplyr::mutate(
       dplyr::across(
         tidyselect::starts_with("quantile_"),
         ~ dplyr::case_when(

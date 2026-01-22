@@ -148,3 +148,22 @@ is_hosp_target <- function(target) {
 is_ed_target <- function(target) {
   stringr::str_ends(target, "prop ed visits")
 }
+
+
+#' Get target data type from full target string.
+#'
+#' Converts full target strings to data type for use in
+#' data outputs.
+#'
+#' @param target Character. Full target name (e.g.,
+#' "wk inc covid hosp").
+#' @return Character. Target data type ("hosp", "prop_ed",
+#' or NA if unrecognized).
+#' @export
+get_target_data_type <- function(target) {
+  dplyr::case_when(
+    is_hosp_target(target) ~ "hosp",
+    is_ed_target(target) ~ "prop_ed",
+    TRUE ~ NA_character_
+  )
+}
