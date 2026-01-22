@@ -100,7 +100,7 @@ summarize_ref_date_forecasts <- function(
       population = as.numeric(.data$population)
     ) |>
     dplyr::mutate(
-      target_name = get_alternate_target_name(.data$target)
+      target_data_type = get_target_data_type(.data$target)
     ) |>
     dplyr::mutate(
       dplyr::across(
