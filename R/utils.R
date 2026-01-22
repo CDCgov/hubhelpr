@@ -148,3 +148,22 @@ is_hosp_target <- function(target) {
 is_ed_target <- function(target) {
   stringr::str_ends(target, "prop ed visits")
 }
+
+
+#' Get alternate target name from full target string.
+#'
+#' Converts full target strings to short names for use in
+#' data outputs.
+#'
+#' @param target Character. Full target name (e.g.,
+#' "wk inc covid hosp").
+#' @return Character. Short target name ("hosp", "prop_ed",
+#' or NA if unrecognized).
+#' @export
+get_alternate_target_name <- function(target) {
+  dplyr::case_when(
+    is_hosp_target(target) ~ "hosp",
+    is_ed_target(target) ~ "prop_ed",
+    TRUE ~ NA_character_
+  )
+}
