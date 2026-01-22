@@ -49,6 +49,7 @@ write_viz_target_data <- function(
         "code",
         "name"
       ),
+      target_data_type = get_target_data_type(.data$target),
       observation = dplyr::if_else(
         grepl("ed visits", .data$target),
         round(.data$observation, 4),
@@ -60,6 +61,7 @@ write_viz_target_data <- function(
       "location",
       "location_name",
       "target",
+      "target_data_type",
       value = "observation"
     )
 
