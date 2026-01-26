@@ -9,11 +9,6 @@ inputs:
     description: "GitHub username of the person making changes."
     required: true
 
-outputs:
-  status:
-    description: "Authorization check result (success or failure)."
-    value: ${{ steps.check.outputs.status }}
-
 runs:
   using: "composite"
   steps:
@@ -31,7 +26,6 @@ runs:
           github::cdcgov/hubhelpr
 
     - name: "Check Changes for Auto-Approval"
-      id: check
       shell: Rscript {0}
       run: |
         changed_files <- jsonlite::fromJSON('${{ inputs.changed_files }}')
@@ -40,9 +34,3 @@ runs:
           gh_actor = "${{ inputs.gh_actor }}",
           base_hub_path = "."
         )
-        cat("status=success", file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
-
-    - name: "Save Validation Status"
-      if: success()
-      shell: bash
-      run: echo "success" > status
