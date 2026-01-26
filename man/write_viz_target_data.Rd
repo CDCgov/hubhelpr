@@ -9,6 +9,7 @@ write_viz_target_data(
   base_hub_path,
   hub_reports_path,
   disease,
+  as_of = "latest",
   targets = NULL,
   included_locations = hubhelpr::included_locations,
   output_format = "csv"
@@ -25,6 +26,10 @@ directory.}
 reports directory.}
 
 \item{disease}{Character, disease name ("covid" or "rsv").}
+
+\item{as_of}{As of date to filter to, as an object coercible
+by as.Date(), or "latest" to filter to the most recent
+available vintage. Default "latest".}
 
 \item{targets}{Character vector of target names to filter
 (e.g., "wk inc covid hosp"). If NULL (default), all
