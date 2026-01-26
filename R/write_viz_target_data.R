@@ -14,6 +14,9 @@
 #' @param hub_reports_path Character, path to forecast hub
 #' reports directory.
 #' @param disease Character, disease name ("covid" or "rsv").
+#' @param as_of As of date to filter to, as an object coercible
+#' by as.Date(), or "latest" to filter to the most recent
+#' available vintage. Default "latest".
 #' @param targets Character vector of target names to filter
 #' (e.g., "wk inc covid hosp"). If NULL (default), all
 #' targets are included.
@@ -32,12 +35,13 @@ write_viz_target_data <- function(
   base_hub_path,
   hub_reports_path,
   disease,
+  as_of = "latest",
   targets = NULL,
   included_locations = hubhelpr::included_locations,
   output_format = "csv"
 ) {
   target_data <- hubData::connect_target_timeseries(base_hub_path) |>
-    forecasttools::hub_target_data_as_of(as_of = "latest") |>
+    forecasttools::hub_target_data_as_of(as_of = as_of) |>
     dplyr::filter(.data$location %in% !!included_locations) |>
     dplyr::collect() |>
     dplyr::filter(
@@ -49,9 +53,11 @@ write_viz_target_data <- function(
         "code",
         "name"
       ),
-      target_data_type = get_target_data_type(.data$target),
+      target_data_type = get_target_data_type(.data$target)
+    ) |>
+    dplyr::mutate(
       observation = dplyr::if_else(
-        grepl("ed visits", .data$target),
+        .data$target_data_type == "prop_ed",
         round(.data$observation, 4),
         .data$observation
       )
