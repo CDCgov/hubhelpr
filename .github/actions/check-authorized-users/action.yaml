@@ -1,0 +1,48 @@
+name: "Check Authorized Users"
+description: "Verify that a GitHub user is authorized to modify model output directories in a Hub."
+
+inputs:
+  changed_files:
+    description: "JSON array of changed file paths from the changed-files action."
+    required: true
+  gh_actor:
+    description: "GitHub username of the person making changes."
+    required: true
+
+outputs:
+  status:
+    description: "Authorization check result (success or failure)."
+    value: ${{ steps.check.outputs.status }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Setup R"
+      uses: r-lib/actions/setup-r@v2
+      with:
+        use-public-rspm: true
+        extra-repositories: "https://hubverse-org.r-universe.dev"
+
+    - name: "Install Dependencies"
+      uses: r-lib/actions/setup-r-dependencies@v2
+      with:
+        pak-version: "devel"
+        packages: |
+          github::cdcgov/hubhelpr
+
+    - name: "Check Changes for Auto-Approval"
+      id: check
+      shell: Rscript {0}
+      run: |
+        changed_files <- jsonlite::fromJSON('${{ inputs.changed_files }}')
+        hubhelpr::check_changes_for_autoapproval(
+          changed_files = changed_files,
+          gh_actor = "${{ inputs.gh_actor }}",
+          base_hub_path = "."
+        )
+        cat("status=success", file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)
+
+    - name: "Save Validation Status"
+      if: success()
+      shell: bash
+      run: echo "success" > status
