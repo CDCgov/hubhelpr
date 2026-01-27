@@ -26,7 +26,7 @@ test_that("check_changes_for_autoapproval succeeds with valid changes to model-o
     "  - user2"
   ), metadata_file)
   
-  # File paths don't need to exist, just valid paths
+  # Changed file paths don't need to exist (only model-metadata files do)
   changed_files <- c(fs::path(base_hub_path, "model-output", "team1-model", "test.csv"))
   
   # Should not raise an error for authorized user

@@ -203,20 +203,20 @@ test_that("check_authorized_users succeeds with single authorized model", {
   )
 })
 
-test_that("check_authorized_users handles NA values in designated_github_users", {
+test_that("check_authorized_users handles null values in designated_github_users", {
   # Create a temporary hub directory structure
   base_hub_path <- withr::local_tempdir("test_hub_")
   model_metadata_dir <- fs::path(base_hub_path, "model-metadata")
   fs::dir_create(model_metadata_dir)
   
-  # Create model metadata file
-  # Note: YAML doesn't have explicit NA, but we can test with empty values
+  # Create model metadata file with null values (which become NA in R)
   metadata_file <- fs::path(model_metadata_dir, "team1-model.yml")
   writeLines(c(
     "team_name: Team 1",
     "model_name: Model 1",
     "designated_github_users:",
     "  - user1",
+    "  - null",
     "  - user2"
   ), metadata_file)
   
