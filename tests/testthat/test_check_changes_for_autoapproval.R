@@ -1,3 +1,16 @@
+# Tests for check_changes_for_autoapproval
+#
+# This test file validates the check_changes_for_autoapproval function,
+# which is used in GitHub workflows to validate that PR changes are eligible
+# for auto-approval.
+#
+# Testing strategy:
+# - Tests that don't require authorization checking can run without mocking
+# - Tests that require authorization checking use mockery::stub to mock
+#   hubData::load_model_metadata, avoiding the need for complex hub fixtures
+# - Tests validate both success cases (authorized changes) and error cases
+#   (unauthorized changes, files outside model-output, etc.)
+
 test_that("check_changes_for_autoapproval succeeds with valid changes to model-output", {
   skip_if_not_installed("mockery")
   

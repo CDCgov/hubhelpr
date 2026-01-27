@@ -1,3 +1,15 @@
+# Tests for check_authorized_users
+#
+# This test file validates the check_authorized_users function, which checks
+# whether a GitHub user is authorized to modify specific model directories.
+#
+# Testing strategy:
+# - All tests use mockery::stub to mock hubData::load_model_metadata to avoid
+#   needing to create complex hub metadata fixtures
+# - Tests validate both success cases (authorized users) and various error
+#   cases (unauthorized users, missing metadata, etc.)
+# - Tests verify that error messages are informative and include relevant details
+
 test_that("check_authorized_users succeeds when user authorized for all models", {
   skip_if_not_installed("mockery")
   
