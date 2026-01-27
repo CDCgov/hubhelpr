@@ -15,7 +15,7 @@
 test_that("check_authorized_users succeeds when user authorized for all models", {
   base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("team1-model", "team2-model")
-  
+
   # Mock hubData::load_model_metadata
   local_mocked_bindings(
     load_model_metadata = function(hub_path) {
@@ -29,7 +29,7 @@ test_that("check_authorized_users succeeds when user authorized for all models",
     },
     .package = "hubData"
   )
-  
+
   # Should succeed without error
   expect_message(
     check_authorized_users(
@@ -44,7 +44,7 @@ test_that("check_authorized_users succeeds when user authorized for all models",
 test_that("check_authorized_users errors when user not authorized for any model", {
   base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("team1-model")
-  
+
   # Mock hubData::load_model_metadata
   local_mocked_bindings(
     load_model_metadata = function(hub_path) {
@@ -55,7 +55,7 @@ test_that("check_authorized_users errors when user not authorized for any model"
     },
     .package = "hubData"
   )
-  
+
   expect_error(
     check_authorized_users(
       changed_model_ids = changed_model_ids,
@@ -69,7 +69,7 @@ test_that("check_authorized_users errors when user not authorized for any model"
 test_that("check_authorized_users errors when user authorized for some but not all models", {
   base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("team1-model", "team2-model")
-  
+
   # Mock hubData::load_model_metadata
   # user1 authorized for team1-model but not team2-model
   local_mocked_bindings(
@@ -84,7 +84,7 @@ test_that("check_authorized_users errors when user authorized for some but not a
     },
     .package = "hubData"
   )
-  
+
   expect_error(
     check_authorized_users(
       changed_model_ids = changed_model_ids,
@@ -93,7 +93,7 @@ test_that("check_authorized_users errors when user authorized for some but not a
     ),
     "Authorization check failed for user 'user1'"
   )
-  
+
   # Verify error message includes details about unauthorized model
   expect_error(
     check_authorized_users(
@@ -108,7 +108,7 @@ test_that("check_authorized_users errors when user authorized for some but not a
 test_that("check_authorized_users errors when model has no authorized users", {
   base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("team1-model")
-  
+
   # Mock hubData::load_model_metadata with no designated users
   local_mocked_bindings(
     load_model_metadata = function(hub_path) {
@@ -119,7 +119,7 @@ test_that("check_authorized_users errors when model has no authorized users", {
     },
     .package = "hubData"
   )
-  
+
   expect_error(
     check_authorized_users(
       changed_model_ids = changed_model_ids,
@@ -133,7 +133,7 @@ test_that("check_authorized_users errors when model has no authorized users", {
 test_that("check_authorized_users errors when model directory not found in metadata", {
   base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("unknown-model")
-  
+
   # Mock hubData::load_model_metadata with different models
   local_mocked_bindings(
     load_model_metadata = function(hub_path) {
@@ -144,7 +144,7 @@ test_that("check_authorized_users errors when model directory not found in metad
     },
     .package = "hubData"
   )
-  
+
   expect_error(
     check_authorized_users(
       changed_model_ids = changed_model_ids,
@@ -158,7 +158,7 @@ test_that("check_authorized_users errors when model directory not found in metad
 test_that("check_authorized_users succeeds with single authorized model", {
   base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("team1-model")
-  
+
   # Mock hubData::load_model_metadata
   local_mocked_bindings(
     load_model_metadata = function(hub_path) {
@@ -169,7 +169,7 @@ test_that("check_authorized_users succeeds with single authorized model", {
     },
     .package = "hubData"
   )
-  
+
   expect_message(
     check_authorized_users(
       changed_model_ids = changed_model_ids,
@@ -183,7 +183,7 @@ test_that("check_authorized_users succeeds with single authorized model", {
 test_that("check_authorized_users handles NA values in designated_github_users", {
   base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("team1-model")
-  
+
   # Mock hubData::load_model_metadata with NA values
   local_mocked_bindings(
     load_model_metadata = function(hub_path) {
@@ -194,7 +194,7 @@ test_that("check_authorized_users handles NA values in designated_github_users",
     },
     .package = "hubData"
   )
-  
+
   expect_message(
     check_authorized_users(
       changed_model_ids = changed_model_ids,

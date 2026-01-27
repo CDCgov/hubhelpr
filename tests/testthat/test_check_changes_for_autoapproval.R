@@ -16,7 +16,7 @@
 test_that("check_changes_for_autoapproval succeeds with valid changes to model-output", {
   base_hub_path <- "/fake/hub/path"
   changed_files <- c("/fake/hub/path/model-output/team1-model/test.csv")
-  
+
   # Mock hubData::load_model_metadata to return expected structure
   local_mocked_bindings(
     load_model_metadata = function(hub_path) {
@@ -27,7 +27,7 @@ test_that("check_changes_for_autoapproval succeeds with valid changes to model-o
     },
     .package = "hubData"
   )
-  
+
   # Should not raise an error for authorized user
   expect_silent(
     check_changes_for_autoapproval(
@@ -40,7 +40,7 @@ test_that("check_changes_for_autoapproval succeeds with valid changes to model-o
 
 test_that("check_changes_for_autoapproval errors when no changed files", {
   base_hub_path <- "/fake/hub/path"
-  
+
   expect_error(
     check_changes_for_autoapproval(
       changed_files = character(0),
@@ -54,7 +54,7 @@ test_that("check_changes_for_autoapproval errors when no changed files", {
 test_that("check_changes_for_autoapproval errors when files outside model-output", {
   base_hub_path <- "/fake/hub/path"
   changed_files <- c("/fake/hub/path/other-dir/test.txt")
-  
+
   expect_error(
     check_changes_for_autoapproval(
       changed_files = changed_files,
@@ -71,7 +71,7 @@ test_that("check_changes_for_autoapproval errors when files both inside and outs
     "/fake/hub/path/model-output/team1-model/test.csv",
     "/fake/hub/path/other-dir/test.txt"
   )
-  
+
   expect_error(
     check_changes_for_autoapproval(
       changed_files = changed_files,
@@ -85,7 +85,7 @@ test_that("check_changes_for_autoapproval errors when files both inside and outs
 test_that("check_changes_for_autoapproval errors when user not authorized for any model", {
   base_hub_path <- "/fake/hub/path"
   changed_files <- c("/fake/hub/path/model-output/team1-model/test.csv")
-  
+
   # Mock hubData::load_model_metadata to return model with different authorized users
   local_mocked_bindings(
     load_model_metadata = function(hub_path) {
@@ -96,7 +96,7 @@ test_that("check_changes_for_autoapproval errors when user not authorized for an
     },
     .package = "hubData"
   )
-  
+
   expect_error(
     check_changes_for_autoapproval(
       changed_files = changed_files,
@@ -113,7 +113,7 @@ test_that("check_changes_for_autoapproval errors when user authorized for some m
     "/fake/hub/path/model-output/team1-model/test1.csv",
     "/fake/hub/path/model-output/team2-model/test2.csv"
   )
-  
+
   # Mock hubData::load_model_metadata
   # user1 is authorized for team1-model but not team2-model
   local_mocked_bindings(
@@ -128,7 +128,7 @@ test_that("check_changes_for_autoapproval errors when user authorized for some m
     },
     .package = "hubData"
   )
-  
+
   expect_error(
     check_changes_for_autoapproval(
       changed_files = changed_files,
@@ -145,7 +145,7 @@ test_that("check_changes_for_autoapproval succeeds when user authorized for mult
     "/fake/hub/path/model-output/team1-model/test1.csv",
     "/fake/hub/path/model-output/team2-model/test2.csv"
   )
-  
+
   # Mock hubData::load_model_metadata
   # user1 is authorized for both models
   local_mocked_bindings(
@@ -160,7 +160,7 @@ test_that("check_changes_for_autoapproval succeeds when user authorized for mult
     },
     .package = "hubData"
   )
-  
+
   expect_silent(
     check_changes_for_autoapproval(
       changed_files = changed_files,
