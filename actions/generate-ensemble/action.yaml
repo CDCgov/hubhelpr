@@ -1,0 +1,63 @@
+name: "Generate Ensemble Forecast"
+description: "Within a hub: generate ensemble forecasts, commit to a new branch, and create a pull request. Requires R and hubhelpr to be installed beforehand."
+
+inputs:
+  disease:
+    description: "Disease identifier ('covid' or 'rsv')."
+    required: true
+  github_token:
+    description: "GitHub token for creating the pull request."
+    required: true
+  base_hub_path:
+    description: "Path to the hub repository root directory."
+    required: false
+    default: "."
+  reference_date:
+    description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the last day of the current MMWR epiweek."
+    required: false
+    default: "latest"
+  ensemble_targets:
+    description: "Comma-separated list of ensemble target suffixes (e.g., 'hosp, prop ed visits')."
+    required: false
+    default: "hosp, prop ed visits"
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Generate Ensemble Forecast"
+      id: generate
+      shell: Rscript {0}
+      run: |
+        today <- lubridate::today()
+        input_date <- "${{ inputs.reference_date }}"
+        if (input_date == "latest") {
+          ref_date <- forecasttools::ceiling_mmwr_epiweek(today)
+        } else {
+          ref_date <- as.Date(input_date)
+        }
+        targets <- trimws(strsplit("${{ inputs.ensemble_targets }}", ",")[[1]])
+        hubhelpr::generate_hub_ensemble(
+          "${{ inputs.base_hub_path }}", ref_date,
+          "${{ inputs.disease }}", targets
+        )
+        writeLines(sprintf("date=%s", today), Sys.getenv("GITHUB_OUTPUT"))
+
+    - name: "Commit Changes"
+      shell: bash
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git checkout -b "add-${{ inputs.disease }}-ensemble-${{ steps.generate.outputs.date }}"
+        git add .
+        git commit -m "Add ${{ inputs.disease }} ensemble forecasts"
+        git push origin "add-${{ inputs.disease }}-ensemble-${{ steps.generate.outputs.date }}"
+
+    - name: "Create Pull Request"
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        gh pr create --base main \
+          --head "add-${{ inputs.disease }}-ensemble-${{ steps.generate.outputs.date }}" \
+          --title "Add ${{ inputs.disease }} ensemble forecast" \
+          --body "This PR is generated automatically to add a quantile median ensemble forecast."
