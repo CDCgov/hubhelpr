@@ -1,0 +1,18 @@
+name: "Set Up hubhelpr"
+description: "This action sets up R with the hubhelpr package installed."
+inputs: {}
+runs:
+  using: "composite"
+  steps:
+    - name: "Set Up R"
+      uses: r-lib/actions/setup-r@v2
+      with:
+        use-public-rspm: true
+        extra-repositories: "https://hubverse-org.r-universe.dev"
+
+    - name: "Install hubhelpr"
+      uses: r-lib/actions/setup-r-dependencies@v2
+      with:
+        pak-version: "devel"
+        packages: |
+          github::cdcgov/hubhelpr
