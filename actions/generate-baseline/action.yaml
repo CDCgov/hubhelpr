@@ -8,10 +8,14 @@ inputs:
   github_token:
     description: "GitHub token for creating the pull request."
     required: true
-  reference_date:
-    description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the ceiling of the current MMWR epiweek if not provided."
+  base_hub_path:
+    description: "Path to the hub repository root directory."
     required: false
-    default: ""
+    default: "."
+  reference_date:
+    description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the ceiling of the current MMWR epiweek."
+    required: false
+    default: "latest"
 
 runs:
   using: "composite"
@@ -20,29 +24,25 @@ runs:
       id: generate
       shell: Rscript {0}
       run: |
+        today <- lubridate::today()
         input_date <- "${{ inputs.reference_date }}"
-        if (nchar(input_date) == 0) {
-          ref_date <- forecasttools::ceiling_mmwr_epiweek(lubridate::today())
+        if (input_date == "latest") {
+          ref_date <- forecasttools::ceiling_mmwr_epiweek(today)
         } else {
           ref_date <- as.Date(input_date)
         }
-        hubhelpr::generate_hub_baseline(".", ref_date, "${{ inputs.disease }}")
-        hub_name <- hubhelpr::get_hub_name("${{ inputs.disease }}")
-        writeLines(sprintf("hub_name=%s", hub_name), Sys.getenv("GITHUB_OUTPUT"))
-
-    - name: "Set Date"
-      shell: bash
-      run: echo "DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+        hubhelpr::generate_hub_baseline("${{ inputs.base_hub_path }}", ref_date, "${{ inputs.disease }}")
+        writeLines(sprintf("date=%s", today), Sys.getenv("GITHUB_OUTPUT"))
 
     - name: "Commit Changes"
       shell: bash
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git checkout -b "add-${{ inputs.disease }}-baseline-${{ env.DATE }}"
+        git checkout -b "add-${{ inputs.disease }}-baseline-${{ steps.generate.outputs.date }}"
         git add .
-        git commit -m "Add ${{ steps.generate.outputs.hub_name }} baseline forecasts"
-        git push origin "add-${{ inputs.disease }}-baseline-${{ env.DATE }}"
+        git commit -m "Add ${{ inputs.disease }} baseline forecasts"
+        git push origin "add-${{ inputs.disease }}-baseline-${{ steps.generate.outputs.date }}"
 
     - name: "Create Pull Request"
       shell: bash
@@ -50,6 +50,6 @@ runs:
         GH_TOKEN: ${{ inputs.github_token }}
       run: |
         gh pr create --base main \
-          --head "add-${{ inputs.disease }}-baseline-${{ env.DATE }}" \
-          --title "Add ${{ steps.generate.outputs.hub_name }} baseline forecast" \
+          --head "add-${{ inputs.disease }}-baseline-${{ steps.generate.outputs.date }}" \
+          --title "Add ${{ inputs.disease }} baseline forecast" \
           --body "This PR is generated automatically."
