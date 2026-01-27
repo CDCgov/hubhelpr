@@ -4,30 +4,30 @@
 # whether a GitHub user is authorized to modify specific model directories.
 #
 # Testing strategy:
-# - All tests use mockery::stub to mock hubData::load_model_metadata to avoid
-#   needing to create complex hub metadata fixtures
+# - All tests use testthat::local_mocked_bindings to mock hubData::load_model_metadata
+#   to avoid needing to create complex hub metadata fixtures
+# - Since the function works with model IDs and doesn't examine actual files,
+#   no temporary directories or files are created
 # - Tests validate both success cases (authorized users) and various error
 #   cases (unauthorized users, missing metadata, etc.)
 # - Tests verify that error messages are informative and include relevant details
 
 test_that("check_authorized_users succeeds when user authorized for all models", {
-  skip_if_not_installed("mockery")
-  
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  
+  base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("team1-model", "team2-model")
   
   # Mock hubData::load_model_metadata
-  mockery::stub(
-    check_authorized_users,
-    "hubData::load_model_metadata",
-    tibble::tibble(
-      model_id = c("team1-model", "team2-model"),
-      designated_github_users = list(
-        c("user1", "user2"),
-        c("user1", "user3")
+  local_mocked_bindings(
+    load_model_metadata = function(hub_path) {
+      tibble::tibble(
+        model_id = c("team1-model", "team2-model"),
+        designated_github_users = list(
+          c("user1", "user2"),
+          c("user1", "user3")
+        )
       )
-    )
+    },
+    .package = "hubData"
   )
   
   # Should succeed without error
@@ -42,20 +42,18 @@ test_that("check_authorized_users succeeds when user authorized for all models",
 })
 
 test_that("check_authorized_users errors when user not authorized for any model", {
-  skip_if_not_installed("mockery")
-  
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  
+  base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("team1-model")
   
   # Mock hubData::load_model_metadata
-  mockery::stub(
-    check_authorized_users,
-    "hubData::load_model_metadata",
-    tibble::tibble(
-      model_id = "team1-model",
-      designated_github_users = list(c("user1", "user2"))
-    )
+  local_mocked_bindings(
+    load_model_metadata = function(hub_path) {
+      tibble::tibble(
+        model_id = "team1-model",
+        designated_github_users = list(c("user1", "user2"))
+      )
+    },
+    .package = "hubData"
   )
   
   expect_error(
@@ -69,24 +67,22 @@ test_that("check_authorized_users errors when user not authorized for any model"
 })
 
 test_that("check_authorized_users errors when user authorized for some but not all models", {
-  skip_if_not_installed("mockery")
-  
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  
+  base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("team1-model", "team2-model")
   
   # Mock hubData::load_model_metadata
   # user1 authorized for team1-model but not team2-model
-  mockery::stub(
-    check_authorized_users,
-    "hubData::load_model_metadata",
-    tibble::tibble(
-      model_id = c("team1-model", "team2-model"),
-      designated_github_users = list(
-        c("user1", "user2"),
-        c("other-user")
+  local_mocked_bindings(
+    load_model_metadata = function(hub_path) {
+      tibble::tibble(
+        model_id = c("team1-model", "team2-model"),
+        designated_github_users = list(
+          c("user1", "user2"),
+          c("other-user")
+        )
       )
-    )
+    },
+    .package = "hubData"
   )
   
   expect_error(
@@ -110,20 +106,18 @@ test_that("check_authorized_users errors when user authorized for some but not a
 })
 
 test_that("check_authorized_users errors when model has no authorized users", {
-  skip_if_not_installed("mockery")
-  
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  
+  base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("team1-model")
   
   # Mock hubData::load_model_metadata with no designated users
-  mockery::stub(
-    check_authorized_users,
-    "hubData::load_model_metadata",
-    tibble::tibble(
-      model_id = "team1-model",
-      designated_github_users = list(character(0))
-    )
+  local_mocked_bindings(
+    load_model_metadata = function(hub_path) {
+      tibble::tibble(
+        model_id = "team1-model",
+        designated_github_users = list(character(0))
+      )
+    },
+    .package = "hubData"
   )
   
   expect_error(
@@ -137,20 +131,18 @@ test_that("check_authorized_users errors when model has no authorized users", {
 })
 
 test_that("check_authorized_users errors when model directory not found in metadata", {
-  skip_if_not_installed("mockery")
-  
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  
+  base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("unknown-model")
   
   # Mock hubData::load_model_metadata with different models
-  mockery::stub(
-    check_authorized_users,
-    "hubData::load_model_metadata",
-    tibble::tibble(
-      model_id = "team1-model",
-      designated_github_users = list(c("user1", "user2"))
-    )
+  local_mocked_bindings(
+    load_model_metadata = function(hub_path) {
+      tibble::tibble(
+        model_id = "team1-model",
+        designated_github_users = list(c("user1", "user2"))
+      )
+    },
+    .package = "hubData"
   )
   
   expect_error(
@@ -164,20 +156,18 @@ test_that("check_authorized_users errors when model directory not found in metad
 })
 
 test_that("check_authorized_users succeeds with single authorized model", {
-  skip_if_not_installed("mockery")
-  
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  
+  base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("team1-model")
   
   # Mock hubData::load_model_metadata
-  mockery::stub(
-    check_authorized_users,
-    "hubData::load_model_metadata",
-    tibble::tibble(
-      model_id = "team1-model",
-      designated_github_users = list(c("user1"))
-    )
+  local_mocked_bindings(
+    load_model_metadata = function(hub_path) {
+      tibble::tibble(
+        model_id = "team1-model",
+        designated_github_users = list(c("user1"))
+      )
+    },
+    .package = "hubData"
   )
   
   expect_message(
@@ -191,20 +181,18 @@ test_that("check_authorized_users succeeds with single authorized model", {
 })
 
 test_that("check_authorized_users handles NA values in designated_github_users", {
-  skip_if_not_installed("mockery")
-  
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  
+  base_hub_path <- "/fake/hub/path"
   changed_model_ids <- c("team1-model")
   
   # Mock hubData::load_model_metadata with NA values
-  mockery::stub(
-    check_authorized_users,
-    "hubData::load_model_metadata",
-    tibble::tibble(
-      model_id = "team1-model",
-      designated_github_users = list(c("user1", NA_character_, "user2"))
-    )
+  local_mocked_bindings(
+    load_model_metadata = function(hub_path) {
+      tibble::tibble(
+        model_id = "team1-model",
+        designated_github_users = list(c("user1", NA_character_, "user2"))
+      )
+    },
+    .package = "hubData"
   )
   
   expect_message(

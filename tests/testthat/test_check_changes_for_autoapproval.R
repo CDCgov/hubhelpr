@@ -6,33 +6,26 @@
 #
 # Testing strategy:
 # - Tests that don't require authorization checking can run without mocking
-# - Tests that require authorization checking use mockery::stub to mock
-#   hubData::load_model_metadata, avoiding the need for complex hub fixtures
+# - Tests that require authorization checking use testthat::local_mocked_bindings
+#   to mock hubData::load_model_metadata, avoiding the need for complex hub fixtures
+# - Since the function works with file paths and doesn't examine actual files,
+#   no temporary directories or files are created
 # - Tests validate both success cases (authorized changes) and error cases
 #   (unauthorized changes, files outside model-output, etc.)
 
 test_that("check_changes_for_autoapproval succeeds with valid changes to model-output", {
-  skip_if_not_installed("mockery")
-  
-  # Create a temporary hub directory structure
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  model_output_dir <- fs::path(base_hub_path, "model-output", "team1-model")
-  fs::dir_create(model_output_dir)
-  
-  # Create a test file in model-output
-  test_file <- fs::path(model_output_dir, "test.csv")
-  writeLines("test", test_file)
-  
-  changed_files <- c(as.character(test_file))
+  base_hub_path <- "/fake/hub/path"
+  changed_files <- c("/fake/hub/path/model-output/team1-model/test.csv")
   
   # Mock hubData::load_model_metadata to return expected structure
-  mockery::stub(
-    check_changes_for_autoapproval,
-    "hubData::load_model_metadata",
-    tibble::tibble(
-      model_id = "team1-model",
-      designated_github_users = list(c("user1", "user2"))
-    )
+  local_mocked_bindings(
+    load_model_metadata = function(hub_path) {
+      tibble::tibble(
+        model_id = "team1-model",
+        designated_github_users = list(c("user1", "user2"))
+      )
+    },
+    .package = "hubData"
   )
   
   # Should not raise an error for authorized user
@@ -46,7 +39,7 @@ test_that("check_changes_for_autoapproval succeeds with valid changes to model-o
 })
 
 test_that("check_changes_for_autoapproval errors when no changed files", {
-  base_hub_path <- withr::local_tempdir("test_hub_")
+  base_hub_path <- "/fake/hub/path"
   
   expect_error(
     check_changes_for_autoapproval(
@@ -59,15 +52,8 @@ test_that("check_changes_for_autoapproval errors when no changed files", {
 })
 
 test_that("check_changes_for_autoapproval errors when files outside model-output", {
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  
-  # Create a file outside model-output
-  other_dir <- fs::path(base_hub_path, "other-dir")
-  fs::dir_create(other_dir)
-  test_file <- fs::path(other_dir, "test.txt")
-  writeLines("test", test_file)
-  
-  changed_files <- c(as.character(test_file))
+  base_hub_path <- "/fake/hub/path"
+  changed_files <- c("/fake/hub/path/other-dir/test.txt")
   
   expect_error(
     check_changes_for_autoapproval(
@@ -80,21 +66,11 @@ test_that("check_changes_for_autoapproval errors when files outside model-output
 })
 
 test_that("check_changes_for_autoapproval errors when files both inside and outside model-output", {
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  
-  # Create a file inside model-output
-  model_output_dir <- fs::path(base_hub_path, "model-output", "team1-model")
-  fs::dir_create(model_output_dir)
-  model_file <- fs::path(model_output_dir, "test.csv")
-  writeLines("test", model_file)
-  
-  # Create a file outside model-output
-  other_dir <- fs::path(base_hub_path, "other-dir")
-  fs::dir_create(other_dir)
-  other_file <- fs::path(other_dir, "test.txt")
-  writeLines("test", other_file)
-  
-  changed_files <- c(as.character(model_file), as.character(other_file))
+  base_hub_path <- "/fake/hub/path"
+  changed_files <- c(
+    "/fake/hub/path/model-output/team1-model/test.csv",
+    "/fake/hub/path/other-dir/test.txt"
+  )
   
   expect_error(
     check_changes_for_autoapproval(
@@ -107,25 +83,18 @@ test_that("check_changes_for_autoapproval errors when files both inside and outs
 })
 
 test_that("check_changes_for_autoapproval errors when user not authorized for any model", {
-  skip_if_not_installed("mockery")
-  
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  model_output_dir <- fs::path(base_hub_path, "model-output", "team1-model")
-  fs::dir_create(model_output_dir)
-  
-  test_file <- fs::path(model_output_dir, "test.csv")
-  writeLines("test", test_file)
-  
-  changed_files <- c(as.character(test_file))
+  base_hub_path <- "/fake/hub/path"
+  changed_files <- c("/fake/hub/path/model-output/team1-model/test.csv")
   
   # Mock hubData::load_model_metadata to return model with different authorized users
-  mockery::stub(
-    check_changes_for_autoapproval,
-    "hubData::load_model_metadata",
-    tibble::tibble(
-      model_id = "team1-model",
-      designated_github_users = list(c("other-user1", "other-user2"))
-    )
+  local_mocked_bindings(
+    load_model_metadata = function(hub_path) {
+      tibble::tibble(
+        model_id = "team1-model",
+        designated_github_users = list(c("other-user1", "other-user2"))
+      )
+    },
+    .package = "hubData"
   )
   
   expect_error(
@@ -139,36 +108,25 @@ test_that("check_changes_for_autoapproval errors when user not authorized for an
 })
 
 test_that("check_changes_for_autoapproval errors when user authorized for some models but not all", {
-  skip_if_not_installed("mockery")
-  
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  
-  # Create two model directories
-  model1_dir <- fs::path(base_hub_path, "model-output", "team1-model")
-  model2_dir <- fs::path(base_hub_path, "model-output", "team2-model")
-  fs::dir_create(model1_dir)
-  fs::dir_create(model2_dir)
-  
-  # Create files in both models
-  file1 <- fs::path(model1_dir, "test1.csv")
-  file2 <- fs::path(model2_dir, "test2.csv")
-  writeLines("test", file1)
-  writeLines("test", file2)
-  
-  changed_files <- c(as.character(file1), as.character(file2))
+  base_hub_path <- "/fake/hub/path"
+  changed_files <- c(
+    "/fake/hub/path/model-output/team1-model/test1.csv",
+    "/fake/hub/path/model-output/team2-model/test2.csv"
+  )
   
   # Mock hubData::load_model_metadata
   # user1 is authorized for team1-model but not team2-model
-  mockery::stub(
-    check_changes_for_autoapproval,
-    "hubData::load_model_metadata",
-    tibble::tibble(
-      model_id = c("team1-model", "team2-model"),
-      designated_github_users = list(
-        c("user1", "user2"),
-        c("other-user")
+  local_mocked_bindings(
+    load_model_metadata = function(hub_path) {
+      tibble::tibble(
+        model_id = c("team1-model", "team2-model"),
+        designated_github_users = list(
+          c("user1", "user2"),
+          c("other-user")
+        )
       )
-    )
+    },
+    .package = "hubData"
   )
   
   expect_error(
@@ -182,36 +140,25 @@ test_that("check_changes_for_autoapproval errors when user authorized for some m
 })
 
 test_that("check_changes_for_autoapproval succeeds when user authorized for multiple models", {
-  skip_if_not_installed("mockery")
-  
-  base_hub_path <- withr::local_tempdir("test_hub_")
-  
-  # Create two model directories
-  model1_dir <- fs::path(base_hub_path, "model-output", "team1-model")
-  model2_dir <- fs::path(base_hub_path, "model-output", "team2-model")
-  fs::dir_create(model1_dir)
-  fs::dir_create(model2_dir)
-  
-  # Create files in both models
-  file1 <- fs::path(model1_dir, "test1.csv")
-  file2 <- fs::path(model2_dir, "test2.csv")
-  writeLines("test", file1)
-  writeLines("test", file2)
-  
-  changed_files <- c(as.character(file1), as.character(file2))
+  base_hub_path <- "/fake/hub/path"
+  changed_files <- c(
+    "/fake/hub/path/model-output/team1-model/test1.csv",
+    "/fake/hub/path/model-output/team2-model/test2.csv"
+  )
   
   # Mock hubData::load_model_metadata
   # user1 is authorized for both models
-  mockery::stub(
-    check_changes_for_autoapproval,
-    "hubData::load_model_metadata",
-    tibble::tibble(
-      model_id = c("team1-model", "team2-model"),
-      designated_github_users = list(
-        c("user1", "user2"),
-        c("user1", "other-user")
+  local_mocked_bindings(
+    load_model_metadata = function(hub_path) {
+      tibble::tibble(
+        model_id = c("team1-model", "team2-model"),
+        designated_github_users = list(
+          c("user1", "user2"),
+          c("user1", "other-user")
+        )
       )
-    )
+    },
+    .package = "hubData"
   )
   
   expect_silent(

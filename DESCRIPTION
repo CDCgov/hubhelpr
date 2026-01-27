@@ -48,7 +48,6 @@ Remotes:
     epiprocess=github::cmu-delphi/epiprocess
 Suggests:
     httptest2,
-    mockery,
     testthat (>= 3.0.0),
     tibble,
     withr
