@@ -1,0 +1,55 @@
+name: "Generate Baseline Forecast"
+description: "Within a hub: generate baseline forecasts, commit to a new branch, and create a pull request. Requires R and hubhelpr to be installed beforehand."
+
+inputs:
+  disease:
+    description: "Disease identifier ('covid' or 'rsv')."
+    required: true
+  github_token:
+    description: "GitHub token for creating the pull request."
+    required: true
+  reference_date:
+    description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the ceiling of the current MMWR epiweek if not provided."
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Generate Baseline Forecast"
+      id: generate
+      shell: Rscript {0}
+      run: |
+        input_date <- "${{ inputs.reference_date }}"
+        if (nchar(input_date) == 0) {
+          ref_date <- forecasttools::ceiling_mmwr_epiweek(lubridate::today())
+        } else {
+          ref_date <- as.Date(input_date)
+        }
+        hubhelpr::generate_hub_baseline(".", ref_date, "${{ inputs.disease }}")
+        hub_name <- hubhelpr::get_hub_name("${{ inputs.disease }}")
+        writeLines(sprintf("hub_name=%s", hub_name), Sys.getenv("GITHUB_OUTPUT"))
+
+    - name: "Set Date"
+      shell: bash
+      run: echo "DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+
+    - name: "Commit Changes"
+      shell: bash
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git checkout -b "add-${{ inputs.disease }}-baseline-${{ env.DATE }}"
+        git add .
+        git commit -m "Add ${{ steps.generate.outputs.hub_name }} baseline forecasts"
+        git push origin "add-${{ inputs.disease }}-baseline-${{ env.DATE }}"
+
+    - name: "Create Pull Request"
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        gh pr create --base main \
+          --head "add-${{ inputs.disease }}-baseline-${{ env.DATE }}" \
+          --title "Add ${{ steps.generate.outputs.hub_name }} baseline forecast" \
+          --body "This PR is generated automatically."
