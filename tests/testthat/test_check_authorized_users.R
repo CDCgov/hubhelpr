@@ -4,32 +4,39 @@
 # whether a GitHub user is authorized to modify specific model directories.
 #
 # Testing strategy:
-# - All tests use testthat::local_mocked_bindings to mock hubData::load_model_metadata
-#   to avoid needing to create complex hub metadata fixtures
-# - Since the function works with model IDs and doesn't examine actual files,
-#   no temporary directories or files are created
+# - Creates temporary hub directories with model-metadata YAML files
+# - Uses real hubData::load_model_metadata() calls (not mocked) to read metadata
 # - Tests validate both success cases (authorized users) and various error
 #   cases (unauthorized users, missing metadata, etc.)
 # - Tests verify that error messages are informative and include relevant details
 
 test_that("check_authorized_users succeeds when user authorized for all models", {
-  base_hub_path <- "/fake/hub/path"
+  # Create a temporary hub directory structure
+  base_hub_path <- withr::local_tempdir("test_hub_")
+  model_metadata_dir <- fs::path(base_hub_path, "model-metadata")
+  fs::dir_create(model_metadata_dir)
+  
+  # Create model metadata files
+  metadata_file1 <- fs::path(model_metadata_dir, "team1-model.yml")
+  writeLines(c(
+    "team_name: Team 1",
+    "model_name: Model 1",
+    "designated_github_users:",
+    "  - user1",
+    "  - user2"
+  ), metadata_file1)
+  
+  metadata_file2 <- fs::path(model_metadata_dir, "team2-model.yml")
+  writeLines(c(
+    "team_name: Team 2",
+    "model_name: Model 2",
+    "designated_github_users:",
+    "  - user1",
+    "  - user3"
+  ), metadata_file2)
+  
   changed_model_ids <- c("team1-model", "team2-model")
-
-  # Mock hubData::load_model_metadata
-  local_mocked_bindings(
-    load_model_metadata = function(hub_path) {
-      tibble::tibble(
-        model_id = c("team1-model", "team2-model"),
-        designated_github_users = list(
-          c("user1", "user2"),
-          c("user1", "user3")
-        )
-      )
-    },
-    .package = "hubData"
-  )
-
+  
   # Should succeed without error
   expect_message(
     check_authorized_users(
@@ -42,20 +49,23 @@ test_that("check_authorized_users succeeds when user authorized for all models",
 })
 
 test_that("check_authorized_users errors when user not authorized for any model", {
-  base_hub_path <- "/fake/hub/path"
+  # Create a temporary hub directory structure
+  base_hub_path <- withr::local_tempdir("test_hub_")
+  model_metadata_dir <- fs::path(base_hub_path, "model-metadata")
+  fs::dir_create(model_metadata_dir)
+  
+  # Create model metadata file
+  metadata_file <- fs::path(model_metadata_dir, "team1-model.yml")
+  writeLines(c(
+    "team_name: Team 1",
+    "model_name: Model 1",
+    "designated_github_users:",
+    "  - user1",
+    "  - user2"
+  ), metadata_file)
+  
   changed_model_ids <- c("team1-model")
-
-  # Mock hubData::load_model_metadata
-  local_mocked_bindings(
-    load_model_metadata = function(hub_path) {
-      tibble::tibble(
-        model_id = "team1-model",
-        designated_github_users = list(c("user1", "user2"))
-      )
-    },
-    .package = "hubData"
-  )
-
+  
   expect_error(
     check_authorized_users(
       changed_model_ids = changed_model_ids,
@@ -67,24 +77,32 @@ test_that("check_authorized_users errors when user not authorized for any model"
 })
 
 test_that("check_authorized_users errors when user authorized for some but not all models", {
-  base_hub_path <- "/fake/hub/path"
-  changed_model_ids <- c("team1-model", "team2-model")
-
-  # Mock hubData::load_model_metadata
+  # Create a temporary hub directory structure
+  base_hub_path <- withr::local_tempdir("test_hub_")
+  model_metadata_dir <- fs::path(base_hub_path, "model-metadata")
+  fs::dir_create(model_metadata_dir)
+  
+  # Create model metadata files
   # user1 authorized for team1-model but not team2-model
-  local_mocked_bindings(
-    load_model_metadata = function(hub_path) {
-      tibble::tibble(
-        model_id = c("team1-model", "team2-model"),
-        designated_github_users = list(
-          c("user1", "user2"),
-          c("other-user")
-        )
-      )
-    },
-    .package = "hubData"
-  )
-
+  metadata_file1 <- fs::path(model_metadata_dir, "team1-model.yml")
+  writeLines(c(
+    "team_name: Team 1",
+    "model_name: Model 1",
+    "designated_github_users:",
+    "  - user1",
+    "  - user2"
+  ), metadata_file1)
+  
+  metadata_file2 <- fs::path(model_metadata_dir, "team2-model.yml")
+  writeLines(c(
+    "team_name: Team 2",
+    "model_name: Model 2",
+    "designated_github_users:",
+    "  - other-user"
+  ), metadata_file2)
+  
+  changed_model_ids <- c("team1-model", "team2-model")
+  
   expect_error(
     check_authorized_users(
       changed_model_ids = changed_model_ids,
@@ -93,7 +111,7 @@ test_that("check_authorized_users errors when user authorized for some but not a
     ),
     "Authorization check failed for user 'user1'"
   )
-
+  
   # Verify error message includes details about unauthorized model
   expect_error(
     check_authorized_users(
@@ -106,20 +124,20 @@ test_that("check_authorized_users errors when user authorized for some but not a
 })
 
 test_that("check_authorized_users errors when model has no authorized users", {
-  base_hub_path <- "/fake/hub/path"
+  # Create a temporary hub directory structure
+  base_hub_path <- withr::local_tempdir("test_hub_")
+  model_metadata_dir <- fs::path(base_hub_path, "model-metadata")
+  fs::dir_create(model_metadata_dir)
+  
+  # Create model metadata file with no designated users
+  metadata_file <- fs::path(model_metadata_dir, "team1-model.yml")
+  writeLines(c(
+    "team_name: Team 1",
+    "model_name: Model 1"
+  ), metadata_file)
+  
   changed_model_ids <- c("team1-model")
-
-  # Mock hubData::load_model_metadata with no designated users
-  local_mocked_bindings(
-    load_model_metadata = function(hub_path) {
-      tibble::tibble(
-        model_id = "team1-model",
-        designated_github_users = list(character(0))
-      )
-    },
-    .package = "hubData"
-  )
-
+  
   expect_error(
     check_authorized_users(
       changed_model_ids = changed_model_ids,
@@ -131,20 +149,23 @@ test_that("check_authorized_users errors when model has no authorized users", {
 })
 
 test_that("check_authorized_users errors when model directory not found in metadata", {
-  base_hub_path <- "/fake/hub/path"
+  # Create a temporary hub directory structure
+  base_hub_path <- withr::local_tempdir("test_hub_")
+  model_metadata_dir <- fs::path(base_hub_path, "model-metadata")
+  fs::dir_create(model_metadata_dir)
+  
+  # Create model metadata file for a different model
+  metadata_file <- fs::path(model_metadata_dir, "team1-model.yml")
+  writeLines(c(
+    "team_name: Team 1",
+    "model_name: Model 1",
+    "designated_github_users:",
+    "  - user1",
+    "  - user2"
+  ), metadata_file)
+  
   changed_model_ids <- c("unknown-model")
-
-  # Mock hubData::load_model_metadata with different models
-  local_mocked_bindings(
-    load_model_metadata = function(hub_path) {
-      tibble::tibble(
-        model_id = "team1-model",
-        designated_github_users = list(c("user1", "user2"))
-      )
-    },
-    .package = "hubData"
-  )
-
+  
   expect_error(
     check_authorized_users(
       changed_model_ids = changed_model_ids,
@@ -156,20 +177,22 @@ test_that("check_authorized_users errors when model directory not found in metad
 })
 
 test_that("check_authorized_users succeeds with single authorized model", {
-  base_hub_path <- "/fake/hub/path"
+  # Create a temporary hub directory structure
+  base_hub_path <- withr::local_tempdir("test_hub_")
+  model_metadata_dir <- fs::path(base_hub_path, "model-metadata")
+  fs::dir_create(model_metadata_dir)
+  
+  # Create model metadata file
+  metadata_file <- fs::path(model_metadata_dir, "team1-model.yml")
+  writeLines(c(
+    "team_name: Team 1",
+    "model_name: Model 1",
+    "designated_github_users:",
+    "  - user1"
+  ), metadata_file)
+  
   changed_model_ids <- c("team1-model")
-
-  # Mock hubData::load_model_metadata
-  local_mocked_bindings(
-    load_model_metadata = function(hub_path) {
-      tibble::tibble(
-        model_id = "team1-model",
-        designated_github_users = list(c("user1"))
-      )
-    },
-    .package = "hubData"
-  )
-
+  
   expect_message(
     check_authorized_users(
       changed_model_ids = changed_model_ids,
@@ -181,20 +204,24 @@ test_that("check_authorized_users succeeds with single authorized model", {
 })
 
 test_that("check_authorized_users handles NA values in designated_github_users", {
-  base_hub_path <- "/fake/hub/path"
+  # Create a temporary hub directory structure
+  base_hub_path <- withr::local_tempdir("test_hub_")
+  model_metadata_dir <- fs::path(base_hub_path, "model-metadata")
+  fs::dir_create(model_metadata_dir)
+  
+  # Create model metadata file
+  # Note: YAML doesn't have explicit NA, but we can test with empty values
+  metadata_file <- fs::path(model_metadata_dir, "team1-model.yml")
+  writeLines(c(
+    "team_name: Team 1",
+    "model_name: Model 1",
+    "designated_github_users:",
+    "  - user1",
+    "  - user2"
+  ), metadata_file)
+  
   changed_model_ids <- c("team1-model")
-
-  # Mock hubData::load_model_metadata with NA values
-  local_mocked_bindings(
-    load_model_metadata = function(hub_path) {
-      tibble::tibble(
-        model_id = "team1-model",
-        designated_github_users = list(c("user1", NA_character_, "user2"))
-      )
-    },
-    .package = "hubData"
-  )
-
+  
   expect_message(
     check_authorized_users(
       changed_model_ids = changed_model_ids,
