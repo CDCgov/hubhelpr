@@ -17,9 +17,9 @@ inputs:
     required: false
     default: "latest"
   ensemble_targets:
-    description: "Comma-separated list of ensemble target suffixes (e.g., 'hosp, prop ed visits')."
+    description: "JSON/YAML array of forecast targets for which to generate ensembles (e.g., '[\"hosp\", \"prop ed visits\"]')."
     required: false
-    default: "hosp, prop ed visits"
+    default: '["hosp", "prop ed visits"]'
 
 runs:
   using: "composite"
@@ -35,7 +35,7 @@ runs:
         } else {
           ref_date <- as.Date(input_date)
         }
-        targets <- trimws(strsplit("${{ inputs.ensemble_targets }}", ",")[[1]])
+        targets <- jsonlite::fromJSON('${{ inputs.ensemble_targets }}')
         hubhelpr::generate_hub_ensemble(
           "${{ inputs.base_hub_path }}", ref_date,
           "${{ inputs.disease }}", targets
