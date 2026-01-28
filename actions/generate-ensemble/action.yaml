@@ -30,7 +30,7 @@ runs:
       run: |
         today <- lubridate::today()
         input_date <- "${{ inputs.reference_date }}"
-        if (input_date == "latest") {
+        if (input_date == "latest" || nchar(input_date) == 0) {
           ref_date <- forecasttools::ceiling_mmwr_epiweek(today)
         } else {
           ref_date <- as.Date(input_date)
