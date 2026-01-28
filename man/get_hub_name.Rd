@@ -7,11 +7,11 @@
 get_hub_name(disease)
 }
 \arguments{
-\item{disease}{Character. Disease identifier ("covid"
-or "rsv").}
+\item{disease}{Character. Disease identifier ("covid",
+"rsv", or "flu").}
 }
 \value{
-Character. Hub name (e.g., "CovidHub", "RSVHub").
+Character. Hub name (e.g., "CovidHub", "RSVHub", "FluSight").
 }
 \description{
 Converts disease identifier to hub display name format
