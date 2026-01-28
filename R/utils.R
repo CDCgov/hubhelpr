@@ -3,17 +3,17 @@
 #' Converts disease identifier to hub display name format
 #' used for identifying hub-baseline and hub-ensemble.
 #'
-#' @param disease Character. Disease identifier ("covid"
-#' or "rsv").
-#' @return Character. Hub name (e.g., "CovidHub", "RSVHub").
+#' @param disease Character. Disease identifier ("covid",
+#' "rsv", or "flu").
+#' @return Character. Hub name (e.g., "CovidHub", "RSVHub", "FluSight").
 #' @export
 get_hub_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
-
+  checkmate::assert_names(disease, subset.of = c("covid", "rsv", "flu"))
   dplyr::case_when(
     disease == "covid" ~ "CovidHub",
-    disease == "rsv" ~ "RSVHub"
+    disease == "rsv" ~ "RSVHub",
+    disease == "flu" ~ "FluSight"
   )
 }
 
