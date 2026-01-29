@@ -14,7 +14,7 @@ inputs:
     default: "."
   reference_date:
     description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the last day of the current MMWR epiweek."
-    required: false
+    required: true
     default: "latest"
 
 runs:
