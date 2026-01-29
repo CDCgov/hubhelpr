@@ -15,7 +15,6 @@ inputs:
   reference_date:
     description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the last day of the current MMWR epiweek."
     required: true
-    default: "latest"
   ensemble_targets:
     description: "JSON/YAML array of forecast targets for which to generate ensembles (e.g., '[\"hosp\", \"prop ed visits\"]')."
     required: false
