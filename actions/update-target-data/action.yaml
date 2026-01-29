@@ -1,5 +1,5 @@
 name: "Update Target Data"
-description: "Within a hub: pull NHSN/NSSP target data, generate oracle output, and create a pull request if there are changes. Requires R and hubhelpr to be installed beforehand."
+description: "Within a hub: pull NHSN/NSSP target data, generate hubverse format target data (time series and oracle output formats), and create a pull request if there are changes. Requires R and hubhelpr to be installed beforehand."
 
 inputs:
   disease:
