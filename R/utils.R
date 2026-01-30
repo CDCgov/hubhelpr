@@ -84,7 +84,7 @@ round_to_place <- function(value) {
 #' @param target Character. Target name (e.g., "wk inc covid hosp").
 #' @param disease Character. Disease identifier ("covid" or "rsv").
 #' @return List with section_header, target_description, target_short,
-#' data_source, value_unit, format_value, and format_forecast elements.
+#' data_source, value_unit, and format_forecast elements.
 #' Returns NULL if target type is not recognized.
 #' @noRd
 generate_target_webtext_config <- function(target, disease) {
@@ -99,7 +99,6 @@ generate_target_webtext_config <- function(target, disease) {
       target_short = glue::glue("{disease_name} hospital admissions"),
       data_source = "NHSN data",
       value_unit = "",
-      format_value = function(x) round(x, -2),
       format_forecast = function(x) round_to_place(x)
     )
   } else if (is_ed_target(target)) {
@@ -111,8 +110,7 @@ generate_target_webtext_config <- function(target, disease) {
       target_short = glue::glue("{disease_name} ED visit proportions"),
       data_source = "NSSP data",
       value_unit = "%",
-      format_value = function(x) round(x * 100, 1),
-      format_forecast = function(x) round(x * 100, 1)
+      format_forecast = function(x) signif(x * 100, 2)
     )
   } else {
     cli::cli_warn("Unknown target type for: {target}, skipping.")
