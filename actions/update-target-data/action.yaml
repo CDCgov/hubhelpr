@@ -1,5 +1,5 @@
 name: "Update Target Data"
-description: "Within a hub: pull NHSN/NSSP target data, generate oracle output, and create a pull request if there are changes. Requires R and hubhelpr to be installed beforehand."
+description: "Within a hub: pull NHSN/NSSP target data, generate hubverse format target data (time series and oracle output formats), and create a pull request if there are changes. Requires R and hubhelpr to be installed beforehand."
 
 inputs:
   disease:
@@ -36,8 +36,6 @@ runs:
       env:
         DATA_CDC_GOV_API_KEY_ID: ${{ inputs.api_key_id }}
         DATA_CDC_GOV_API_KEY_SECRET: ${{ inputs.api_key_secret }}
-        NHSN_API_KEY_ID: ${{ inputs.api_key_id }}
-        NHSN_API_KEY_SECRET: ${{ inputs.api_key_secret }}
       run: |
         today <- lubridate::today()
         hubhelpr::update_hub_target_data(
