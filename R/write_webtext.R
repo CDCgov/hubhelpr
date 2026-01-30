@@ -206,7 +206,7 @@ generate_target_text_block <- function(
       week_end_date_formatted = format(.data$week_ending_date, "%B %d, %Y")
     )
 
-  last_reported <- config$format_value(last_reported_target_data$value)
+  last_reported <- config$format_forecast(last_reported_target_data$value)
   value_unit <- config$value_unit
   target_description <- config$target_description
   target_short <- config$target_short
