@@ -42,7 +42,10 @@ update_hub_target_data <- function(
   nssp_update_local = FALSE
 ) {
   if (!disease %in% supported_diseases) {
-    stop("'disease' must be one of: ", paste(supported_diseases, collapse = ", "))
+    stop(
+      "'disease' must be one of: ",
+      paste(supported_diseases, collapse = ", ")
+    )
   }
   output_dirpath <- fs::path(base_hub_path, "target-data")
   fs::dir_create(output_dirpath)
