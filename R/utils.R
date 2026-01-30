@@ -1,3 +1,12 @@
+#' Supported disease identifiers.
+#'
+#' Character vector of disease identifiers recognized by
+#' hubhelpr functions.
+#'
+#' @export
+supported_diseases <- c("covid", "rsv")
+
+
 #' Get hub display name for a given disease.
 #'
 #' Converts disease identifier to hub display name format
@@ -9,7 +18,7 @@
 #' @export
 get_hub_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_names(disease, subset.of = supported_diseases)
 
   dplyr::case_when(
     disease == "covid" ~ "CovidHub",
@@ -29,7 +38,7 @@ get_hub_name <- function(disease) {
 #' @export
 get_hub_repo_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_names(disease, subset.of = supported_diseases)
 
   dplyr::case_when(
     disease == "covid" ~ "covid19-forecast-hub",
@@ -49,7 +58,7 @@ get_hub_repo_name <- function(disease) {
 #' @export
 get_disease_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_names(disease, subset.of = supported_diseases)
 
   dplyr::case_when(
     disease == "covid" ~ "COVID-19",
@@ -147,6 +156,59 @@ is_hosp_target <- function(target) {
 #' @export
 is_ed_target <- function(target) {
   stringr::str_ends(target, "prop ed visits")
+}
+
+
+#' Get unique target suffixes from hub time-series data.
+#'
+#' Reads the target-data time-series and extracts unique
+#' target suffixes (e.g., "hosp", "prop ed visits") for a
+#' given disease.
+#'
+#' @param base_hub_path Path to the base hub directory.
+#' @param disease Character. Disease identifier ("covid" or
+#' "rsv").
+#' @return Character vector of unique target suffixes.
+#' @export
+get_unique_targets <- function(base_hub_path, disease) {
+  checkmate::assert_scalar(disease)
+  checkmate::assert_names(disease, subset.of = supported_diseases)
+
+  hub_target_data <- hubData::connect_target_timeseries(base_hub_path) |>
+    dplyr::collect()
+
+  unique_targets <- unique(hub_target_data$target)
+
+  prefix <- glue::glue("wk inc {disease} ")
+  target_suffixes <- unique_targets |>
+    stringr::str_subset(paste0("^", prefix)) |>
+    stringr::str_remove(paste0("^", prefix))
+
+  if (length(target_suffixes) == 0) {
+    cli::cli_abort(
+      "No targets found in time-series data matching disease '{disease}'."
+    )
+  }
+
+  return(target_suffixes)
+}
+
+
+#' Get human-readable label for a target suffix.
+#'
+#' Converts target suffix to a human-readable label for
+#' use in error messages and assertions.
+#'
+#' @param target_suffix Character. Target suffix (e.g., "hosp",
+#' "prop ed visits").
+#' @return Character. Human-readable label.
+#' @export
+get_target_label <- function(target_suffix) {
+  dplyr::case_when(
+    target_suffix == "hosp" ~ "Hospital Admissions",
+    target_suffix == "prop ed visits" ~ "Proportion ED Visits",
+    TRUE ~ target_suffix
+  )
 }
 
 

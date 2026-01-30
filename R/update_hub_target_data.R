@@ -41,8 +41,8 @@ update_hub_target_data <- function(
   legacy_file = FALSE,
   nssp_update_local = FALSE
 ) {
-  if (!disease %in% c("covid", "rsv")) {
-    stop("'disease' must be either 'covid' or 'rsv'")
+  if (!disease %in% supported_diseases) {
+    stop("'disease' must be one of: ", paste(supported_diseases, collapse = ", "))
   }
   output_dirpath <- fs::path(base_hub_path, "target-data")
   fs::dir_create(output_dirpath)
