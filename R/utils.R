@@ -176,10 +176,10 @@ get_unique_targets <- function(base_hub_path, disease) {
   checkmate::assert_scalar(disease)
   checkmate::assert_names(disease, subset.of = supported_diseases)
 
-  hub_target_data <- hubData::connect_target_timeseries(base_hub_path) |>
-    dplyr::collect()
-
-  unique_targets <- unique(hub_target_data$target)
+  unique_targets <- hubData::connect_target_timeseries(base_hub_path) |>
+    dplyr::distinct(target) |>
+    dplyr::collect() |>
+    dplyr::pull(target)
 
   prefix <- glue::glue("wk inc {disease} ")
   target_suffixes <- unique_targets |>
