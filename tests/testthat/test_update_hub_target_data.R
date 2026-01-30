@@ -51,8 +51,8 @@ test_that("update_hub_target_data errors for unsupported disease", {
   expect_error(
     update_hub_target_data(
       base_hub_path = tempdir(),
-      disease = "flu"
+      disease = "measles"
     ),
-    "'disease' must be either 'covid' or 'rsv'"
+    "'disease' must be one of"
   )
 })
