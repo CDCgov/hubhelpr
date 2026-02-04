@@ -36,13 +36,13 @@ runs:
         }
         input_targets <- '${{ inputs.targets }}'
         if (nchar(input_targets) == 0) {
-          targets <- NULL
+          target_suffixes <- NULL
         } else {
-          targets <- jsonlite::fromJSON(input_targets)
+          target_suffixes <- jsonlite::fromJSON(input_targets)
         }
         hubhelpr::generate_hub_baseline(
           "${{ inputs.base_hub_path }}", ref_date,
-          "${{ inputs.disease }}", targets
+          "${{ inputs.disease }}", target_suffixes = target_suffixes
         )
         writeLines(sprintf("date=%s", today), Sys.getenv("GITHUB_OUTPUT"))
 

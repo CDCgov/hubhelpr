@@ -120,7 +120,7 @@ make_baseline_forecast <- function(
 #' @param base_hub_path Path to the base hub directory.
 #' @param reference_date Reference date (should be a Saturday).
 #' @param disease Disease name ("covid" or "rsv").
-#' @param targets Character vector of target suffixes to
+#' @param target_suffixes Character vector of target suffixes to
 #' generate baselines for (e.g., c("hosp", "prop ed
 #' visits")). Defaults to NULL, which generates
 #' baselines for all unique targets in the time-series data.
@@ -136,7 +136,7 @@ generate_hub_baseline <- function(
   base_hub_path,
   reference_date,
   disease,
-  targets = NULL,
+  target_suffixes = NULL,
   as_of = "latest",
   output_format = "csv"
 ) {
@@ -159,10 +159,10 @@ generate_hub_baseline <- function(
 
   available_targets <- get_unique_targets(base_hub_path, disease)
 
-  if (is.null(targets)) {
-    targets <- available_targets
+  if (is.null(target_suffixes)) {
+    target_suffixes <- available_targets
   } else {
-    invalid_targets <- setdiff(targets, available_targets)
+    invalid_targets <- setdiff(target_suffixes, available_targets)
     if (length(invalid_targets) > 0) {
       cli::cli_abort(
         c(
@@ -184,7 +184,7 @@ generate_hub_baseline <- function(
     dplyr::collect() |>
     forecasttools::hub_target_data_as_of(as_of)
 
-  all_preds <- purrr::map(targets, function(target_suffix) {
+  all_preds <- purrr::map(target_suffixes, function(target_suffix) {
     target_name <- glue::glue("wk inc {disease} {target_suffix}")
     target_label <- get_target_label(target_suffix)
     make_baseline_forecast(

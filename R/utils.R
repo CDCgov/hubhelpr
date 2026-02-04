@@ -1,10 +1,21 @@
 #' Supported disease identifiers.
 #'
-#' Character vector of disease identifiers recognized by
-#' hubhelpr functions.
+#' Character vector of disease identifiers with full
+#' forecast pipeline support (baseline and ensemble
+#' generation).
 #'
 #' @export
-supported_diseases <- c("covid", "rsv", "flu")
+supported_diseases <- c("covid", "rsv")
+
+
+#' Recognized disease identifiers.
+#'
+#' Character vector of all disease identifiers recognized
+#' by hubhelpr utility functions. Includes diseases without
+#' full forecast pipeline support.
+#'
+#' @export
+recognized_diseases <- c("covid", "rsv", "flu")
 
 
 #' Get hub display name for a given disease.
@@ -18,7 +29,7 @@ supported_diseases <- c("covid", "rsv", "flu")
 #' @export
 get_hub_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = supported_diseases)
+  checkmate::assert_names(disease, subset.of = recognized_diseases)
 
   dplyr::case_when(
     disease == "covid" ~ "CovidHub",
@@ -33,13 +44,13 @@ get_hub_name <- function(disease) {
 #' Converts disease identifier to corresponding GitHub
 #' repository name.
 #'
-#' @param disease Character. Disease identifier ("covid"
-#' or "rsv").
+#' @param disease Character. Disease identifier ("covid",
+#' "rsv", or "flu").
 #' @return Character. GitHub repository name.
 #' @export
 get_hub_repo_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = supported_diseases)
+  checkmate::assert_names(disease, subset.of = recognized_diseases)
 
   dplyr::case_when(
     disease == "covid" ~ "covid19-forecast-hub",
@@ -54,17 +65,19 @@ get_hub_repo_name <- function(disease) {
 #' Converts disease identifier to human-readable display
 #' name.
 #'
-#' @param disease Character. Disease identifier ("covid"
-#' or "rsv").
-#' @return Character. Display name (e.g., "COVID-19", "RSV").
+#' @param disease Character. Disease identifier ("covid",
+#' "rsv", or "flu").
+#' @return Character. Display name (e.g., "COVID-19", "RSV",
+#' "Influenza").
 #' @export
 get_disease_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = supported_diseases)
+  checkmate::assert_names(disease, subset.of = recognized_diseases)
 
   dplyr::case_when(
     disease == "covid" ~ "COVID-19",
-    disease == "rsv" ~ "RSV"
+    disease == "rsv" ~ "RSV",
+    disease == "flu" ~ "Influenza"
   )
 }
 
