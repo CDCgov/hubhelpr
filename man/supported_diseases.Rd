@@ -5,13 +5,14 @@
 \alias{supported_diseases}
 \title{Supported disease identifiers.}
 \format{
-An object of class \code{character} of length 3.
+An object of class \code{character} of length 2.
 }
 \usage{
 supported_diseases
 }
 \description{
-Character vector of disease identifiers recognized by
-hubhelpr functions.
+Character vector of disease identifiers with full
+forecast pipeline support (baseline and ensemble
+generation).
 }
 \keyword{datasets}

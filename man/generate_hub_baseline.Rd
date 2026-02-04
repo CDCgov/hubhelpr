@@ -9,7 +9,7 @@ generate_hub_baseline(
   base_hub_path,
   reference_date,
   disease,
-  targets = NULL,
+  target_suffixes = NULL,
   as_of = "latest",
   output_format = "csv"
 )
@@ -21,7 +21,7 @@ generate_hub_baseline(
 
 \item{disease}{Disease name ("covid" or "rsv").}
 
-\item{targets}{Character vector of target suffixes to
+\item{target_suffixes}{Character vector of target suffixes to
 generate baselines for (e.g., c("hosp", "prop ed
 visits")). Defaults to NULL, which generates
 baselines for all unique targets in the time-series data.}
