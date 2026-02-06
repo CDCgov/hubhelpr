@@ -9,8 +9,12 @@ write_viz_target_data(
   base_hub_path,
   hub_reports_path,
   disease,
+  use_hub_data = FALSE,
   as_of = "latest",
-  targets = NULL,
+  pull_nhsn = TRUE,
+  pull_nssp = TRUE,
+  start_date = NULL,
+  end_date = NULL,
   included_locations = hubhelpr::included_locations,
   output_format = "csv"
 )
@@ -27,13 +31,30 @@ reports directory.}
 
 \item{disease}{Character, disease name ("covid" or "rsv").}
 
+\item{use_hub_data}{Logical, whether to read data from
+the hub's time-series file (TRUE) or pull fresh data
+from sources (FALSE). Default: FALSE.}
+
 \item{as_of}{As of date to filter to, as an object coercible
 by as.Date(), or "latest" to filter to the most recent
-available vintage. Default "latest".}
+available vintage. Default "latest". Used only when
+use_hub_data = TRUE.}
 
-\item{targets}{Character vector of target names to filter
-(e.g., "wk inc covid hosp"). If NULL (default), all
-targets are included.}
+\item{pull_nhsn}{Logical, whether to pull NHSN hospital
+admissions data. Default: TRUE. Used only when
+use_hub_data = FALSE.}
+
+\item{pull_nssp}{Logical, whether to pull NSSP emergency
+department visit data. Default: TRUE. Used only when
+use_hub_data = FALSE.}
+
+\item{start_date}{Date, earliest date to include in data.
+Default: NULL (no filtering). Used only when
+use_hub_data = FALSE.}
+
+\item{end_date}{Date, latest date to include in data.
+Default: NULL (no filtering). Used only when
+use_hub_data = FALSE.}
 
 \item{included_locations}{Character vector of location
 codes to include in the output. Default
@@ -47,10 +68,10 @@ Invisibly returns file path where data was
 written.
 }
 \description{
-This function reads target data from the hub's
-time-series file using hubData, filters to the latest
-vintage and specified targets, and writes it to the
+This function reads target data either from the hub's
+time-series file using hubData or by pulling data
+from NHSN and NSSP APIs, then writes to the
 weekly-summaries directory for use by the visualization
 webpage. Output includes columns: week_ending_date,
-location, location_name, target, and value.
+location, location_name, target, target_data_type, and value.
 }
