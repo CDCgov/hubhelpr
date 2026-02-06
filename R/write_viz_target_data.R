@@ -63,6 +63,13 @@ write_viz_target_data <- function(
       dplyr::filter(.data$location %in% !!included_locations) |>
       dplyr::collect()
   } else {
+    if (!pull_nhsn && !pull_nssp) {
+      cli::cli_abort(
+        "When 'use_hub_data' is FALSE, at least
+        one of 'pull_nhsn' or 'pull_nssp' must be TRUE"
+      )
+    }
+
     nhsn_data <- if (pull_nhsn) {
       get_hubverse_format_nhsn_data(
         disease,
@@ -111,7 +118,6 @@ write_viz_target_data <- function(
       value = "observation"
     )
 
-  # create output directory and file path
   output_folder_path <- fs::path(
     hub_reports_path,
     "weekly-summaries",
