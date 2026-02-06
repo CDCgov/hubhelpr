@@ -53,6 +53,6 @@ test_that("update_hub_target_data errors for unsupported disease", {
       base_hub_path = tempdir(),
       disease = "flu"
     ),
-    "Assertion on 'disease' failed"
+    class = "AssertionError"
   )
 })
