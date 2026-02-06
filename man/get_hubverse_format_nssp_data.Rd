@@ -27,7 +27,7 @@ include in the output.
 Default value \code{hubhelpr::included_locations}.}
 
 \item{nssp_update_local}{Logical. Whether to update NSSP
-data from local file \code{auxiliary-data/latest.csv}
+data from local file \code{auxiliary-data/latest.parquet}
 (default: FALSE).}
 
 \item{start_date}{First week-ending

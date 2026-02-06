@@ -74,7 +74,7 @@ get_hubverse_format_nhsn_data <- function(
 #' include in the output.
 #' Default value `hubhelpr::included_locations`.
 #' @param nssp_update_local Logical. Whether to update NSSP
-#' data from local file `auxiliary-data/latest.csv`
+#' data from local file `auxiliary-data/latest.parquet`
 #' (default: FALSE).
 #' @param start_date First week-ending
 #' date to include for the NSSP dataset. Default value
