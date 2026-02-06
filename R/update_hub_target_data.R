@@ -95,7 +95,7 @@ get_hubverse_format_nssp_data <- function(
   end_date = NULL
 ) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
   nssp_col_name <- get_nssp_col_name(disease)
 
@@ -184,6 +184,9 @@ update_hub_target_data <- function(
   legacy_file = FALSE,
   nssp_update_local = FALSE
 ) {
+  checkmate::assert_scalar(disease)
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+
   nhsn_data <- get_hubverse_format_nhsn_data(
     disease,
     as_of = as_of,

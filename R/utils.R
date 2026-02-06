@@ -1,11 +1,11 @@
 #' Get NHSN column name for a given disease
 #'
-#' @param disease Disease name ("covid" or "rsv")
+#' @param disease Disease name ("covid", "rsv", or "flu")
 #' @return Character string with the NHSN column name
 #' @export
 get_nhsn_col_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv", "flu"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   dplyr::case_when(
     disease == "covid" ~ "totalconfc19newadm",
@@ -16,12 +16,12 @@ get_nhsn_col_name <- function(disease) {
 
 #' Get NSSP column name for a given disease
 #'
-#' @param disease Disease name ("covid" or "rsv")
+#' @param disease Disease name ("covid", "rsv", or "flu")
 #' @return Character string with the NSSP column name
 #' @export
 get_nssp_col_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv", "flu"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   dplyr::case_when(
     disease == "covid" ~ "percent_visits_covid",
@@ -42,7 +42,7 @@ get_nssp_col_name <- function(disease) {
 #' @export
 get_hub_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv", "flu"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
   dplyr::case_when(
     disease == "covid" ~ "CovidHub",
     disease == "rsv" ~ "RSVHub",
@@ -62,7 +62,7 @@ get_hub_name <- function(disease) {
 #' @export
 get_hub_repo_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
   dplyr::case_when(
     disease == "covid" ~ "covid19-forecast-hub",
@@ -82,7 +82,7 @@ get_hub_repo_name <- function(disease) {
 #' @export
 get_disease_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
   dplyr::case_when(
     disease == "covid" ~ "COVID-19",

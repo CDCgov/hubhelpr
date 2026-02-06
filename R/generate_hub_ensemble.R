@@ -88,7 +88,7 @@ generate_hub_ensemble <- function(
   output_format = "csv"
 ) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
   reference_date <- lubridate::as_date(reference_date)
 
   dow_supplied <- lubridate::wday(reference_date, week_start = 7, label = FALSE)
