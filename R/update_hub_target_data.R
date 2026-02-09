@@ -34,7 +34,7 @@ get_hubverse_format_nhsn_data <- function(
   end_date = NULL
 ) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   nhsn_col_name <- get_nhsn_col_name(disease)
 
@@ -95,7 +95,7 @@ get_hubverse_format_nssp_data <- function(
   end_date = NULL
 ) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   nssp_col_name <- get_nssp_col_name(disease)
 
