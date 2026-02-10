@@ -2,13 +2,13 @@
 % Please edit documentation in R/update_hub_target_data.R
 \name{update_hub_target_data}
 \alias{update_hub_target_data}
-\title{Get and process target data for a given Hub.}
+\title{Update hub target data.}
 \usage{
 update_hub_target_data(
   base_hub_path,
   disease,
   as_of = lubridate::today(),
-  nhsn_first_weekending_date = lubridate::as_date("2024-11-09"),
+  start_date = lubridate::as_date("2024-11-09"),
   included_locations = hubhelpr::included_locations,
   legacy_file = FALSE,
   nssp_update_local = FALSE
@@ -22,7 +22,7 @@ update_hub_target_data(
 \item{as_of}{As-of date of the data pull. Default is
 the system date as determined by \code{\link[lubridate:now]{lubridate::today()}}.}
 
-\item{nhsn_first_weekending_date}{First week-ending
+\item{start_date}{First week-ending
 date to include for the NHSN dataset. Default value
 is "2024-11-09".}
 
@@ -34,7 +34,7 @@ Default value \code{hubhelpr::included_locations}.}
 CSV output (default: FALSE).}
 
 \item{nssp_update_local}{Logical. Whether to update NSSP
-data from local file \code{auxiliary-data/latest.csv}
+data from local hub file \code{auxiliary-data/latest.parquet}
 (default: FALSE).}
 }
 \value{
@@ -43,6 +43,7 @@ legacy CSV target data files to the target-data
 directory in the hub.
 }
 \description{
-This function pulls, formats and save NHSN and NSSP
-data for use in the Hub.
+This function pulls, formats and saves NHSN and NSSP
+data for use in the Hub. It combines both data sources
+with any existing data and writes to the target-data directory.
 }

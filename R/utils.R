@@ -1,3 +1,34 @@
+#' Get NHSN column name for a given disease
+#'
+#' @param disease Disease name ("covid", "rsv", or "flu")
+#' @return Character string with the NHSN column name
+#' @export
+get_nhsn_col_name <- function(disease) {
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
+
+  dplyr::case_when(
+    disease == "covid" ~ "totalconfc19newadm",
+    disease == "rsv" ~ "totalconfrsvnewadm",
+    disease == "flu" ~ "totalconfflunewadm"
+  )
+}
+
+#' Get NSSP column name for a given disease
+#'
+#' @param disease Disease name ("covid", "rsv", or "flu")
+#' @return Character string with the NSSP column name
+#' @export
+get_nssp_col_name <- function(disease) {
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
+
+  dplyr::case_when(
+    disease == "covid" ~ "percent_visits_covid",
+    disease == "rsv" ~ "percent_visits_rsv",
+    disease == "flu" ~ "percent_visits_flu"
+  )
+}
+
+
 #' Get hub display name for a given disease.
 #'
 #' Converts disease identifier to hub display name format
@@ -8,8 +39,7 @@
 #' @return Character. Hub name (e.g., "CovidHub", "RSVHub", "FluSight").
 #' @export
 get_hub_name <- function(disease) {
-  checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv", "flu"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
   dplyr::case_when(
     disease == "covid" ~ "CovidHub",
     disease == "rsv" ~ "RSVHub",
@@ -28,8 +58,7 @@ get_hub_name <- function(disease) {
 #' @return Character. GitHub repository name.
 #' @export
 get_hub_repo_name <- function(disease) {
-  checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
   dplyr::case_when(
     disease == "covid" ~ "covid19-forecast-hub",
@@ -48,8 +77,7 @@ get_hub_repo_name <- function(disease) {
 #' @return Character. Display name (e.g., "COVID-19", "RSV").
 #' @export
 get_disease_name <- function(disease) {
-  checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
   dplyr::case_when(
     disease == "covid" ~ "COVID-19",
