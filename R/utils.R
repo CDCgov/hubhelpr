@@ -58,7 +58,7 @@ get_hub_name <- function(disease) {
 #' @return Character. GitHub repository name.
 #' @export
 get_hub_repo_name <- function(disease) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   dplyr::case_when(
     disease == "covid" ~ "covid19-forecast-hub",
@@ -79,7 +79,7 @@ get_hub_repo_name <- function(disease) {
 #' "Influenza").
 #' @export
 get_disease_name <- function(disease) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   dplyr::case_when(
     disease == "covid" ~ "COVID-19",

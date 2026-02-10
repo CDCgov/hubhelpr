@@ -35,9 +35,6 @@ get_hubverse_format_nhsn_data <- function(
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
-  output_dirpath <- fs::path(base_hub_path, "target-data")
-  fs::dir_create(output_dirpath)
-
   nhsn_col_name <- get_nhsn_col_name(disease)
 
   hubverse_format_nhsn_data <- forecasttools::pull_data_cdc_gov_dataset(
