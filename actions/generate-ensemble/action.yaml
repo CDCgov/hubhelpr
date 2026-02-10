@@ -16,7 +16,7 @@ inputs:
     description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the last day of the current MMWR epiweek."
     required: true
   targets:
-    description: "JSON array of target suffixes for which to generate ensembles (e.g., '[\"hosp\", \"prop ed visits\"]'). Defaults to all unique targets in time-series data."
+    description: "JSON array of full target names for which to generate ensembles (e.g., '[\"wk inc covid hosp\", \"wk inc covid prop ed visits\"]'). Defaults to all unique targets in time-series data."
     required: false
     default: ""
 
@@ -36,13 +36,13 @@ runs:
         }
         input_targets <- '${{ inputs.targets }}'
         if (nchar(input_targets) == 0) {
-          target_suffixes <- NULL
+          targets <- NULL
         } else {
-          target_suffixes <- jsonlite::fromJSON(input_targets)
+          targets <- jsonlite::fromJSON(input_targets)
         }
         hubhelpr::generate_hub_ensemble(
           "${{ inputs.base_hub_path }}", ref_date,
-          "${{ inputs.disease }}", target_suffixes = target_suffixes
+          "${{ inputs.disease }}", targets = targets
         )
         writeLines(sprintf("date=%s", today), Sys.getenv("GITHUB_OUTPUT"))
 

@@ -1,23 +1,3 @@
-#' Supported disease identifiers.
-#'
-#' Character vector of disease identifiers with full
-#' forecast pipeline support (baseline and ensemble
-#' generation).
-#'
-#' @export
-supported_diseases <- c("covid", "rsv")
-
-
-#' Recognized disease identifiers.
-#'
-#' Character vector of all disease identifiers recognized
-#' by hubhelpr utility functions. Includes diseases without
-#' full forecast pipeline support.
-#'
-#' @export
-recognized_diseases <- c("covid", "rsv", "flu")
-
-
 #' Get hub display name for a given disease.
 #'
 #' Converts disease identifier to hub display name format
@@ -29,7 +9,7 @@ recognized_diseases <- c("covid", "rsv", "flu")
 #' @export
 get_hub_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = recognized_diseases)
+  checkmate::assert_names(disease, subset.of = c("covid", "rsv", "flu"))
 
   dplyr::case_when(
     disease == "covid" ~ "CovidHub",
@@ -50,7 +30,7 @@ get_hub_name <- function(disease) {
 #' @export
 get_hub_repo_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = recognized_diseases)
+  checkmate::assert_names(disease, subset.of = c("covid", "rsv", "flu"))
 
   dplyr::case_when(
     disease == "covid" ~ "covid19-forecast-hub",
@@ -72,7 +52,7 @@ get_hub_repo_name <- function(disease) {
 #' @export
 get_disease_name <- function(disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = recognized_diseases)
+  checkmate::assert_names(disease, subset.of = c("covid", "rsv", "flu"))
 
   dplyr::case_when(
     disease == "covid" ~ "COVID-19",
@@ -174,20 +154,20 @@ is_ed_target <- function(target) {
 }
 
 
-#' Get unique target suffixes from hub time-series data.
+#' Get unique targets from hub time-series data.
 #'
 #' Reads the target-data time-series and extracts unique
-#' target suffixes (e.g., "hosp", "prop ed visits") for a
-#' given disease.
+#' full target names (e.g., "wk inc covid hosp",
+#' "wk inc covid prop ed visits") for a given disease.
 #'
 #' @param base_hub_path Path to the base hub directory.
 #' @param disease Character. Disease identifier ("covid" or
 #' "rsv").
-#' @return Character vector of unique target suffixes.
+#' @return Character vector of unique full target names.
 #' @export
 get_unique_targets <- function(base_hub_path, disease) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = supported_diseases)
+  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
 
   unique_targets <- hubData::connect_target_timeseries(base_hub_path) |>
     dplyr::distinct(target) |>
@@ -195,34 +175,33 @@ get_unique_targets <- function(base_hub_path, disease) {
     dplyr::pull(target)
 
   prefix <- glue::glue("wk inc {disease} ")
-  target_suffixes <- unique_targets |>
-    stringr::str_subset(paste0("^", prefix)) |>
-    stringr::str_remove(paste0("^", prefix))
+  disease_targets <- unique_targets |>
+    stringr::str_subset(paste0("^", prefix))
 
-  if (length(target_suffixes) == 0) {
+  if (length(disease_targets) == 0) {
     cli::cli_abort(
       "No targets found in time-series data matching disease '{disease}'."
     )
   }
 
-  return(target_suffixes)
+  return(disease_targets)
 }
 
 
-#' Get human-readable label for a target suffix.
+#' Get human-readable label for a target.
 #'
-#' Converts target suffix to a human-readable label for
-#' use in error messages and assertions.
+#' Converts a full target name to a human-readable label
+#' for use in error messages and assertions.
 #'
-#' @param target_suffix Character. Target suffix (e.g., "hosp",
-#' "prop ed visits").
+#' @param target Character. Full target name (e.g.,
+#' "wk inc covid hosp", "wk inc rsv prop ed visits").
 #' @return Character. Human-readable label.
 #' @export
-get_target_label <- function(target_suffix) {
+get_target_label <- function(target) {
   dplyr::case_when(
-    target_suffix == "hosp" ~ "Hospital Admissions",
-    target_suffix == "prop ed visits" ~ "Proportion ED Visits",
-    TRUE ~ target_suffix
+    is_hosp_target(target) ~ "Hospital Admissions",
+    is_ed_target(target) ~ "Proportion ED Visits",
+    TRUE ~ target
   )
 }
 

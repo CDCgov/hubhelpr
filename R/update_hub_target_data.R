@@ -41,10 +41,10 @@ update_hub_target_data <- function(
   legacy_file = FALSE,
   nssp_update_local = FALSE
 ) {
-  if (!disease %in% supported_diseases) {
+  if (!disease %in% c("covid", "rsv")) {
     stop(
       "'disease' must be one of: ",
-      paste(supported_diseases, collapse = ", ")
+      paste(c("covid", "rsv"), collapse = ", ")
     )
   }
   output_dirpath <- fs::path(base_hub_path, "target-data")

@@ -9,7 +9,7 @@ generate_hub_ensemble(
   base_hub_path,
   reference_date,
   disease,
-  target_suffixes = NULL,
+  targets = NULL,
   output_format = "csv"
 )
 }
@@ -20,10 +20,11 @@ generate_hub_ensemble(
 
 \item{disease}{Disease name ("covid" or "rsv").}
 
-\item{target_suffixes}{Character vector of target suffixes to
-generate ensembles for (e.g., c("hosp", "prop ed
-visits")). Defaults to NULL, which generates
-ensembles for all unique targets in the time-series data.}
+\item{targets}{Character vector of full target names to
+generate ensembles for (e.g., c("wk inc covid hosp",
+"wk inc covid prop ed visits")). Defaults to NULL,
+which generates ensembles for all unique targets in
+the time-series data.}
 
 \item{output_format}{Character, output file format. One
 of "csv", "tsv", or "parquet". Default: "csv".}

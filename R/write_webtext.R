@@ -299,7 +299,7 @@ generate_webtext_block <- function(
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 ) {
-  checkmate::assert_choice(disease, choices = supported_diseases)
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
   checkmate::assert_choice(input_format, choices = c("csv", "tsv", "parquet"))
 
   reference_date <- lubridate::as_date(reference_date)

@@ -384,3 +384,4 @@ docs/site/
 
 /.quarto/
 /test_files/
+.DS_Store

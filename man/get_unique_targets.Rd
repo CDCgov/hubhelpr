@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{get_unique_targets}
 \alias{get_unique_targets}
-\title{Get unique target suffixes from hub time-series data.}
+\title{Get unique targets from hub time-series data.}
 \usage{
 get_unique_targets(base_hub_path, disease)
 }
@@ -13,10 +13,10 @@ get_unique_targets(base_hub_path, disease)
 "rsv").}
 }
 \value{
-Character vector of unique target suffixes.
+Character vector of unique full target names.
 }
 \description{
 Reads the target-data time-series and extracts unique
-target suffixes (e.g., "hosp", "prop ed visits") for a
-given disease.
+full target names (e.g., "wk inc covid hosp",
+"wk inc covid prop ed visits") for a given disease.
 }

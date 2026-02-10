@@ -75,10 +75,11 @@ ensemble_by_target <- function(
 #' @param base_hub_path Path to the base hub directory.
 #' @param reference_date Reference date (should be a Saturday).
 #' @param disease Disease name ("covid" or "rsv").
-#' @param target_suffixes Character vector of target suffixes to
-#' generate ensembles for (e.g., c("hosp", "prop ed
-#' visits")). Defaults to NULL, which generates
-#' ensembles for all unique targets in the time-series data.
+#' @param targets Character vector of full target names to
+#' generate ensembles for (e.g., c("wk inc covid hosp",
+#' "wk inc covid prop ed visits")). Defaults to NULL,
+#' which generates ensembles for all unique targets in
+#' the time-series data.
 #' @param output_format Character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
 #' @return NULL. Writes ensemble forecast file to hub's
@@ -88,11 +89,11 @@ generate_hub_ensemble <- function(
   base_hub_path,
   reference_date,
   disease,
-  target_suffixes = NULL,
+  targets = NULL,
   output_format = "csv"
 ) {
   checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = supported_diseases)
+  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
   reference_date <- lubridate::as_date(reference_date)
 
   dow_supplied <- lubridate::wday(reference_date, week_start = 7, label = FALSE)
@@ -109,10 +110,10 @@ generate_hub_ensemble <- function(
 
   available_targets <- get_unique_targets(base_hub_path, disease)
 
-  if (is.null(target_suffixes)) {
-    target_suffixes <- available_targets
+  if (is.null(targets)) {
+    targets <- available_targets
   } else {
-    invalid_targets <- setdiff(target_suffixes, available_targets)
+    invalid_targets <- setdiff(targets, available_targets)
     if (length(invalid_targets) > 0) {
       cli::cli_abort(
         c(
@@ -172,12 +173,12 @@ generate_hub_ensemble <- function(
   )
 
   median_ensemble_outputs <- purrr::map(
-    target_suffixes,
-    function(target_suffix) {
+    targets,
+    function(target_name) {
       ensemble_by_target(
         weekly_models,
         weekly_forecasts,
-        target_name = glue::glue("wk inc {disease} {target_suffix}"),
+        target_name = target_name,
         ensemble_model_id = as.character(glue::glue(
           "{hub_name}-quantile-median-ensemble"
         ))
