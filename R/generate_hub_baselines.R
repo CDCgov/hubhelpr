@@ -133,7 +133,6 @@ generate_hub_baseline <- function(
   as_of = "latest",
   output_format = "csv"
 ) {
-  checkmate::assert_scalar(disease)
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
   reference_date <- lubridate::as_date(reference_date)
   desired_max_time_value <- reference_date - lubridate::weeks(1)
