@@ -87,7 +87,6 @@ generate_hub_ensemble <- function(
   ensemble_targets = c("hosp", "prop ed visits"),
   output_format = "csv"
 ) {
-  checkmate::assert_scalar(disease)
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
   reference_date <- lubridate::as_date(reference_date)
 

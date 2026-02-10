@@ -4,7 +4,6 @@
 #' @return Character string with the NHSN column name
 #' @export
 get_nhsn_col_name <- function(disease) {
-  checkmate::assert_scalar(disease)
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   dplyr::case_when(
@@ -20,7 +19,6 @@ get_nhsn_col_name <- function(disease) {
 #' @return Character string with the NSSP column name
 #' @export
 get_nssp_col_name <- function(disease) {
-  checkmate::assert_scalar(disease)
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   dplyr::case_when(
@@ -41,7 +39,6 @@ get_nssp_col_name <- function(disease) {
 #' @return Character. Hub name (e.g., "CovidHub", "RSVHub", "FluSight").
 #' @export
 get_hub_name <- function(disease) {
-  checkmate::assert_scalar(disease)
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
   dplyr::case_when(
     disease == "covid" ~ "CovidHub",
@@ -61,7 +58,6 @@ get_hub_name <- function(disease) {
 #' @return Character. GitHub repository name.
 #' @export
 get_hub_repo_name <- function(disease) {
-  checkmate::assert_scalar(disease)
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
   dplyr::case_when(
@@ -81,7 +77,6 @@ get_hub_repo_name <- function(disease) {
 #' @return Character. Display name (e.g., "COVID-19", "RSV").
 #' @export
 get_disease_name <- function(disease) {
-  checkmate::assert_scalar(disease)
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
   dplyr::case_when(
