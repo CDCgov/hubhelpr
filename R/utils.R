@@ -53,16 +53,17 @@ get_hub_name <- function(disease) {
 #' Converts disease identifier to corresponding GitHub
 #' repository name.
 #'
-#' @param disease Character. Disease identifier ("covid"
-#' or "rsv").
+#' @param disease Character. Disease identifier ("covid",
+#' "rsv", or "flu").
 #' @return Character. GitHub repository name.
 #' @export
 get_hub_repo_name <- function(disease) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   dplyr::case_when(
     disease == "covid" ~ "covid19-forecast-hub",
-    disease == "rsv" ~ "rsv-forecast-hub"
+    disease == "rsv" ~ "rsv-forecast-hub",
+    disease == "flu" ~ "FluSight-forecast-hub"
   )
 }
 
@@ -72,16 +73,18 @@ get_hub_repo_name <- function(disease) {
 #' Converts disease identifier to human-readable display
 #' name.
 #'
-#' @param disease Character. Disease identifier ("covid"
-#' or "rsv").
-#' @return Character. Display name (e.g., "COVID-19", "RSV").
+#' @param disease Character. Disease identifier ("covid",
+#' "rsv", or "flu").
+#' @return Character. Display name (e.g., "COVID-19", "RSV",
+#' "Influenza").
 #' @export
 get_disease_name <- function(disease) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   dplyr::case_when(
     disease == "covid" ~ "COVID-19",
-    disease == "rsv" ~ "RSV"
+    disease == "rsv" ~ "RSV",
+    disease == "flu" ~ "Influenza"
   )
 }
 
@@ -173,6 +176,48 @@ is_hosp_target <- function(target) {
 #' @export
 is_ed_target <- function(target) {
   stringr::str_ends(target, "prop ed visits")
+}
+
+
+#' Get unique targets from hub time-series data.
+#'
+#' Reads the target-data time-series and returns the
+#' unique target names present in the data.
+#'
+#' @param base_hub_path Path to the base hub directory.
+#' @return Character vector of unique target names.
+#' @export
+get_unique_targets <- function(base_hub_path) {
+  targets <- hubData::connect_target_timeseries(base_hub_path) |>
+    dplyr::distinct(target) |>
+    dplyr::collect() |>
+    dplyr::pull(target)
+
+  if (length(targets) == 0) {
+    cli::cli_abort(
+      "No targets found in time-series data."
+    )
+  }
+
+  return(targets)
+}
+
+
+#' Get human-readable label for a target.
+#'
+#' Converts a full target name to a human-readable label
+#' for use in error messages and assertions.
+#'
+#' @param target Character. Full target name (e.g.,
+#' "wk inc covid hosp", "wk inc rsv prop ed visits").
+#' @return Character. Human-readable label.
+#' @export
+get_target_label <- function(target) {
+  dplyr::case_when(
+    is_hosp_target(target) ~ "Hospital Admissions",
+    is_ed_target(target) ~ "Proportion ED Visits",
+    TRUE ~ target
+  )
 }
 
 

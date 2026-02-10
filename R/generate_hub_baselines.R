@@ -114,22 +114,30 @@ make_baseline_forecast <- function(
 }
 
 
-#' Generate hub baseline forecasts for a given disease and reference date
+#' Generate hub baseline forecasts for a given disease and
+#' reference date.
 #'
 #' @param base_hub_path Path to the base hub directory.
 #' @param reference_date Reference date (should be a Saturday).
 #' @param disease Disease name ("covid" or "rsv").
+#' @param targets Character vector of full target names to
+#' generate baselines for (e.g., c("wk inc covid hosp",
+#' "wk inc covid prop ed visits")). Defaults to NULL,
+#' which generates baselines for all unique targets in
+#' the time-series data.
 #' @param as_of As of date to filter to, as an object
 #' coercible by as.Date(), or "latest" to filter to the
 #' most recent available vintage. Default "latest".
-#' @param output_format Character, output file format. One of "csv",
-#' "tsv", or "parquet". Default: "csv".
-#' @return NULL. Writes baseline forecast file to hub's model-output directory.
+#' @param output_format Character, output file format. One
+#' of "csv", "tsv", or "parquet". Default: "csv".
+#' @return NULL. Writes baseline forecast file to hub's
+#' model-output directory.
 #' @export
 generate_hub_baseline <- function(
   base_hub_path,
   reference_date,
   disease,
+  targets = NULL,
   as_of = "latest",
   output_format = "csv"
 ) {
@@ -149,6 +157,23 @@ generate_hub_baseline <- function(
     )
   }
 
+  available_targets <- get_unique_targets(base_hub_path)
+
+  if (is.null(targets)) {
+    targets <- available_targets
+  } else {
+    invalid_targets <- setdiff(targets, available_targets)
+    if (length(invalid_targets) > 0) {
+      cli::cli_abort(
+        c(
+          "Requested targets not found in time-series data:",
+          "x" = "Invalid targets: {.val {invalid_targets}}",
+          "i" = "Available targets: {.val {available_targets}}"
+        )
+      )
+    }
+  }
+
   baseline_model_name <- glue::glue("{get_hub_name(disease)}-baseline")
   output_dirpath <- fs::path(base_hub_path, "model-output", baseline_model_name)
   if (!fs::dir_exists(output_dirpath)) {
@@ -159,26 +184,21 @@ generate_hub_baseline <- function(
     dplyr::collect() |>
     forecasttools::hub_target_data_as_of(as_of)
 
-  preds_hosp <- make_baseline_forecast(
-    target_data = hub_target_data,
-    target_name = glue::glue("wk inc {disease} hosp"),
-    target_label = "Hospital Admissions",
-    reference_date = reference_date,
-    desired_max_time_value = desired_max_time_value,
-    rng_seed = rng_seed
-  )
-
-  preds_ed <- make_baseline_forecast(
-    target_data = hub_target_data,
-    target_name = glue::glue("wk inc {disease} prop ed visits"),
-    target_label = "Proportion ED Visits",
-    reference_date = reference_date,
-    desired_max_time_value = desired_max_time_value,
-    rng_seed = rng_seed
-  )
+  all_preds <- purrr::map(targets, function(target_name) {
+    target_label <- get_target_label(target_name)
+    make_baseline_forecast(
+      target_data = hub_target_data,
+      target_name = target_name,
+      target_label = target_label,
+      reference_date = reference_date,
+      desired_max_time_value = desired_max_time_value,
+      rng_seed = rng_seed
+    )
+  }) |>
+    dplyr::bind_rows()
 
   forecasttools::write_tabular_file(
-    dplyr::bind_rows(preds_hosp, preds_ed),
+    all_preds,
     fs::path(
       output_dirpath,
       glue::glue("{reference_date}-{baseline_model_name}"),

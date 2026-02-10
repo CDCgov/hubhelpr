@@ -15,6 +15,10 @@ inputs:
   reference_date:
     description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the last day of the current MMWR epiweek."
     required: true
+  targets:
+    description: "JSON array of full target names for which to generate baselines (e.g., '[\"wk inc covid hosp\", \"wk inc covid prop ed visits\"]'). Defaults to all unique targets in time-series data."
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -30,7 +34,16 @@ runs:
         } else {
           ref_date <- as.Date(input_date)
         }
-        hubhelpr::generate_hub_baseline("${{ inputs.base_hub_path }}", ref_date, "${{ inputs.disease }}")
+        input_targets <- '${{ inputs.targets }}'
+        if (nchar(input_targets) == 0) {
+          targets <- NULL
+        } else {
+          targets <- jsonlite::fromJSON(input_targets)
+        }
+        hubhelpr::generate_hub_baseline(
+          "${{ inputs.base_hub_path }}", ref_date,
+          "${{ inputs.disease }}", targets = targets
+        )
         writeLines(sprintf("date=%s", today), Sys.getenv("GITHUB_OUTPUT"))
 
     - name: "Commit Changes"

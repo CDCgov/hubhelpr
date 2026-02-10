@@ -69,22 +69,27 @@ ensemble_by_target <- function(
 }
 
 
-#' Generate hub ensemble forecasts for a given disease and reference date
+#' Generate hub ensemble forecasts for a given disease and
+#' reference date.
 #'
 #' @param base_hub_path Path to the base hub directory.
 #' @param reference_date Reference date (should be a Saturday).
 #' @param disease Disease name ("covid" or "rsv").
-#' @param ensemble_targets A vector specifying targets to generate ensemble
-#' forecasts for. Defaults to c("hosp", "prop ed visits").
-#' @param output_format Character, output file format. One of "csv",
-#' "tsv", or "parquet". Default: "csv".
-#' @return NULL. Writes ensemble forecast file to hub's model-output directory.
+#' @param targets Character vector of full target names to
+#' generate ensembles for (e.g., c("wk inc covid hosp",
+#' "wk inc covid prop ed visits")). Defaults to NULL,
+#' which generates ensembles for all unique targets in
+#' the time-series data.
+#' @param output_format Character, output file format. One
+#' of "csv", "tsv", or "parquet". Default: "csv".
+#' @return NULL. Writes ensemble forecast file to hub's
+#' model-output directory.
 #' @export
 generate_hub_ensemble <- function(
   base_hub_path,
   reference_date,
   disease,
-  ensemble_targets = c("hosp", "prop ed visits"),
+  targets = NULL,
   output_format = "csv"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
@@ -100,6 +105,23 @@ generate_hub_ensemble <- function(
         "{dow_supplied} of the week."
       )
     )
+  }
+
+  available_targets <- get_unique_targets(base_hub_path)
+
+  if (is.null(targets)) {
+    targets <- available_targets
+  } else {
+    invalid_targets <- setdiff(targets, available_targets)
+    if (length(invalid_targets) > 0) {
+      cli::cli_abort(
+        c(
+          "Requested targets not found in time-series data:",
+          "x" = "Invalid targets: {.val {invalid_targets}}",
+          "i" = "Available targets: {.val {available_targets}}"
+        )
+      )
+    }
   }
 
   hub_name <- get_hub_name(disease)
@@ -150,12 +172,12 @@ generate_hub_ensemble <- function(
   )
 
   median_ensemble_outputs <- purrr::map(
-    ensemble_targets,
-    function(ensemble_target) {
+    targets,
+    function(target_name) {
       ensemble_by_target(
         weekly_models,
         weekly_forecasts,
-        target_name = glue::glue("wk inc {disease} {ensemble_target}"),
+        target_name = target_name,
         ensemble_model_id = as.character(glue::glue(
           "{hub_name}-quantile-median-ensemble"
         ))

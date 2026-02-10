@@ -2,13 +2,14 @@
 % Please edit documentation in R/generate_hub_ensemble.R
 \name{generate_hub_ensemble}
 \alias{generate_hub_ensemble}
-\title{Generate hub ensemble forecasts for a given disease and reference date}
+\title{Generate hub ensemble forecasts for a given disease and
+reference date.}
 \usage{
 generate_hub_ensemble(
   base_hub_path,
   reference_date,
   disease,
-  ensemble_targets = c("hosp", "prop ed visits"),
+  targets = NULL,
   output_format = "csv"
 )
 }
@@ -19,15 +20,20 @@ generate_hub_ensemble(
 
 \item{disease}{Disease name ("covid" or "rsv").}
 
-\item{ensemble_targets}{A vector specifying targets to generate ensemble
-forecasts for. Defaults to c("hosp", "prop ed visits").}
+\item{targets}{Character vector of full target names to
+generate ensembles for (e.g., c("wk inc covid hosp",
+"wk inc covid prop ed visits")). Defaults to NULL,
+which generates ensembles for all unique targets in
+the time-series data.}
 
-\item{output_format}{Character, output file format. One of "csv",
-"tsv", or "parquet". Default: "csv".}
+\item{output_format}{Character, output file format. One
+of "csv", "tsv", or "parquet". Default: "csv".}
 }
 \value{
-NULL. Writes ensemble forecast file to hub's model-output directory.
+NULL. Writes ensemble forecast file to hub's
+model-output directory.
 }
 \description{
-Generate hub ensemble forecasts for a given disease and reference date
+Generate hub ensemble forecasts for a given disease and
+reference date.
 }
