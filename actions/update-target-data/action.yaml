@@ -1,0 +1,81 @@
+name: "Update Target Data"
+description: "Within a hub: pull NHSN/NSSP target data, generate hubverse format target data (time series and oracle output formats), and create a pull request if there are changes. Requires R and hubhelpr to be installed beforehand."
+
+inputs:
+  disease:
+    description: "Disease identifier ('covid' or 'rsv')."
+    required: true
+  github_token:
+    description: "GitHub token for creating the pull request."
+    required: true
+  base_hub_path:
+    description: "Path to the hub repository root directory."
+    required: false
+    default: "."
+  api_key_id:
+    description: "API key ID for data.cdc.gov."
+    required: true
+  api_key_secret:
+    description: "API key secret for data.cdc.gov."
+    required: true
+  legacy_file:
+    description: "Whether to write legacy CSV output ('true' or 'false')."
+    required: false
+    default: "false"
+  nssp_update_local:
+    description: "Whether to update NSSP data from local file ('true' or 'false')."
+    required: false
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Update Target Data"
+      id: update
+      shell: Rscript {0}
+      env:
+        DATA_CDC_GOV_API_KEY_ID: ${{ inputs.api_key_id }}
+        DATA_CDC_GOV_API_KEY_SECRET: ${{ inputs.api_key_secret }}
+      run: |
+        today <- lubridate::today()
+        hubhelpr::update_hub_target_data(
+          base_hub_path = "${{ inputs.base_hub_path }}",
+          disease = "${{ inputs.disease }}",
+          as_of = today,
+          legacy_file = as.logical("${{ inputs.legacy_file }}"),
+          nssp_update_local = as.logical("${{ inputs.nssp_update_local }}")
+        )
+        hubhelpr::generate_oracle_output("${{ inputs.base_hub_path }}")
+        writeLines(sprintf("date=%s", today), Sys.getenv("GITHUB_OUTPUT"))
+
+    - name: "Check For Changes"
+      id: check
+      shell: bash
+      run: |
+        if git diff --exit-code target-data/; then
+          echo "changed=false" >> $GITHUB_OUTPUT
+        else
+          echo "changed=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: "Commit Changes"
+      if: steps.check.outputs.changed == 'true'
+      shell: bash
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git checkout -b "update-${{ inputs.disease }}-target-data-${{ steps.update.outputs.date }}"
+        git add .
+        git commit -m "Update ${{ inputs.disease }} target data"
+        git push origin "update-${{ inputs.disease }}-target-data-${{ steps.update.outputs.date }}"
+
+    - name: "Create Pull Request"
+      if: steps.check.outputs.changed == 'true'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        gh pr create --base main \
+          --head "update-${{ inputs.disease }}-target-data-${{ steps.update.outputs.date }}" \
+          --title "Update ${{ inputs.disease }} target data" \
+          --body "This PR updates target data and oracle output based on the latest NHSN and NSSP datasets."

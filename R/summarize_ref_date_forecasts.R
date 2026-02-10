@@ -122,8 +122,8 @@ summarize_ref_date_forecasts <- function(
         tidyselect::starts_with("quantile_") &
           !tidyselect::contains("_per100k"),
         ~ dplyr::case_when(
-          is_hosp_target(.data$target) ~ round(.x),
-          is_ed_target(.data$target) ~ round(.x, 4)
+          is_hosp_target(.data$target) ~ round_to_place(.x),
+          is_ed_target(.data$target) ~ signif(.x, digits = 2)
         ),
         .names = "{.col}_rounded"
       ),

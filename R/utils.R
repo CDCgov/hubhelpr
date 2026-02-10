@@ -1,19 +1,49 @@
+#' Get NHSN column name for a given disease
+#'
+#' @param disease Disease name ("covid", "rsv", or "flu")
+#' @return Character string with the NHSN column name
+#' @export
+get_nhsn_col_name <- function(disease) {
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
+
+  dplyr::case_when(
+    disease == "covid" ~ "totalconfc19newadm",
+    disease == "rsv" ~ "totalconfrsvnewadm",
+    disease == "flu" ~ "totalconfflunewadm"
+  )
+}
+
+#' Get NSSP column name for a given disease
+#'
+#' @param disease Disease name ("covid", "rsv", or "flu")
+#' @return Character string with the NSSP column name
+#' @export
+get_nssp_col_name <- function(disease) {
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
+
+  dplyr::case_when(
+    disease == "covid" ~ "percent_visits_covid",
+    disease == "rsv" ~ "percent_visits_rsv",
+    disease == "flu" ~ "percent_visits_flu"
+  )
+}
+
+
 #' Get hub display name for a given disease.
 #'
 #' Converts disease identifier to hub display name format
 #' used for identifying hub-baseline and hub-ensemble.
 #'
-#' @param disease Character. Disease identifier ("covid"
-#' or "rsv").
-#' @return Character. Hub name (e.g., "CovidHub", "RSVHub").
+#' @param disease Character. Disease identifier ("covid",
+#' "rsv", or "flu").
+#' @return Character. Hub name (e.g., "CovidHub", "RSVHub", "FluSight").
 #' @export
 get_hub_name <- function(disease) {
-  checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
-
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
   dplyr::case_when(
     disease == "covid" ~ "CovidHub",
-    disease == "rsv" ~ "RSVHub"
+    disease == "rsv" ~ "RSVHub",
+    disease == "flu" ~ "FluSight"
   )
 }
 
@@ -28,8 +58,7 @@ get_hub_name <- function(disease) {
 #' @return Character. GitHub repository name.
 #' @export
 get_hub_repo_name <- function(disease) {
-  checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
   dplyr::case_when(
     disease == "covid" ~ "covid19-forecast-hub",
@@ -48,8 +77,7 @@ get_hub_repo_name <- function(disease) {
 #' @return Character. Display name (e.g., "COVID-19", "RSV").
 #' @export
 get_disease_name <- function(disease) {
-  checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
   dplyr::case_when(
     disease == "covid" ~ "COVID-19",
@@ -84,7 +112,7 @@ round_to_place <- function(value) {
 #' @param target Character. Target name (e.g., "wk inc covid hosp").
 #' @param disease Character. Disease identifier ("covid" or "rsv").
 #' @return List with section_header, target_description, target_short,
-#' data_source, value_unit, format_value, and format_forecast elements.
+#' data_source, value_unit, and format_forecast elements.
 #' Returns NULL if target type is not recognized.
 #' @noRd
 generate_target_webtext_config <- function(target, disease) {
@@ -99,7 +127,6 @@ generate_target_webtext_config <- function(target, disease) {
       target_short = glue::glue("{disease_name} hospital admissions"),
       data_source = "NHSN data",
       value_unit = "",
-      format_value = function(x) round(x, -2),
       format_forecast = function(x) round_to_place(x)
     )
   } else if (is_ed_target(target)) {
@@ -111,8 +138,7 @@ generate_target_webtext_config <- function(target, disease) {
       target_short = glue::glue("{disease_name} ED visit proportions"),
       data_source = "NSSP data",
       value_unit = "%",
-      format_value = function(x) round(x * 100, 1),
-      format_forecast = function(x) round(x * 100, 1)
+      format_forecast = function(x) signif(x * 100, 2)
     )
   } else {
     cli::cli_warn("Unknown target type for: {target}, skipping.")

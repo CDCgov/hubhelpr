@@ -53,6 +53,6 @@ test_that("update_hub_target_data errors for unsupported disease", {
       base_hub_path = tempdir(),
       disease = "flu"
     ),
-    "'disease' must be either 'covid' or 'rsv'"
+    "Assertion on 'disease' failed: Must be element of set \\{'covid','rsv'\\}, but is 'flu'"
   )
 })

@@ -1,0 +1,23 @@
+name: "Check Authorized Users"
+description: "Verify that a GitHub user is authorized to modify model output directories in a Hub. Requires R and hubhelpr to be installed beforehand."
+
+inputs:
+  changed_files:
+    description: "JSON array of changed file paths from the changed-files action."
+    required: true
+  gh_actor:
+    description: "GitHub username of the person making changes."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Check Changes for Auto-Approval"
+      shell: Rscript {0}
+      run: |
+        changed_files <- jsonlite::fromJSON('${{ inputs.changed_files }}')
+        hubhelpr::check_changes_for_autoapproval(
+          changed_files = changed_files,
+          gh_actor = "${{ inputs.gh_actor }}",
+          base_hub_path = "."
+        )
