@@ -156,35 +156,25 @@ is_ed_target <- function(target) {
 
 #' Get unique targets from hub time-series data.
 #'
-#' Reads the target-data time-series and extracts unique
-#' full target names (e.g., "wk inc covid hosp",
-#' "wk inc covid prop ed visits") for a given disease.
+#' Reads the target-data time-series and returns the
+#' unique target names present in the data.
 #'
 #' @param base_hub_path Path to the base hub directory.
-#' @param disease Character. Disease identifier ("covid" or
-#' "rsv").
-#' @return Character vector of unique full target names.
+#' @return Character vector of unique target names.
 #' @export
-get_unique_targets <- function(base_hub_path, disease) {
-  checkmate::assert_scalar(disease)
-  checkmate::assert_names(disease, subset.of = c("covid", "rsv"))
-
-  unique_targets <- hubData::connect_target_timeseries(base_hub_path) |>
+get_unique_targets <- function(base_hub_path) {
+  targets <- hubData::connect_target_timeseries(base_hub_path) |>
     dplyr::distinct(target) |>
     dplyr::collect() |>
     dplyr::pull(target)
 
-  prefix <- glue::glue("wk inc {disease} ")
-  disease_targets <- unique_targets |>
-    stringr::str_subset(paste0("^", prefix))
-
-  if (length(disease_targets) == 0) {
+  if (length(targets) == 0) {
     cli::cli_abort(
-      "No targets found in time-series data matching disease '{disease}'."
+      "No targets found in time-series data."
     )
   }
 
-  return(disease_targets)
+  return(targets)
 }
 
 

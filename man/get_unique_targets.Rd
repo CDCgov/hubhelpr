@@ -4,19 +4,15 @@
 \alias{get_unique_targets}
 \title{Get unique targets from hub time-series data.}
 \usage{
-get_unique_targets(base_hub_path, disease)
+get_unique_targets(base_hub_path)
 }
 \arguments{
 \item{base_hub_path}{Path to the base hub directory.}
-
-\item{disease}{Character. Disease identifier ("covid" or
-"rsv").}
 }
 \value{
-Character vector of unique full target names.
+Character vector of unique target names.
 }
 \description{
-Reads the target-data time-series and extracts unique
-full target names (e.g., "wk inc covid hosp",
-"wk inc covid prop ed visits") for a given disease.
+Reads the target-data time-series and returns the
+unique target names present in the data.
 }

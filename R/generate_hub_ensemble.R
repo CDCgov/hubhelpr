@@ -108,7 +108,7 @@ generate_hub_ensemble <- function(
     )
   }
 
-  available_targets <- get_unique_targets(base_hub_path, disease)
+  available_targets <- get_unique_targets(base_hub_path)
 
   if (is.null(targets)) {
     targets <- available_targets
