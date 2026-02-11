@@ -114,8 +114,9 @@ round_to_place <- function(value) {
 #'
 #' @param target Character. Target name (e.g., "wk inc covid hosp").
 #' @param disease Character. Disease identifier ("covid" or "rsv").
-#' @return List with section_header, target_description, target_short,
-#' data_source, value_unit, and format_forecast elements.
+#' @return List with section_header, target_label_short,
+#' target_description, target_short, data_source,
+#' value_unit, and format_forecast elements.
 #' Returns NULL if target type is not recognized.
 #' @noRd
 generate_target_webtext_config <- function(target, disease) {
@@ -124,8 +125,9 @@ generate_target_webtext_config <- function(target, disease) {
   if (is_hosp_target(target)) {
     config <- list(
       section_header = "Hospital Admissions",
+      target_label_short = "hospital admissions",
       target_description = glue::glue(
-        "new weekly laboratory-confirmed {disease_name} hospital admissions"
+        "the number of new laboratory-confirmed {disease_name} hospital admissions"
       ),
       target_short = glue::glue("{disease_name} hospital admissions"),
       data_source = "NHSN data",
@@ -135,8 +137,9 @@ generate_target_webtext_config <- function(target, disease) {
   } else if (is_ed_target(target)) {
     config <- list(
       section_header = "ED Visits",
+      target_label_short = "ED visits",
       target_description = glue::glue(
-        "the proportion of emergency department visits due to {disease_name}"
+        "the percentage of emergency department visits due to {disease_name}"
       ),
       target_short = glue::glue("{disease_name} ED visit proportions"),
       data_source = "NSSP data",

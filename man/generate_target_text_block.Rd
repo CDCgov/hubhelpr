@@ -2,7 +2,7 @@
 % Please edit documentation in R/write_webtext.R
 \name{generate_target_text_block}
 \alias{generate_target_text_block}
-\title{Generate webtext for a single target.}
+\title{Compute webtext components for a single target.}
 \usage{
 generate_target_text_block(
   target,
@@ -36,11 +36,15 @@ generate_target_text_block(
 \item{included_locations}{Character vector of location codes.}
 }
 \value{
-Character string containing the target-specific
-webtext block, or empty string if no data found.
+Named list with components: forecast_paragraph,
+forecast_due_date, n_modeling_groups, n_forecasts,
+target_label_short, figure_description,
+forecast_horizon_text, teams_in_ensemble,
+teams_not_in_ensemble, reporting_flag.
 }
 \description{
-Internal helper function that processes one target,
-filtering data, gathering contributing teams, and
-generating the formatted text block.
+Internal helper that processes one target, filtering
+data, gathering contributing teams, and computing the
+text components needed by generate_webtext_block() to
+assemble the final document.
 }
