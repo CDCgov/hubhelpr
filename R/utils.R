@@ -187,7 +187,7 @@ is_ed_target <- function(target) {
 #' @param base_hub_path Path to the base hub directory.
 #' @return Character vector of unique target names.
 #' @export
-get_unique_targets <- function(base_hub_path) {
+get_unique_hub_targets <- function(base_hub_path) {
   targets <- hubData::connect_target_timeseries(base_hub_path) |>
     dplyr::distinct(target) |>
     dplyr::collect() |>
