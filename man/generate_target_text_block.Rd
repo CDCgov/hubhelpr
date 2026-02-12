@@ -37,10 +37,9 @@ generate_target_text_block(
 }
 \value{
 Named list with components: forecast_paragraph,
-forecast_due_date, n_modeling_groups, n_forecasts,
-target_label_short, figure_description,
-forecast_horizon_text, teams_in_ensemble,
-teams_not_in_ensemble, reporting_flag.
+forecast_due_date, overview_fragment,
+figure_description, forecast_horizon_text,
+model_list_text, reporting_flag.
 }
 \description{
 Internal helper that processes one target, filtering

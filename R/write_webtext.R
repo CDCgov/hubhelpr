@@ -134,10 +134,9 @@ check_hospital_reporting_latency <- function(
 #' @param included_locations Character vector of location codes.
 #'
 #' @return Named list with components: forecast_paragraph,
-#' forecast_due_date, n_modeling_groups, n_forecasts,
-#' target_label_short, figure_description,
-#' forecast_horizon_text, teams_in_ensemble,
-#' teams_not_in_ensemble, reporting_flag.
+#' forecast_due_date, overview_fragment,
+#' figure_description, forecast_horizon_text,
+#' model_list_text, reporting_flag.
 #'
 generate_target_text_block <- function(
   target,
@@ -179,8 +178,31 @@ generate_target_text_block <- function(
     dplyr::filter(!.data$designated_model) |>
     dplyr::pull(.data$team_model_text)
 
+  # pre-format overview fragment
   n_modeling_groups <- length(unique(contributing_metadata$team_name))
   n_forecasts <- length(target_contributing_models)
+  overview_fragment <- glue::glue(
+    "{n_modeling_groups} modeling groups contributed ",
+    "{n_forecasts} forecasts of {config$target_label_short}"
+  )
+
+  # pre-format model lists
+  in_header <- glue::glue(
+    "Models included in {hub_name} ensemble ({config$section_header}):"
+  )
+  in_list <- paste0("* ", teams_in_ensemble, collapse = "\n")
+  not_header <- glue::glue(
+    "Models not included in {hub_name} ensemble ({config$section_header}):"
+  )
+  not_list <- paste0("* ", teams_not_in_ensemble, collapse = "\n")
+  model_list_text <- glue::glue(
+    "{in_header}",
+    "{in_list}",
+    "",
+    "{not_header}",
+    "{not_list}",
+    .sep = "\n"
+  )
 
   # format forecast values based on target config
   forecast_value <- config$format_forecast(target_ensemble$quantile_0.5)
@@ -258,14 +280,10 @@ generate_target_text_block <- function(
   return(list(
     forecast_paragraph = forecast_paragraph,
     forecast_due_date = forecast_due_date,
-    n_modeling_groups = n_modeling_groups,
-    n_forecasts = n_forecasts,
-    target_label_short = config$target_label_short,
-    section_header = config$section_header,
+    overview_fragment = overview_fragment,
     figure_description = figure_description,
     forecast_horizon_text = forecast_horizon_text,
-    teams_in_ensemble = teams_in_ensemble,
-    teams_not_in_ensemble = teams_not_in_ensemble,
+    model_list_text = model_list_text,
     reporting_flag = reporting_flag
   ))
 }
@@ -368,91 +386,53 @@ generate_webtext_block <- function(
     included_locations = included_locations
   )
 
-  # (1) initial forecast paragraphs
-  forecast_paragraphs <- purrr::imap_chr(
-    target_components,
-    function(tc, i) {
-      paragraph <- tc$forecast_paragraph
-      if (i > 1) {
-        paragraph <- stringr::str_replace(
-          paragraph,
-          "ensemble predicts",
-          "ensemble forecasting also predicts"
-        )
-      }
-      paragraph
-    }
-  )
+  # pre-formatted fragments from each target
+  extract <- function(field) {
+    purrr::map_chr(target_components, field)
+  }
 
-  # (2) overview section, with per-target counts
-  count_fragments <- purrr::map_chr(
-    target_components,
-    function(tc) {
-      glue::glue(
-        "{tc$n_modeling_groups} modeling groups contributed ",
-        "{tc$n_forecasts} forecasts of {tc$target_label_short}"
-      )
+  # forecast paragraphs — second+ targets use "also predicts"
+  paragraphs <- purrr::imap_chr(target_components, function(tc, i) {
+    if (i == 1) {
+      return(tc$forecast_paragraph)
     }
-  )
+    stringr::str_replace(
+      tc$forecast_paragraph,
+      "ensemble predicts",
+      "ensemble forecasting also predicts"
+    )
+  })
+
+  # overview, figure, reporting flag, model lists
   forecast_due_date <- target_components[[1]]$forecast_due_date
   overview <- glue::glue(
     "Overview: Reported and forecasted data as of {forecast_due_date}. ",
-    "{paste(count_fragments, collapse = ' and ')}."
+    "{paste(extract('overview_fragment'), collapse = ' and ')}."
   )
 
-  # (3) "what does the figure show?" section
-  figure_fragments <- purrr::map_chr(
-    target_components,
-    function(tc) tc$figure_description
-  )
   horizon_text <- target_components[[length(
     target_components
   )]]$forecast_horizon_text
   figure_section <- glue::glue(
     "What does the figure show?: The figure shows ",
-    "{paste(figure_fragments, collapse = ' and ')}, ",
+    "{paste(extract('figure_description'), collapse = ' and ')}, ",
     "{horizon_text}."
   )
 
-  # (4) hospital reporting flag section
-  reporting_flags <- purrr::map_chr(
-    target_components,
-    function(tc) tc$reporting_flag
-  )
+  reporting_flags <- extract("reporting_flag")
   reporting_flag <- paste(
     reporting_flags[reporting_flags != ""],
     collapse = "\n\n"
   )
 
-  # (5) model lists, two sections per target (in/not in ensemble)
-  model_list_sections <- purrr::map_chr(
-    target_components,
-    function(tc) {
-      in_header <- glue::glue(
-        "Models included in {hub_name} ensemble ({tc$section_header}):"
-      )
-      in_list <- paste0("* ", tc$teams_in_ensemble, collapse = "\n")
-
-      not_header <- glue::glue(
-        "Models not included in {hub_name} ensemble ({tc$section_header}):"
-      )
-      not_list <- paste0("* ", tc$teams_not_in_ensemble, collapse = "\n")
-
-      paste(in_header, in_list, "", not_header, not_list, sep = "\n")
-    }
-  )
-
-  # combine all sections
+  # assemble all sections
   sections <- c(
-    forecast_paragraphs,
+    paragraphs,
     overview,
-    figure_section
+    figure_section,
+    if (nchar(reporting_flag) > 0) reporting_flag,
+    extract("model_list_text")
   )
-  if (nchar(reporting_flag) > 0) {
-    sections <- c(sections, reporting_flag)
-  }
-  sections <- c(sections, model_list_sections)
-
   web_text <- paste(sections, collapse = "\n\n")
 
   return(web_text)
