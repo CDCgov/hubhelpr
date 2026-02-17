@@ -402,35 +402,35 @@ generate_webtext_block <- function(
     included_locations = included_locations
   )
 
-  # build sections from components
+  # build webtext from template
   hosp_forecast_paragraph <- stringr::str_replace(
     hosp$forecast_paragraph,
     "ensemble predicts",
     "ensemble forecasting also predicts"
   )
 
-  overview <- glue::glue(
+  web_text <- glue::glue(
+    "{ed$forecast_paragraph}",
+    "",
+    "{hosp_forecast_paragraph}",
+    "",
     "Overview: Reported and forecasted data as of {ed$forecast_due_date}. ",
-    "{ed$overview_fragment} and {hosp$overview_fragment}."
-  )
-
-  figure_section <- glue::glue(
+    "{ed$overview_fragment} and {hosp$overview_fragment}.",
+    "",
     "What does the figure show?: The figure shows ",
     "{ed$figure_description} and {hosp$figure_description}, ",
-    "{hosp$forecast_horizon_text}."
+    "{hosp$forecast_horizon_text}.",
+    "",
+    "{hosp$reporting_flag}",
+    "",
+    "{ed$model_list_text}",
+    "",
+    "{hosp$model_list_text}",
+    .sep = "\n"
   )
 
-  # assemble all sections
-  sections <- c(
-    ed$forecast_paragraph,
-    hosp_forecast_paragraph,
-    overview,
-    figure_section,
-    if (nchar(hosp$reporting_flag) > 0) hosp$reporting_flag,
-    ed$model_list_text,
-    hosp$model_list_text
-  )
-  web_text <- paste(sections, collapse = "\n\n")
+  # clean up empty sections (due to blank reporting flag)
+  web_text <- stringr::str_replace_all(web_text, "\n{3,}", "\n\n")
 
   return(web_text)
 }
