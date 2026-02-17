@@ -372,10 +372,14 @@ generate_webtext_block <- function(
       )
     )
 
-  # compute per-target components
-  target_components <- purrr::map(
-    targets,
-    generate_target_text_block,
+  # ed and hosp targets
+  target_names <- get_target_names(disease)
+  ed_target <- target_names$ed
+  hosp_target <- target_names$hosp
+
+  # get components for each target
+  ed <- generate_target_text_block(
+    target = ed_target,
     disease = disease,
     ensemble_data = ensemble_data,
     all_target_data = all_target_data,
@@ -386,52 +390,45 @@ generate_webtext_block <- function(
     included_locations = included_locations
   )
 
-  # pre-formatted fragments from each target
-  extract <- function(field) {
-    purrr::map_chr(target_components, field)
-  }
-
-  # forecast paragraphs — second+ targets use "also predicts"
-  paragraphs <- purrr::imap_chr(target_components, function(tc, i) {
-    if (i == 1) {
-      return(tc$forecast_paragraph)
-    }
-    stringr::str_replace(
-      tc$forecast_paragraph,
-      "ensemble predicts",
-      "ensemble forecasting also predicts"
-    )
-  })
-
-  # overview, figure, reporting flag, model lists
-  forecast_due_date <- target_components[[1]]$forecast_due_date
-  overview <- glue::glue(
-    "Overview: Reported and forecasted data as of {forecast_due_date}. ",
-    "{paste(extract('overview_fragment'), collapse = ' and ')}."
+  hosp <- generate_target_text_block(
+    target = hosp_target,
+    disease = disease,
+    ensemble_data = ensemble_data,
+    all_target_data = all_target_data,
+    all_forecasts_data = all_forecasts_data,
+    all_model_metadata = all_model_metadata,
+    hub_name = hub_name,
+    reference_date = reference_date,
+    included_locations = included_locations
   )
 
-  horizon_text <- target_components[[length(
-    target_components
-  )]]$forecast_horizon_text
+  # build sections from components
+  hosp_forecast_paragraph <- stringr::str_replace(
+    hosp$forecast_paragraph,
+    "ensemble predicts",
+    "ensemble forecasting also predicts"
+  )
+
+  overview <- glue::glue(
+    "Overview: Reported and forecasted data as of {ed$forecast_due_date}. ",
+    "{ed$overview_fragment} and {hosp$overview_fragment}."
+  )
+
   figure_section <- glue::glue(
     "What does the figure show?: The figure shows ",
-    "{paste(extract('figure_description'), collapse = ' and ')}, ",
-    "{horizon_text}."
-  )
-
-  reporting_flags <- extract("reporting_flag")
-  reporting_flag <- paste(
-    reporting_flags[reporting_flags != ""],
-    collapse = "\n\n"
+    "{ed$figure_description} and {hosp$figure_description}, ",
+    "{hosp$forecast_horizon_text}."
   )
 
   # assemble all sections
   sections <- c(
-    paragraphs,
+    ed$forecast_paragraph,
+    hosp_forecast_paragraph,
     overview,
     figure_section,
-    if (nchar(reporting_flag) > 0) reporting_flag,
-    extract("model_list_text")
+    if (nchar(hosp$reporting_flag) > 0) hosp$reporting_flag,
+    ed$model_list_text,
+    hosp$model_list_text
   )
   web_text <- paste(sections, collapse = "\n\n")
 

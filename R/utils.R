@@ -155,6 +155,25 @@ generate_target_webtext_config <- function(target, disease) {
 }
 
 
+#' Get target names for a given disease.
+#'
+#' Returns the full target name strings for a disease,
+#' keyed by target type.
+#'
+#' @param disease Character. Disease identifier ("covid",
+#' "rsv", or "flu").
+#' @return Named list with elements `ed` and `hosp`
+#' containing the full target name strings.
+#' @export
+get_target_names <- function(disease) {
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
+  list(
+    ed = glue::glue("wk inc {disease} prop ed visits"),
+    hosp = glue::glue("wk inc {disease} hosp")
+  )
+}
+
+
 #' Check if target is a hospital admissions count.
 #'
 #' Helper function to identify targets that end with "hosp".
