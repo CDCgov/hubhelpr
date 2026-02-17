@@ -1,0 +1,88 @@
+name: "Generate Visualization Data"
+description: "Generate weekly visualization data files for a forecast hub, commit to a new branch, and create a pull request. Requires R and hubhelpr to be installed beforehand."
+
+inputs:
+  disease:
+    description: "Disease identifier ('covid' or 'rsv')."
+    required: true
+  github_token:
+    description: "GitHub token for creating the pull request."
+    required: true
+  base_hub_path:
+    description: "Path to the hub repository directory."
+    required: true
+  hub_reports_path:
+    description: "Path to the hub reports directory."
+    required: false
+    default: "."
+  reference_date:
+    description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the last day of the current MMWR epiweek."
+    required: false
+    default: "latest"
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Generate Data Files"
+      id: generate
+      shell: Rscript {0}
+      run: |
+        input_date <- "${{ inputs.reference_date }}"
+        if (input_date == "" || input_date == "latest") {
+          ref_date <- forecasttools::ceiling_mmwr_epiweek(lubridate::today())
+        } else {
+          ref_date <- as.Date(input_date)
+        }
+        cat("Using reference date:", as.character(ref_date), "\n")
+
+        base_hub_path <- "${{ inputs.base_hub_path }}"
+        hub_reports_path <- "${{ inputs.hub_reports_path }}"
+        disease <- "${{ inputs.disease }}"
+
+        hubhelpr::write_ref_date_summary_ens(
+          reference_date = ref_date,
+          base_hub_path = base_hub_path,
+          hub_reports_path = hub_reports_path,
+          disease = disease
+        )
+
+        hubhelpr::write_ref_date_summary_all(
+          reference_date = ref_date,
+          base_hub_path = base_hub_path,
+          hub_reports_path = hub_reports_path,
+          disease = disease
+        )
+
+        hubhelpr::write_viz_target_data(
+          reference_date = ref_date,
+          base_hub_path = base_hub_path,
+          hub_reports_path = hub_reports_path,
+          disease = disease,
+          pull_nhsn = TRUE,
+          pull_nssp = ref_date >= as.Date("2025-06-21")
+        )
+
+        writeLines(
+          sprintf("date=%s", as.character(ref_date)),
+          Sys.getenv("GITHUB_OUTPUT")
+        )
+
+    - name: "Commit Changes"
+      shell: bash
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git checkout -b "add-viz-v2-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}"
+        git add .
+        git commit -m "Update weekly ${{ inputs.disease }} visualization data"
+        git push origin "add-viz-v2-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}"
+
+    - name: "Create Pull Request"
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        gh pr create --base main \
+          --head "add-viz-v2-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}" \
+          --title "Weekly ${{ inputs.disease }} forecast visualization data" \
+          --body "This PR is generated automatically to add weekly visualization data files for ${{ inputs.disease }}."
