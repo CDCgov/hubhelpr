@@ -157,7 +157,7 @@ generate_hub_baseline <- function(
     )
   }
 
-  available_targets <- get_unique_targets(base_hub_path)
+  available_targets <- get_unique_hub_targets(base_hub_path)
 
   if (is.null(targets)) {
     targets <- available_targets
