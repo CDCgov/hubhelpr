@@ -72,10 +72,10 @@ runs:
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git checkout -b "add-viz-v2-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}"
+        git checkout -b "add-viz-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}"
         git add .
         git commit -m "Update weekly ${{ inputs.disease }} visualization data"
-        git push origin "add-viz-v2-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}"
+        git push origin "add-viz-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}"
 
     - name: "Create Pull Request"
       shell: bash
@@ -83,6 +83,6 @@ runs:
         GH_TOKEN: ${{ inputs.github_token }}
       run: |
         gh pr create --base main \
-          --head "add-viz-v2-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}" \
+          --head "add-viz-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}" \
           --title "Weekly ${{ inputs.disease }} forecast visualization data" \
           --body "This PR is generated automatically to add weekly visualization data files for ${{ inputs.disease }}."
