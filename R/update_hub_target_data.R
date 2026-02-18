@@ -242,16 +242,16 @@ update_hub_target_data <- function(
 
   output_file <- fs::path(output_dirpath, "time-series", ext = "parquet")
 
+  new_data <- dplyr::bind_rows(nhsn_data, nssp_data)
+
   if (fs::file_exists(output_file)) {
-    existing_data <- forecasttools::read_tabular_file(output_file)
+    existing_data <- forecasttools::read_tabular_file(output_file) |>
+      dplyr::filter(!(.data$as_of %in% unique(new_data$as_of)))
   } else {
     existing_data <- NULL
   }
-  dplyr::bind_rows(
-    existing_data,
-    nhsn_data,
-    nssp_data
-  ) |>
+
+  dplyr::bind_rows(existing_data, new_data) |>
     forecasttools::write_tabular_file(output_file)
 
   return(invisible())
