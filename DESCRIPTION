@@ -39,7 +39,8 @@ Imports:
     stringr,
     tidyr,
     tidyselect,
-    hubUtils
+    hubUtils,
+    janitor
 Remotes:
     forecasttools=github::cdcgov/forecasttools,
     hubUtils=github::hubverse-org/hubUtils,

@@ -115,7 +115,7 @@ summarize_ref_date_forecasts <- function(
     dplyr::mutate(
       dplyr::across(
         tidyselect::ends_with("_per100k"),
-        ~ round(.x, 2),
+        ~ janitor::round_half_up(.x, 2),
         .names = "{.col}_rounded"
       ),
       dplyr::across(
@@ -123,7 +123,7 @@ summarize_ref_date_forecasts <- function(
           !tidyselect::contains("_per100k"),
         ~ dplyr::case_when(
           is_hosp_target(.data$target) ~ round_to_place(.x),
-          is_ed_target(.data$target) ~ signif(.x, digits = 2)
+          is_ed_target(.data$target) ~ janitor::signif_half_up(.x, digits = 2)
         ),
         .names = "{.col}_rounded"
       ),
