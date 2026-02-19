@@ -6,6 +6,58 @@ hubverse_ts_req_cols <- c(
   "target"
 )
 
+td_key_cols <- c("date", "location", "as_of", "target")
+
+
+#' Merge new target time-series data with existing data.
+#'
+#' Combines new data with existing data, handling conflicts
+#' and deduplication. Key columns are date, location, as_of,
+#' and target.
+#'
+#' @param existing_data Data frame of existing time-series
+#' data, or NULL if no existing data.
+#' @param new_data Data frame of new time-series data to
+#' merge.
+#' @param overwrite_existing Logical. If TRUE, overwrite
+#' existing rows that share key columns with new data.
+#' If FALSE (default), error if any conflicts are found.
+#'
+#' @return Data frame with merged data.
+#' @noRd
+merge_target_data <- function(
+  existing_data,
+  new_data,
+  overwrite_existing = FALSE
+) {
+  if (!is.null(existing_data)) {
+    conflicts <- dplyr::inner_join(
+      existing_data,
+      new_data,
+      by = td_key_cols,
+      suffix = c("_old", "_new")
+    )
+
+    if (nrow(conflicts) > 0 && !overwrite_existing) {
+      cli::cli_abort(
+        "{nrow(conflicts)} conflicting row{?s} found.",
+        "i" = "Use {.arg overwrite_existing = TRUE} to overwrite."
+      )
+    }
+
+    if (overwrite_existing) {
+      existing_data <- dplyr::anti_join(
+        existing_data,
+        new_data,
+        by = td_key_cols
+      )
+    }
+  }
+
+  dplyr::bind_rows(existing_data, new_data) |>
+    dplyr::distinct()
+}
+
 #' Get and format NHSN data for a given disease.
 #'
 #' This function pulls the NHSN hospital admissions data,
@@ -168,6 +220,10 @@ get_hubverse_format_nssp_data <- function(
 #' @param nssp_update_local Logical. Whether to update NSSP
 #' data from local hub file `auxiliary-data/latest.parquet`
 #' (default: FALSE).
+#' @param overwrite_existing Logical. If TRUE, overwrite
+#' existing rows that share key columns (date, location,
+#' as_of, target) with the new data. If FALSE (default),
+#' error if any conflicts are found.
 #'
 #' @return Writes `time-series.parquet` and optionally
 #' legacy CSV target data files to the target-data
@@ -180,7 +236,8 @@ update_hub_target_data <- function(
   start_date = lubridate::as_date("2024-11-09"),
   included_locations = hubhelpr::included_locations,
   legacy_file = FALSE,
-  nssp_update_local = FALSE
+  nssp_update_local = FALSE,
+  overwrite_existing = FALSE
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
@@ -245,13 +302,16 @@ update_hub_target_data <- function(
   new_data <- dplyr::bind_rows(nhsn_data, nssp_data)
 
   if (fs::file_exists(output_file)) {
-    existing_data <- forecasttools::read_tabular_file(output_file) |>
-      dplyr::filter(!(.data$as_of %in% unique(new_data$as_of)))
+    existing_data <- forecasttools::read_tabular_file(output_file)
   } else {
     existing_data <- NULL
   }
 
-  dplyr::bind_rows(existing_data, new_data) |>
+  merge_target_data(
+    existing_data,
+    new_data,
+    overwrite_existing = overwrite_existing
+  ) |>
     forecasttools::write_tabular_file(output_file)
 
   return(invisible())

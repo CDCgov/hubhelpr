@@ -43,7 +43,8 @@ runs:
           disease = "${{ inputs.disease }}",
           as_of = today,
           legacy_file = as.logical("${{ inputs.legacy_file }}"),
-          nssp_update_local = as.logical("${{ inputs.nssp_update_local }}")
+          nssp_update_local = as.logical("${{ inputs.nssp_update_local }}"),
+          overwrite_existing = TRUE
         )
         hubhelpr::generate_oracle_output("${{ inputs.base_hub_path }}")
         writeLines(sprintf("date=%s", today), Sys.getenv("GITHUB_OUTPUT"))
