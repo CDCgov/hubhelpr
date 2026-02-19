@@ -100,9 +100,9 @@ get_disease_name <- function(disease) {
 #' @noRd
 round_to_place <- function(value) {
   dplyr::case_when(
-    value >= 1000 ~ round(value, -2),
-    value >= 10 ~ round(value, -1),
-    .default = round(value, 0)
+    value >= 1000 ~ janitor::round_half_up(value, -2),
+    value >= 10 ~ janitor::round_half_up(value, -1),
+    .default = janitor::round_half_up(value, 0)
   )
 }
 
@@ -141,7 +141,7 @@ generate_target_webtext_config <- function(target, disease) {
       target_short = glue::glue("{disease_name} ED visit proportions"),
       data_source = "NSSP data",
       value_unit = "%",
-      format_forecast = function(x) signif(x * 100, 2)
+      format_forecast = function(x) janitor::signif_half_up(x * 100, 2)
     )
   } else {
     cli::cli_warn("Unknown target type for: {target}, skipping.")

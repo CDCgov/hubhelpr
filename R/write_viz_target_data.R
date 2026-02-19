@@ -113,7 +113,7 @@ write_viz_target_data <- function(
     dplyr::mutate(
       observation = dplyr::if_else(
         .data$target_data_type == "prop_ed",
-        round(.data$observation, 4),
+        janitor::round_half_up(.data$observation, 4),
         .data$observation
       )
     ) |>
