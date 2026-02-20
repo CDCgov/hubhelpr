@@ -11,7 +11,8 @@ update_hub_target_data(
   start_date = lubridate::as_date("2024-11-09"),
   included_locations = hubhelpr::included_locations,
   legacy_file = FALSE,
-  nssp_update_local = FALSE
+  nssp_update_local = FALSE,
+  overwrite_existing = FALSE
 )
 }
 \arguments{
@@ -36,6 +37,11 @@ CSV output (default: FALSE).}
 \item{nssp_update_local}{Logical. Whether to update NSSP
 data from local hub file \code{auxiliary-data/latest.parquet}
 (default: FALSE).}
+
+\item{overwrite_existing}{Logical. If TRUE, overwrite
+existing rows that share key columns (date, location,
+as_of, target) with the new data. If FALSE (default),
+error if any conflicts are found.}
 }
 \value{
 Writes \code{time-series.parquet} and optionally
