@@ -279,7 +279,9 @@ generate_target_text_block <- function(
 #' @param weekly_data_path Character, path to the directory
 #' with weekly summary files.
 #' @param targets Character vector of target names to
-#' generate text for (e.g., "wk inc covid hosp").
+#' generate text for (e.g., "wk inc covid hosp"). If
+#' NULL (default), targets are discovered from the hub
+#' time-series data via [get_unique_hub_targets()].
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
@@ -295,7 +297,7 @@ generate_webtext_block <- function(
   disease,
   base_hub_path,
   weekly_data_path,
-  targets,
+  targets = NULL,
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 ) {
@@ -303,6 +305,10 @@ generate_webtext_block <- function(
   checkmate::assert_choice(input_format, choices = c("csv", "tsv", "parquet"))
 
   reference_date <- lubridate::as_date(reference_date)
+
+  if (is.null(targets)) {
+    targets <- get_unique_hub_targets(base_hub_path)
+  }
 
   hub_name <- get_hub_name(disease)
 
@@ -387,7 +393,9 @@ generate_webtext_block <- function(
 #' @param hub_reports_path Character, path to forecast hub
 #' reports directory.
 #' @param targets Character vector of target names to
-#' generate text for (e.g., "wk inc covid hosp").
+#' generate text for (e.g., "wk inc covid hosp"). If
+#' NULL (default), targets are discovered from the hub
+#' time-series data via [get_unique_hub_targets()].
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
@@ -401,7 +409,7 @@ write_webtext <- function(
   disease,
   base_hub_path,
   hub_reports_path,
-  targets,
+  targets = NULL,
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 ) {

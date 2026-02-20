@@ -44,8 +44,8 @@ runs:
         disease <- "${{ inputs.disease }}"
 
         input_targets <- '${{ inputs.targets }}'
-        if (input_targets == "") {
-          targets <- hubhelpr::get_unique_hub_targets(base_hub_path)
+        if (nchar(input_targets) == 0) {
+          targets <- NULL
         } else {
           targets <- jsonlite::fromJSON(input_targets)
         }
