@@ -116,11 +116,12 @@ check_hospital_reporting_latency <- function(
 }
 
 
-#' Generate webtext for a single target.
+#' Compute webtext components for a single target.
 #'
-#' Internal helper function that processes one target,
-#' filtering data, gathering contributing teams, and
-#' generating the formatted text block.
+#' Internal helper that processes one target, filtering
+#' data, gathering contributing teams, and computing the
+#' text components needed by generate_webtext_block() to
+#' assemble the final document.
 #'
 #' @param target Character, the target name.
 #' @param disease Character, disease name.
@@ -132,8 +133,10 @@ check_hospital_reporting_latency <- function(
 #' @param reference_date Date, the reference date.
 #' @param included_locations Character vector of location codes.
 #'
-#' @return Character string containing the target-specific
-#' webtext block, or empty string if no data found.
+#' @return Named list with components: forecast_paragraph,
+#' forecast_due_date, overview_fragment,
+#' figure_description, forecast_horizon_text,
+#' model_list_text, reporting_flag.
 #'
 generate_target_text_block <- function(
   target,
@@ -144,7 +147,8 @@ generate_target_text_block <- function(
   all_model_metadata,
   hub_name,
   reference_date,
-  included_locations
+  included_locations,
+  also_predicts = FALSE
 ) {
   config <- generate_target_webtext_config(target, disease)
 
@@ -174,6 +178,24 @@ generate_target_text_block <- function(
   teams_not_in_ensemble <- contributing_metadata |>
     dplyr::filter(!.data$designated_model) |>
     dplyr::pull(.data$team_model_text)
+
+  # pre-format overview fragment
+  n_modeling_groups <- length(unique(contributing_metadata$team_name))
+  n_forecasts <- length(target_contributing_models)
+  overview_fragment <- glue::glue(
+    "{n_modeling_groups} modeling groups contributed ",
+    "{n_forecasts} forecasts of {tolower(config$section_header)}"
+  )
+
+  # pre-format model lists
+  model_list_text <- glue::glue(
+    "Models included in {hub_name} ensemble ({config$section_header}):",
+    "{paste0('* ', teams_in_ensemble, collapse = '\n')}",
+    "",
+    "Models not included in {hub_name} ensemble ({config$section_header}):",
+    "{paste0('* ', teams_not_in_ensemble, collapse = '\n')}",
+    .sep = "\n"
+  )
 
   # format forecast values based on target config
   forecast_value <- config$format_forecast(target_ensemble$quantile_0.5)
@@ -211,64 +233,67 @@ generate_target_text_block <- function(
   target_description <- config$target_description
   target_short <- config$target_short
   data_source <- config$data_source
-  section_header <- config$section_header
 
-  bullets <- c(
-    glue::glue(
-      "The {hub_name} ensemble's one-week-ahead forecast predicts that ",
-      "{target_description} will be ",
-      "approximately {forecast_value}{value_unit} nationally, with ",
-      "{lower_value}{value_unit} to {upper_value}{value_unit} ",
-      "likely reported in the week ending {target_end_date_1wk_ahead}."
-    ),
-    glue::glue(
-      "This is compared to the {last_reported}{value_unit} reported for the week ",
-      "ending {last_reported_target_data$week_end_date_formatted}, the most ",
-      "recent week of {data_source}."
-    ),
-    glue::glue(
-      "Reported and forecasted data as of {forecast_due_date}."
-    ),
-    glue::glue(
-      "The figure shows {target_description} ",
-      "reported in the United States each week from ",
-      "{first_target_data_date} through {last_target_data_date} and forecasted ",
-      "{target_short} per week for this week and the next ",
-      "2 weeks through {target_end_date_2wk_ahead}."
-    ),
-    glue::glue(
-      "Contributing teams and models in the ensemble: ",
-      "{paste(teams_in_ensemble, collapse = ', ')}"
-    ),
-    glue::glue(
-      "Contributing teams and models not in the ensemble: ",
-      "{paste(teams_not_in_ensemble, collapse = ', ')}"
-    )
+  direction <- dplyr::case_when(
+    forecast_value < last_reported ~ "a decrease",
+    forecast_value > last_reported ~ "an increase",
+    TRUE ~ "similar to the value"
   )
 
+  predicts_phrase <- if (also_predicts) {
+    "ensemble forecasting also predicts"
+  } else {
+    "ensemble predicts"
+  }
+
+  forecast_paragraph <- glue::glue(
+    "The {hub_name} {predicts_phrase} that for the week ending ",
+    "{target_end_date_1wk_ahead}, {target_description} in the United ",
+    "States will be {forecast_value}{value_unit} ",
+    "(95% prediction interval: {lower_value}{value_unit} to ",
+    "{upper_value}{value_unit}). This is compared to the ",
+    "{last_reported}{value_unit} reported for the week ending ",
+    "{last_reported_target_data$week_end_date_formatted}, the most ",
+    "recent week of {data_source}, {direction} from the prior week."
+  )
+
+  figure_description <- glue::glue(
+    "{target_description} reported in the United States each week from ",
+    "{first_target_data_date} through {last_target_data_date}"
+  )
+
+  forecast_horizon_text <- glue::glue(
+    "forecasted {target_short} per week for this week and the next ",
+    "2 weeks through {target_end_date_2wk_ahead}"
+  )
+
+  reporting_flag <- ""
   if (is_hosp_target(target)) {
-    reporting_rate_flag = check_hospital_reporting_latency(
+    reporting_flag <- check_hospital_reporting_latency(
       reference_date = reference_date,
       disease = disease,
       included_locations = included_locations
     )
-    bullets <- c(bullets, reporting_rate_flag)
   }
 
-  # format as bullet list with section header
-  bullet_text <- paste0("* ", bullets, collapse = "\n")
-  target_text <- glue::glue("## {section_header}\n\n{bullet_text}\n")
-
-  return(target_text)
+  return(list(
+    forecast_paragraph = forecast_paragraph,
+    forecast_due_date = forecast_due_date,
+    overview_fragment = overview_fragment,
+    figure_description = figure_description,
+    forecast_horizon_text = forecast_horizon_text,
+    model_list_text = model_list_text,
+    reporting_flag = reporting_flag
+  ))
 }
 
 
 #' Generate forecast hub webpage text block.
 #'
-#' This function creates formatted text content for
-#' forecast hub visualizations. It processes forecast
-#' data, target data, and team metadata to generate a
-#' text description for the specified targets.
+#' Creates formatted text content for forecast hub
+#' visualizations. Processes forecast data, target data,
+#' and team metadata to generate a combined text
+#' description across all specified targets.
 #'
 #' @param reference_date Character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
@@ -346,10 +371,13 @@ generate_webtext_block <- function(
       )
     )
 
-  # generate text block for each target
-  target_text_blocks <- purrr::map_chr(
-    targets,
-    generate_target_text_block,
+  # identify ed and hosp targets
+  ed_target <- targets[purrr::map_lgl(targets, is_ed_target)]
+  hosp_target <- targets[purrr::map_lgl(targets, is_hosp_target)]
+
+  # get components for each target
+  ed <- generate_target_text_block(
+    target = ed_target,
     disease = disease,
     ensemble_data = ensemble_data,
     all_target_data = all_target_data,
@@ -360,14 +388,41 @@ generate_webtext_block <- function(
     included_locations = included_locations
   )
 
-  disease_display_name <- get_disease_name(disease)
-
-  # combine target text blocks with H1 disease header
-  target_sections <- paste(
-    target_text_blocks[target_text_blocks != ""],
-    collapse = "\n\n"
+  hosp <- generate_target_text_block(
+    target = hosp_target,
+    disease = disease,
+    ensemble_data = ensemble_data,
+    all_target_data = all_target_data,
+    all_forecasts_data = all_forecasts_data,
+    all_model_metadata = all_model_metadata,
+    hub_name = hub_name,
+    reference_date = reference_date,
+    included_locations = included_locations,
+    also_predicts = TRUE
   )
-  web_text <- glue::glue("# {disease_display_name}\n\n{target_sections}")
+
+  # build webtext sections
+  overview <- glue::glue(
+    "Overview: Reported and forecasted data as of {ed$forecast_due_date}. ",
+    "{ed$overview_fragment} and {hosp$overview_fragment}."
+  )
+
+  figure_section <- glue::glue(
+    "What does the figure show?: The figure shows ",
+    "{ed$figure_description} and {hosp$figure_description}, ",
+    "{hosp$forecast_horizon_text}."
+  )
+
+  sections <- c(
+    ed$forecast_paragraph,
+    hosp$forecast_paragraph,
+    overview,
+    figure_section,
+    if (nchar(hosp$reporting_flag) > 0) hosp$reporting_flag,
+    ed$model_list_text,
+    hosp$model_list_text
+  )
+  web_text <- paste(sections, collapse = "\n\n")
 
   return(web_text)
 }
@@ -387,7 +442,9 @@ generate_webtext_block <- function(
 #' @param hub_reports_path Character, path to forecast hub
 #' reports directory.
 #' @param targets Character vector of target names to
-#' generate text for (e.g., "wk inc covid hosp").
+#' generate text for (e.g., "wk inc covid hosp"). If
+#' NULL (default), targets are discovered from the hub
+#' time-series data via [get_unique_hub_targets()].
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
@@ -401,11 +458,15 @@ write_webtext <- function(
   disease,
   base_hub_path,
   hub_reports_path,
-  targets,
+  targets = NULL,
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 ) {
   reference_date <- lubridate::as_date(reference_date)
+
+  if (is.null(targets)) {
+    targets <- get_unique_hub_targets(base_hub_path)
+  }
 
   weekly_data_path <- fs::path(
     hub_reports_path,

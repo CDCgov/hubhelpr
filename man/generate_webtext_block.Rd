@@ -43,8 +43,8 @@ Character string containing the formatted
 webpage text.
 }
 \description{
-This function creates formatted text content for
-forecast hub visualizations. It processes forecast
-data, target data, and team metadata to generate a
-text description for the specified targets.
+Creates formatted text content for forecast hub
+visualizations. Processes forecast data, target data,
+and team metadata to generate a combined text
+description across all specified targets.
 }
