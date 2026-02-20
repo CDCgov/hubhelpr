@@ -19,6 +19,10 @@ inputs:
     description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the last day of the current MMWR epiweek."
     required: false
     default: "latest"
+  targets:
+    description: "JSON array of full target names (e.g., '[\"wk inc covid hosp\", \"wk inc covid prop ed visits\"]'). Defaults to all unique targets in time-series data."
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -33,11 +37,18 @@ runs:
         } else {
           ref_date <- as.Date(input_date)
         }
-        cat("Using reference date:", as.character(ref_date), "\n")
+        message("Using reference date: ", as.character(ref_date))
 
         base_hub_path <- "${{ inputs.base_hub_path }}"
         hub_reports_path <- "${{ inputs.hub_reports_path }}"
         disease <- "${{ inputs.disease }}"
+
+        input_targets <- '${{ inputs.targets }}'
+        if (input_targets == "") {
+          targets <- hubhelpr::get_unique_hub_targets(base_hub_path)
+        } else {
+          targets <- jsonlite::fromJSON(input_targets)
+        }
 
         hubhelpr::write_ref_date_summary_ens(
           reference_date = ref_date,
@@ -59,7 +70,15 @@ runs:
           hub_reports_path = hub_reports_path,
           disease = disease,
           pull_nhsn = TRUE,
-          pull_nssp = ref_date >= as.Date("2025-06-21")
+          pull_nssp = TRUE
+        )
+
+        hubhelpr::write_webtext(
+          reference_date = ref_date,
+          disease = disease,
+          base_hub_path = base_hub_path,
+          hub_reports_path = hub_reports_path,
+          targets = targets
         )
 
         writeLines(
