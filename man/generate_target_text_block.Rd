@@ -13,7 +13,8 @@ generate_target_text_block(
   all_model_metadata,
   hub_name,
   reference_date,
-  included_locations
+  included_locations,
+  also_predicts = FALSE
 )
 }
 \arguments{

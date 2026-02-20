@@ -114,9 +114,9 @@ round_to_place <- function(value) {
 #'
 #' @param target Character. Target name (e.g., "wk inc covid hosp").
 #' @param disease Character. Disease identifier ("covid" or "rsv").
-#' @return List with section_header, target_label_short,
-#' target_description, target_short, data_source,
-#' value_unit, and format_forecast elements.
+#' @return List with section_header, target_description,
+#' target_short, data_source, value_unit, and
+#' format_forecast elements.
 #' Returns NULL if target type is not recognized.
 #' @noRd
 generate_target_webtext_config <- function(target, disease) {
@@ -125,7 +125,6 @@ generate_target_webtext_config <- function(target, disease) {
   if (is_hosp_target(target)) {
     config <- list(
       section_header = "Hospital Admissions",
-      target_label_short = "hospital admissions",
       target_description = glue::glue(
         "the number of new laboratory-confirmed {disease_name} hospital admissions"
       ),
@@ -137,7 +136,6 @@ generate_target_webtext_config <- function(target, disease) {
   } else if (is_ed_target(target)) {
     config <- list(
       section_header = "ED Visits",
-      target_label_short = "ED visits",
       target_description = glue::glue(
         "the percentage of emergency department visits due to {disease_name}"
       ),
@@ -152,25 +150,6 @@ generate_target_webtext_config <- function(target, disease) {
   }
 
   return(config)
-}
-
-
-#' Get target names for a given disease.
-#'
-#' Returns the full target name strings for a disease,
-#' keyed by target type.
-#'
-#' @param disease Character. Disease identifier ("covid",
-#' "rsv", or "flu").
-#' @return Named list with elements `ed` and `hosp`
-#' containing the full target name strings.
-#' @export
-get_target_names <- function(disease) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
-  list(
-    ed = glue::glue("wk inc {disease} prop ed visits"),
-    hosp = glue::glue("wk inc {disease} hosp")
-  )
 }
 
 

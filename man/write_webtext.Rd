@@ -10,7 +10,7 @@ write_webtext(
   disease,
   base_hub_path,
   hub_reports_path,
-  targets,
+  targets = NULL,
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 )
@@ -28,7 +28,9 @@ directory.}
 reports directory.}
 
 \item{targets}{Character vector of target names to
-generate text for (e.g., "wk inc covid hosp").}
+generate text for (e.g., "wk inc covid hosp"). If
+NULL (default), targets are discovered from the hub
+time-series data via \code{\link[=get_unique_hub_targets]{get_unique_hub_targets()}}.}
 
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default

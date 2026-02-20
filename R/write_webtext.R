@@ -147,7 +147,8 @@ generate_target_text_block <- function(
   all_model_metadata,
   hub_name,
   reference_date,
-  included_locations
+  included_locations,
+  also_predicts = FALSE
 ) {
   config <- generate_target_webtext_config(target, disease)
 
@@ -183,24 +184,16 @@ generate_target_text_block <- function(
   n_forecasts <- length(target_contributing_models)
   overview_fragment <- glue::glue(
     "{n_modeling_groups} modeling groups contributed ",
-    "{n_forecasts} forecasts of {config$target_label_short}"
+    "{n_forecasts} forecasts of {tolower(config$section_header)}"
   )
 
   # pre-format model lists
-  in_header <- glue::glue(
-    "Models included in {hub_name} ensemble ({config$section_header}):"
-  )
-  in_list <- paste0("* ", teams_in_ensemble, collapse = "\n")
-  not_header <- glue::glue(
-    "Models not included in {hub_name} ensemble ({config$section_header}):"
-  )
-  not_list <- paste0("* ", teams_not_in_ensemble, collapse = "\n")
   model_list_text <- glue::glue(
-    "{in_header}",
-    "{in_list}",
+    "Models included in {hub_name} ensemble ({config$section_header}):",
+    "{paste0('* ', teams_in_ensemble, collapse = '\n')}",
     "",
-    "{not_header}",
-    "{not_list}",
+    "Models not included in {hub_name} ensemble ({config$section_header}):",
+    "{paste0('* ', teams_not_in_ensemble, collapse = '\n')}",
     .sep = "\n"
   )
 
@@ -247,8 +240,14 @@ generate_target_text_block <- function(
     TRUE ~ "similar to the value"
   )
 
+  predicts_phrase <- if (also_predicts) {
+    "ensemble forecasting also predicts"
+  } else {
+    "ensemble predicts"
+  }
+
   forecast_paragraph <- glue::glue(
-    "The {hub_name} ensemble predicts that for the week ending ",
+    "The {hub_name} {predicts_phrase} that for the week ending ",
     "{target_end_date_1wk_ahead}, {target_description} in the United ",
     "States will be {forecast_value}{value_unit} ",
     "(95% prediction interval: {lower_value}{value_unit} to ",
@@ -372,10 +371,9 @@ generate_webtext_block <- function(
       )
     )
 
-  # ed and hosp targets
-  target_names <- get_target_names(disease)
-  ed_target <- target_names$ed
-  hosp_target <- target_names$hosp
+  # identify ed and hosp targets
+  ed_target <- targets[purrr::map_lgl(targets, is_ed_target)]
+  hosp_target <- targets[purrr::map_lgl(targets, is_hosp_target)]
 
   # get components for each target
   ed <- generate_target_text_block(
@@ -399,20 +397,15 @@ generate_webtext_block <- function(
     all_model_metadata = all_model_metadata,
     hub_name = hub_name,
     reference_date = reference_date,
-    included_locations = included_locations
+    included_locations = included_locations,
+    also_predicts = TRUE
   )
 
   # build webtext from template
-  hosp_forecast_paragraph <- stringr::str_replace(
-    hosp$forecast_paragraph,
-    "ensemble predicts",
-    "ensemble forecasting also predicts"
-  )
-
   web_text <- glue::glue(
     "{ed$forecast_paragraph}",
     "",
-    "{hosp_forecast_paragraph}",
+    "{hosp$forecast_paragraph}",
     "",
     "Overview: Reported and forecasted data as of {ed$forecast_due_date}. ",
     "{ed$overview_fragment} and {hosp$overview_fragment}.",
@@ -450,7 +443,9 @@ generate_webtext_block <- function(
 #' @param hub_reports_path Character, path to forecast hub
 #' reports directory.
 #' @param targets Character vector of target names to
-#' generate text for (e.g., "wk inc covid hosp").
+#' generate text for (e.g., "wk inc covid hosp"). If
+#' NULL (default), targets are discovered from the hub
+#' time-series data via [get_unique_hub_targets()].
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
@@ -464,11 +459,15 @@ write_webtext <- function(
   disease,
   base_hub_path,
   hub_reports_path,
-  targets,
+  targets = NULL,
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 ) {
   reference_date <- lubridate::as_date(reference_date)
+
+  if (is.null(targets)) {
+    targets <- get_unique_hub_targets(base_hub_path)
+  }
 
   weekly_data_path <- fs::path(
     hub_reports_path,
