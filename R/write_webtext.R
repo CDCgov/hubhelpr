@@ -401,29 +401,28 @@ generate_webtext_block <- function(
     also_predicts = TRUE
   )
 
-  # build webtext from template
-  web_text <- glue::glue(
-    "{ed$forecast_paragraph}",
-    "",
-    "{hosp$forecast_paragraph}",
-    "",
+  # build webtext sections
+  overview <- glue::glue(
     "Overview: Reported and forecasted data as of {ed$forecast_due_date}. ",
-    "{ed$overview_fragment} and {hosp$overview_fragment}.",
-    "",
-    "What does the figure show?: The figure shows ",
-    "{ed$figure_description} and {hosp$figure_description}, ",
-    "{hosp$forecast_horizon_text}.",
-    "",
-    "{hosp$reporting_flag}",
-    "",
-    "{ed$model_list_text}",
-    "",
-    "{hosp$model_list_text}",
-    .sep = "\n"
+    "{ed$overview_fragment} and {hosp$overview_fragment}."
   )
 
-  # clean up empty sections (due to blank reporting flag)
-  web_text <- stringr::str_replace_all(web_text, "\n{3,}", "\n\n")
+  figure_section <- glue::glue(
+    "What does the figure show?: The figure shows ",
+    "{ed$figure_description} and {hosp$figure_description}, ",
+    "{hosp$forecast_horizon_text}."
+  )
+
+  sections <- c(
+    ed$forecast_paragraph,
+    hosp$forecast_paragraph,
+    overview,
+    figure_section,
+    if (nchar(hosp$reporting_flag) > 0) hosp$reporting_flag,
+    ed$model_list_text,
+    hosp$model_list_text
+  )
+  web_text <- paste(sections, collapse = "\n\n")
 
   return(web_text)
 }
