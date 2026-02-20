@@ -280,7 +280,7 @@ generate_target_text_block <- function(
 #' with weekly summary files.
 #' @param targets Character vector of target names to
 #' generate text for (e.g., "wk inc covid hosp"). If
-#' NULL (default), targets are discovered from the hub
+#' NULL (default), targets are retrieved from the hub
 #' time-series data via [get_unique_hub_targets()].
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
@@ -394,7 +394,7 @@ generate_webtext_block <- function(
 #' reports directory.
 #' @param targets Character vector of target names to
 #' generate text for (e.g., "wk inc covid hosp"). If
-#' NULL (default), targets are discovered from the hub
+#' NULL (default), targets are retrieved from the hub
 #' time-series data via [get_unique_hub_targets()].
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
