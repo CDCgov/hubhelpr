@@ -35,7 +35,8 @@ merge_target_data <- function(
       by = td_key_cols
     )
 
-    n_rows_to_overwrite <- nrow(existing_data) - nrow(deconflicted_existing_data)
+    n_rows_to_overwrite <- nrow(existing_data) -
+      nrow(deconflicted_existing_data)
 
     if (n_rows_to_overwrite != 0 && !overwrite_existing) {
       cli::cli_abort(
