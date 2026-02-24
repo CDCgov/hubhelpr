@@ -136,9 +136,9 @@ generate_target_webtext_config <- function(target, disease) {
     config <- list(
       section_header = "ED Visits",
       target_description = glue::glue(
-        "the proportion of emergency department visits due to {disease_name}"
+        "the percentage of emergency department visits due to {disease_name}"
       ),
-      target_short = glue::glue("{disease_name} ED visit proportions"),
+      target_short = glue::glue("{disease_name} ED visit percentages"),
       data_source = "NSSP data",
       value_unit = "%",
       format_forecast = function(x) janitor::signif_half_up(x * 100, 2)

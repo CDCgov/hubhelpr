@@ -9,7 +9,7 @@ generate_webtext_block(
   disease,
   base_hub_path,
   weekly_data_path,
-  targets,
+  targets = NULL,
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 )
@@ -28,7 +28,8 @@ hub directory.}
 with weekly summary files.}
 
 \item{targets}{Character vector of target names to
-generate text for (e.g., "wk inc covid hosp").}
+generate text for. Default NULL discovers targets
+from hub time-series data.}
 
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default
@@ -43,8 +44,7 @@ Character string containing the formatted
 webpage text.
 }
 \description{
-This function creates formatted text content for
-forecast hub visualizations. It processes forecast
-data, target data, and team metadata to generate a
-text description for the specified targets.
+Creates formatted text content for forecast hub
+visualizations by loading a template and filling in
+computed data values.
 }
