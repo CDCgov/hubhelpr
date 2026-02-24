@@ -6,14 +6,10 @@ hubverse_ts_req_cols <- c(
   "target"
 )
 
-td_key_cols <- c("date", "location", "as_of", "target")
-
-
 #' Merge new target time-series data with existing data.
 #'
-#' Combines new data with existing data, handling conflicts
-#' and deduplication. Key columns are date, location, as_of,
-#' and target.
+#' Combines new data with existing data, handling conflicts.
+#' Key columns are date, location, as_of, and target.
 #'
 #' @param existing_data Data frame of existing time-series
 #' data, or NULL if no existing data.
@@ -30,32 +26,38 @@ merge_target_data <- function(
   new_data,
   overwrite_existing = FALSE
 ) {
+  td_key_cols <- c("date", "location", "as_of", "target")
+
   if (!is.null(existing_data)) {
-    conflicts <- dplyr::inner_join(
+    deconflicted_existing_data <- dplyr::anti_join(
       existing_data,
       new_data,
-      by = td_key_cols,
-      suffix = c("_old", "_new")
+      by = td_key_cols
     )
 
-    if (nrow(conflicts) > 0 && !overwrite_existing) {
+    n_rows_to_overwrite <- nrow(existing_data) - nrow(deconflicted_existing_data)
+
+    if (n_rows_to_overwrite != 0 && !overwrite_existing) {
       cli::cli_abort(
-        "{nrow(conflicts)} conflicting row{?s} found.",
-        "i" = "Use {.arg overwrite_existing = TRUE} to overwrite."
+        c(
+          "New data would overwrite {n_rows_to_overwrite} row{?s} of existing data.",
+          "i" = "Use {.arg overwrite_existing = TRUE} to overwrite."
+        )
       )
     }
 
-    if (overwrite_existing) {
-      existing_data <- dplyr::anti_join(
-        existing_data,
-        new_data,
-        by = td_key_cols
-      )
-    }
+    data <- dplyr::bind_rows(deconflicted_existing_data, new_data)
+  } else {
+    data <- new_data
   }
 
-  dplyr::bind_rows(existing_data, new_data) |>
-    dplyr::distinct()
+  if (anyDuplicated(data)) {
+    cli::cli_abort(
+      "Duplicate rows found. This should not occur. Check the integrity of the source data."
+    )
+  }
+
+  return(data)
 }
 
 #' Get and format NHSN data for a given disease.
