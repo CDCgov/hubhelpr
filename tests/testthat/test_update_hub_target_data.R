@@ -177,15 +177,18 @@ test_that("merge_target_data overwrites only shared rows when TRUE", {
     result,
     hubhelpr::is_hosp_target(.data$target)
   )
-  expect_equal(nrow(hosp_rows), nrow(hosp_td))
-  expect_equal(hosp_rows$observation, hosp_td$observation)
+  expect_equal(hosp_rows, hosp_td)
 
   ed_rows <- dplyr::filter(
     result,
     hubhelpr::is_ed_target(.data$target)
   )
-  expect_equal(nrow(ed_rows), nrow(ed_td))
-  expect_true(all(ed_rows$observation == 0.07))
+  # ed rows should be the same as input with the
+  # observation overwritten
+  expect_equal(
+    ed_rows |> dplyr::mutate(target = as.character(target)),
+    ed_td |> dplyr::mutate(observation = 0.07)
+  )
 })
 
 test_that("merge_target_data overwrite with identical data has no duplicates", {
@@ -234,9 +237,9 @@ test_that("merge_target_data preserves all columns after overwrite", {
   new_data <- real_td |>
     dplyr::mutate(observation = observation + 1)
   result <- merge_target_data(existing, new_data, overwrite_existing = TRUE)
-  expect_equal(
+  checkmate::expect_names(
     names(result),
-    c("date", "observation", "location", "as_of", "target")
+    identical.to = c("date", "observation", "location", "as_of", "target")
   )
   expect_equal(result$observation, new_data$observation)
 })
