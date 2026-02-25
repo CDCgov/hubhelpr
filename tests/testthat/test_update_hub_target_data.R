@@ -107,28 +107,14 @@ purrr::walk(c("covid", "rsv"), function(disease) {
 })
 
 
-# read mocked NHSN covid response and convert to
-# hubverse format
-nhsn_mock_path <- fs::path(
-  mockdir,
-  "data.cdc.gov",
-  "resource",
-  "mpgq-jmmr.json-8beafd.json"
-)
-nhsn_mock <- jsonlite::fromJSON(nhsn_mock_path) |>
-  dplyr::mutate(
-    date = lubridate::as_date(.data$weekendingdate),
-    observation = as.numeric(.data$totalconfc19newadm),
-    location = forecasttools::us_location_recode(
-      .data$jurisdiction,
-      "hrd",
-      "code"
-    ),
+# mocked NHSN COVID response in hubverse format
+httptest2::with_mock_dir(mockdir_tests, {
+  nhsn_mock <- hubhelpr::get_hubverse_format_nhsn_data(
+    disease = "covid",
     as_of = lubridate::as_date("2025-08-18"),
-    target = "wk inc covid hosp"
-  ) |>
-  dplyr::filter(.data$location %in% hubhelpr::included_locations) |>
-  dplyr::select(date, observation, location, as_of, target)
+    start_date = lubridate::as_date("2024-11-09")
+  )
+})
 
 # 2 locs, most recent date in data
 real_td <- nhsn_mock |>
