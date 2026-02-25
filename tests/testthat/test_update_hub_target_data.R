@@ -219,7 +219,7 @@ test_that("merge_target_data errors on duplicate rows in existing data", {
     dplyr::mutate(as_of = second_as_of)
   expect_error(
     merge_target_data(existing, new_data),
-    "Duplicate rows identified"
+    "Duplicate rows found"
   )
 })
 
