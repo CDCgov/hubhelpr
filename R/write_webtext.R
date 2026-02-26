@@ -220,12 +220,10 @@ compute_target_webtext_values <- function(
     dplyr::filter(!.data$designated_model) |>
     dplyr::pull(.data$team_model_text)
 
-  # format forecast values based on target config
   median_value <- config$format_forecast(target_ensemble$quantile_0.5)
   lower_value <- config$format_forecast(target_ensemble$quantile_0.025)
   upper_value <- config$format_forecast(target_ensemble$quantile_0.975)
 
-  # get last reported value for US
   last_reported_target_data <- target_data |>
     dplyr::filter(
       .data$week_ending_date == max(.data$week_ending_date),
@@ -235,21 +233,17 @@ compute_target_webtext_values <- function(
   last_reported_raw <- last_reported_target_data$value
   last_reported <- config$format_forecast(last_reported_raw)
 
-  # compute change direction using raw (unformatted) values
   forecast_raw <- target_ensemble$quantile_0.5
   change_direction <- compute_change_direction(forecast_raw, last_reported_raw)
 
-  # compute date fields
   target_start_date <- format(
     as.Date(min(target_data$week_ending_date)),
     "%B %d, %Y"
   )
 
-  # count teams and forecasts eligible for ensemble
   n_teams <- length(unique(contributing_metadata$team_name))
   n_forecasts <- length(teams_in_ensemble)
 
-  # format model lists
   models_included <- paste0("* ", teams_in_ensemble, collapse = "\n")
   models_not_included <- paste0("* ", teams_not_in_ensemble, collapse = "\n")
 
