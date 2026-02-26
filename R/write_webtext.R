@@ -191,7 +191,16 @@ compute_target_webtext_values <- function(
   included_locations
 ) {
   target_type <- get_target_data_type(target)
-  config <- generate_target_webtext_config(target, disease)
+
+  format_forecast <- function(x) {
+    if (target_type == "hosp") {
+      round_to_place(x)
+    } else if (target_type == "prop_ed") {
+      janitor::signif_half_up(x * 100, 2)
+    } else {
+      cli::cli_abort("Unknown target type: {target_type}")
+    }
+  }
 
   target_ensemble <- ensemble_data |>
     dplyr::filter(.data$target == !!target)
@@ -220,9 +229,9 @@ compute_target_webtext_values <- function(
     dplyr::filter(!.data$designated_model) |>
     dplyr::pull(.data$team_model_text)
 
-  median_value <- config$format_forecast(target_ensemble$quantile_0.5)
-  lower_value <- config$format_forecast(target_ensemble$quantile_0.025)
-  upper_value <- config$format_forecast(target_ensemble$quantile_0.975)
+  median_value <- format_forecast(target_ensemble$quantile_0.5)
+  lower_value <- format_forecast(target_ensemble$quantile_0.025)
+  upper_value <- format_forecast(target_ensemble$quantile_0.975)
 
   last_reported_target_data <- target_data |>
     dplyr::filter(
@@ -231,7 +240,7 @@ compute_target_webtext_values <- function(
     )
 
   last_reported_raw <- last_reported_target_data$value
-  last_reported <- config$format_forecast(last_reported_raw)
+  last_reported <- format_forecast(last_reported_raw)
 
   forecast_raw <- target_ensemble$quantile_0.5
   change_direction <- compute_change_direction(forecast_raw, last_reported_raw)
