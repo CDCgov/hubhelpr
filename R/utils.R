@@ -107,51 +107,6 @@ round_to_place <- function(value) {
 }
 
 
-#' Generate webtext configuration for a target.
-#'
-#' Returns target-specific text and formatting configuration
-#' for webtext generation.
-#'
-#' @param target Character. Target name (e.g., "wk inc covid hosp").
-#' @param disease Character. Disease identifier ("covid" or "rsv").
-#' @return List with section_header, target_description, target_short,
-#' data_source, value_unit, and format_forecast elements.
-#' Returns NULL if target type is not recognized.
-#' @noRd
-generate_target_webtext_config <- function(target, disease) {
-  disease_name <- get_disease_name(disease)
-
-  if (is_hosp_target(target)) {
-    config <- list(
-      section_header = "Hospital Admissions",
-      target_description = glue::glue(
-        "new weekly laboratory-confirmed {disease_name} hospital admissions"
-      ),
-      target_short = glue::glue("{disease_name} hospital admissions"),
-      data_source = "NHSN data",
-      value_unit = "",
-      format_forecast = function(x) round_to_place(x)
-    )
-  } else if (is_ed_target(target)) {
-    config <- list(
-      section_header = "ED Visits",
-      target_description = glue::glue(
-        "the proportion of emergency department visits due to {disease_name}"
-      ),
-      target_short = glue::glue("{disease_name} ED visit proportions"),
-      data_source = "NSSP data",
-      value_unit = "%",
-      format_forecast = function(x) janitor::signif_half_up(x * 100, 2)
-    )
-  } else {
-    cli::cli_warn("Unknown target type for: {target}, skipping.")
-    return(NULL)
-  }
-
-  return(config)
-}
-
-
 #' Check if target is a hospital admissions count.
 #'
 #' Helper function to identify targets that end with "hosp".
