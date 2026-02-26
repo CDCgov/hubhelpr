@@ -125,7 +125,7 @@ check_hospital_reporting_latency <- function(
 load_webtext_template <- function() {
   template_path <- fs::path_package(
     "extdata",
-    "webtext_template.txt",
+    "webtext_template.md",
     package = "hubhelpr"
   )
 
@@ -160,11 +160,11 @@ compute_change_direction <- function(
 #' Compute webtext template values for a single target.
 #'
 #' Processes data for one target and returns a named list
-#' of values to fill webtext template placeholders.
+#' of values to fill webtext template placeholders. Keys
+#' are prefixed by the target data type derived from
+#' get_target_data_type() ("hosp" or "prop_ed").
 #'
 #' @param target Character, the target name.
-#' @param target_prefix Character, prefix for value names
-#' ("ed" or "hosp").
 #' @param disease Character, disease name.
 #' @param ensemble_data Data frame of ensemble forecast data.
 #' @param all_target_data Data frame of target time series
@@ -177,11 +177,10 @@ compute_change_direction <- function(
 #' codes.
 #'
 #' @return Named list of template placeholder values with
-#' keys prefixed by target_prefix.
+#' keys prefixed by the target data type.
 #' @noRd
 compute_target_webtext_values <- function(
   target,
-  target_prefix,
   disease,
   ensemble_data,
   all_target_data,
@@ -191,6 +190,7 @@ compute_target_webtext_values <- function(
   reference_date,
   included_locations
 ) {
+  target_type <- get_target_data_type(target)
   config <- generate_target_webtext_config(target, disease)
 
   target_ensemble <- ensemble_data |>
@@ -253,7 +253,7 @@ compute_target_webtext_values <- function(
   models_included <- paste0("* ", teams_in_ensemble, collapse = "\n")
   models_not_included <- paste0("* ", teams_not_in_ensemble, collapse = "\n")
 
-  # build named list with prefixed keys
+  # build named list with keys derived from target type
   values <- stats::setNames(
     list(
       median_value,
@@ -268,16 +268,16 @@ compute_target_webtext_values <- function(
       models_not_included
     ),
     c(
-      paste0(target_prefix, "_median"),
-      paste0(target_prefix, "_lower95"),
-      paste0(target_prefix, "_upper95"),
-      paste0(target_prefix, "_change_direction"),
-      paste0(target_prefix, "_last_reported"),
-      paste0(target_prefix, "_target_start_date"),
-      paste0("n_teams_", target_prefix),
-      paste0("n_forecasts_", target_prefix),
-      paste0("models_included_", target_prefix),
-      paste0("models_not_included_", target_prefix)
+      paste0(target_type, "_median"),
+      paste0(target_type, "_lower95"),
+      paste0(target_type, "_upper95"),
+      paste0(target_type, "_change_direction"),
+      paste0(target_type, "_last_reported"),
+      paste0(target_type, "_target_start_date"),
+      paste0("n_teams_", target_type),
+      paste0("n_forecasts_", target_type),
+      paste0("models_included_", target_type),
+      paste0("models_not_included_", target_type)
     )
   )
 
@@ -309,8 +309,7 @@ compute_target_webtext_values <- function(
 #' @param weekly_data_path Character, path to the directory
 #' with weekly summary files.
 #' @param targets Character vector of target names to
-#' generate text for. Default NULL discovers targets
-#' from hub time-series data.
+#' generate text for.
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
@@ -326,7 +325,7 @@ generate_webtext_block <- function(
   disease,
   base_hub_path,
   weekly_data_path,
-  targets = NULL,
+  targets,
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 ) {
@@ -334,10 +333,6 @@ generate_webtext_block <- function(
   checkmate::assert_choice(input_format, choices = c("csv", "tsv", "parquet"))
 
   reference_date <- lubridate::as_date(reference_date)
-
-  if (is.null(targets)) {
-    targets <- get_unique_hub_targets(base_hub_path)
-  }
 
   hub_name <- get_hub_name(disease)
   disease_display_name <- get_disease_name(disease)
@@ -382,20 +377,10 @@ generate_webtext_block <- function(
       )
     )
 
-  # identify ED and hosp targets
-  ed_target <- targets[purrr::map_lgl(targets, is_ed_target)]
-  hosp_target <- targets[purrr::map_lgl(targets, is_hosp_target)]
-
-  if (length(ed_target) == 0 || length(hosp_target) == 0) {
-    cli::cli_abort(
-      "Both an ED visits target and a hospital admissions target are required."
-    )
-  }
-
-  #  each target type
-  ed_values <- compute_target_webtext_values(
-    target = ed_target[1],
-    target_prefix = "ed",
+  # compute template values for each target
+  target_values <- purrr::map(
+    targets,
+    compute_target_webtext_values,
     disease = disease,
     ensemble_data = ensemble_data,
     all_target_data = all_target_data,
@@ -404,20 +389,8 @@ generate_webtext_block <- function(
     hub_name = hub_name,
     reference_date = reference_date,
     included_locations = included_locations
-  )
-
-  hosp_values <- compute_target_webtext_values(
-    target = hosp_target[1],
-    target_prefix = "hosp",
-    disease = disease,
-    ensemble_data = ensemble_data,
-    all_target_data = all_target_data,
-    all_forecasts_data = all_forecasts_data,
-    all_model_metadata = all_model_metadata,
-    hub_name = hub_name,
-    reference_date = reference_date,
-    included_locations = included_locations
-  )
+  ) |>
+    purrr::list_flatten()
 
   # shared date values
   us_target_data <- all_target_data |>
@@ -428,13 +401,13 @@ generate_webtext_block <- function(
     "%B %d, %Y"
   )
 
-  ed_ensemble <- ensemble_data |>
-    dplyr::filter(.data$target == !!ed_target[1])
+  first_target_ensemble <- ensemble_data |>
+    dplyr::filter(.data$target == !!targets[1])
 
-  target_end_date_1wk <- ed_ensemble$target_end_date_formatted
+  target_end_date_1wk <- first_target_ensemble$target_end_date_formatted
 
   target_end_date_2wk <- format(
-    as.Date(ed_ensemble$target_end_date) + lubridate::weeks(1),
+    as.Date(first_target_ensemble$target_end_date) + lubridate::weeks(1),
     "%B %d, %Y"
   )
 
@@ -447,12 +420,22 @@ generate_webtext_block <- function(
       target_end_date_2wk = target_end_date_2wk,
       last_reported_date = last_reported_date
     ),
-    ed_values,
-    hosp_values
+    target_values
   )
 
-  # load & fill template
+  # load template and fill missing placeholders with empty string
   template <- load_webtext_template()
+  placeholder_names <- unlist(regmatches(
+    template,
+    gregexpr("\\{([^}]+)\\}", template)
+  ))
+  placeholder_names <- gsub("[{}]", "", placeholder_names)
+
+  missing_keys <- setdiff(placeholder_names, names(template_values))
+  if (length(missing_keys) > 0) {
+    template_values[missing_keys] <- ""
+  }
+
   web_text <- glue::glue_data(template_values, template)
 
   return(web_text)
@@ -493,6 +476,10 @@ write_webtext <- function(
   input_format = "csv"
 ) {
   reference_date <- lubridate::as_date(reference_date)
+
+  if (is.null(targets)) {
+    targets <- get_unique_hub_targets(base_hub_path)
+  }
 
   weekly_data_path <- fs::path(
     hub_reports_path,

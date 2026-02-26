@@ -9,7 +9,7 @@ generate_webtext_block(
   disease,
   base_hub_path,
   weekly_data_path,
-  targets = NULL,
+  targets,
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 )
@@ -28,8 +28,7 @@ hub directory.}
 with weekly summary files.}
 
 \item{targets}{Character vector of target names to
-generate text for. Default NULL discovers targets
-from hub time-series data.}
+generate text for.}
 
 \item{included_locations}{Character vector of location
 codes that are expected to report. Default

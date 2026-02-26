@@ -1,0 +1,21 @@
+The {hub_name} ensemble predicts that for the week ending {target_end_date_1wk}, the weekly percentage of new emergency department (ED) visits due to {disease} in the United States will be {prop_ed_median}% (95% prediction interval {prop_ed_lower95}-{prop_ed_upper95}%). The median forecast suggests {prop_ed_change_direction} from {prop_ed_last_reported}%, which was reported for the week ending {last_reported_date} (the most recent week of reporting).
+
+Ensemble forecasting also predicts that the number of new laboratory-confirmed {disease} hospital admissions in the United States during the week ending {target_end_date_1wk} will be approximately {hosp_median} ({hosp_lower95}-{hosp_upper95}). The median forecast suggests {hosp_change_direction} compared to the {hosp_last_reported} admissions so far reported for the week ending {last_reported_date}.
+
+Overview: Forecasted percent of ED visits and new hospital admissions due to {disease}. This week, {n_teams_prop_ed} modeling groups contributed {n_forecasts_prop_ed} forecasts of ED visits and {n_teams_hosp} modeling groups contributed {n_forecasts_hosp} forecasts of hospital admissions that were eligible for inclusion in the ensemble forecasts for at least one jurisdiction.
+
+What does the figure show?: The figure shows the percentage of {disease} emergency department visits each week reported from {prop_ed_target_start_date} through {last_reported_date}, number of new laboratory-confirmed {disease} hospital admissions reported in the United States each week from {hosp_target_start_date} through {last_reported_date}, and forecasted new {disease} emergency department visits and hospital admissions per week for this week and the next 2 weeks through {target_end_date_2wk}.
+
+{hosp_reporting_flag_text}
+
+Models included in {hub_name} ensemble (ED Visits)
+{models_included_prop_ed}
+
+Models not included in {hub_name} ensemble (ED Visits)
+{models_not_included_prop_ed}
+
+Models included in {hub_name} ensemble (Hospital Admissions)
+{models_included_hosp}
+
+Models not included in {hub_name} ensemble (Hospital Admissions)
+{models_not_included_hosp}
