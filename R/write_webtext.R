@@ -250,9 +250,11 @@ compute_target_webtext_values <- function(
     "%B %d, %Y"
   )
 
-  designated_metadata <- contributing_metadata |>
-    dplyr::filter(.data$designated_model)
-  n_teams <- length(unique(designated_metadata$team_name))
+  n_teams <- contributing_metadata |>
+    dplyr::filter(.data$designated_model) |>
+    dplyr::pull(.data$team_name) |>
+    unique() |>
+    length()
   n_forecasts <- length(teams_in_ensemble)
 
   models_included <- paste0("* ", teams_in_ensemble, collapse = "\n")
