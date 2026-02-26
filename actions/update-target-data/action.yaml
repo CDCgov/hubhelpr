@@ -26,6 +26,10 @@ inputs:
     description: "Whether to update NSSP data from local file ('true' or 'false')."
     required: false
     default: "false"
+  overwrite_existing:
+    description: "Whether to overwrite existing target data files ('true' or 'false')."
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -43,7 +47,8 @@ runs:
           disease = "${{ inputs.disease }}",
           as_of = today,
           legacy_file = as.logical("${{ inputs.legacy_file }}"),
-          nssp_update_local = as.logical("${{ inputs.nssp_update_local }}")
+          nssp_update_local = as.logical("${{ inputs.nssp_update_local }}"),
+          overwrite_existing = as.logical("${{ inputs.overwrite_existing }}")
         )
         hubhelpr::generate_oracle_output("${{ inputs.base_hub_path }}")
         writeLines(sprintf("date=%s", today), Sys.getenv("GITHUB_OUTPUT"))
