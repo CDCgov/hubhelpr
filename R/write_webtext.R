@@ -417,19 +417,7 @@ generate_webtext_block <- function(
     target_values
   )
 
-  # load template and fill missing placeholders with empty string
   template <- load_webtext_template()
-  placeholder_names <- unlist(regmatches(
-    template,
-    gregexpr("\\{([^}]+)\\}", template)
-  ))
-  placeholder_names <- gsub("[{}]", "", placeholder_names)
-
-  missing_keys <- setdiff(placeholder_names, names(template_values))
-  if (length(missing_keys) > 0) {
-    template_values[missing_keys] <- ""
-  }
-
   web_text <- glue::glue_data(template_values, template)
 
   return(web_text)
