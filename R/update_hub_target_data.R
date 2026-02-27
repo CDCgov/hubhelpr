@@ -310,13 +310,13 @@ update_hub_target_data <- function(
     existing_data <- NULL
   }
 
-  new_data <- merge_target_data(
+  merged_data <- merge_target_data(
     existing_data,
     new_data,
     overwrite_existing = overwrite_existing
   )
 
-  forecasttools::write_tabular(new_data, output_file)
+  forecasttools::write_tabular(merged_data, output_file)
 
   return(invisible())
 }
