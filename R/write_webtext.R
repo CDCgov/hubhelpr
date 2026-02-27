@@ -332,7 +332,7 @@ generate_webtext_block <- function(
   disease,
   base_hub_path,
   weekly_data_path,
-  targets = NULL,
+  targets,
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 ) {
@@ -340,10 +340,6 @@ generate_webtext_block <- function(
   checkmate::assert_choice(input_format, choices = c("csv", "tsv", "parquet"))
 
   reference_date <- lubridate::as_date(reference_date)
-
-  if (is.null(targets)) {
-    targets <- get_unique_hub_targets(base_hub_path)
-  }
 
   hub_name <- get_hub_name(disease)
   disease_display_name <- get_disease_name(disease)

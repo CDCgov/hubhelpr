@@ -9,7 +9,7 @@ generate_webtext_block(
   disease,
   base_hub_path,
   weekly_data_path,
-  targets = NULL,
+  targets,
   included_locations = hubhelpr::included_locations,
   input_format = "csv"
 )
