@@ -116,26 +116,70 @@ check_hospital_reporting_latency <- function(
 }
 
 
-#' Generate webtext for a single target.
+#' Load the webtext template.
 #'
-#' Internal helper function that processes one target,
-#' filtering data, gathering contributing teams, and
-#' generating the formatted text block.
+#' Reads the webtext template file associated with the package.
+#'
+#' @return Character string containing the template text.
+#' @noRd
+load_webtext_template <- function() {
+  template_path <- fs::path_package(
+    "extdata",
+    "webtext_template.md",
+    package = "hubhelpr"
+  )
+
+  paste(readLines(template_path), collapse = "\n")
+}
+
+
+#' Compute the forecast change direction text.
+#'
+#' Compares the forecast median to the last reported value
+#' and returns a human-readable direction string.
+#'
+#' @param forecast_value Numeric, the forecast median value.
+#' @param last_reported_value Numeric, the last reported
+#' observed value.
+#'
+#' @return Character string: "a decrease", "an increase",
+#' or "a similar level".
+#' @noRd
+compute_change_direction <- function(
+  forecast_value,
+  last_reported_value
+) {
+  dplyr::case_when(
+    forecast_value < last_reported_value ~ "a decrease",
+    forecast_value > last_reported_value ~ "an increase",
+    .default = "a similar level"
+  )
+}
+
+
+#' Compute webtext template values for a single target.
+#'
+#' Processes data for one target and returns a named list
+#' of values to fill webtext template placeholders. Keys
+#' are prefixed by the target data type derived from
+#' get_target_data_type() ("hosp" or "prop_ed").
 #'
 #' @param target Character, the target name.
 #' @param disease Character, disease name.
 #' @param ensemble_data Data frame of ensemble forecast data.
-#' @param all_target_data Data frame of target time series data.
+#' @param all_target_data Data frame of target time series
+#' data.
 #' @param all_forecasts_data Data frame of all forecasts data.
 #' @param all_model_metadata Data frame of model metadata.
 #' @param hub_name Character, hub name.
 #' @param reference_date Date, the reference date.
-#' @param included_locations Character vector of location codes.
+#' @param included_locations Character vector of location
+#' codes.
 #'
-#' @return Character string containing the target-specific
-#' webtext block, or empty string if no data found.
-#'
-generate_target_text_block <- function(
+#' @return Named list of template placeholder values with
+#' keys prefixed by the target data type.
+#' @noRd
+compute_target_webtext_values <- function(
   target,
   disease,
   ensemble_data,
@@ -146,7 +190,17 @@ generate_target_text_block <- function(
   reference_date,
   included_locations
 ) {
-  config <- generate_target_webtext_config(target, disease)
+  target_type <- get_target_data_type(target)
+
+  format_forecast <- function(x) {
+    if (target_type == "hosp") {
+      round_to_place(x)
+    } else if (target_type == "prop_ed") {
+      janitor::signif_half_up(x * 100, 2)
+    } else {
+      cli::cli_abort("Unknown target type: {target_type}")
+    }
+  }
 
   target_ensemble <- ensemble_data |>
     dplyr::filter(.data$target == !!target)
@@ -175,100 +229,83 @@ generate_target_text_block <- function(
     dplyr::filter(!.data$designated_model) |>
     dplyr::pull(.data$team_model_text)
 
-  # format forecast values based on target config
-  forecast_value <- config$format_forecast(target_ensemble$quantile_0.5)
-  lower_value <- config$format_forecast(target_ensemble$quantile_0.025)
-  upper_value <- config$format_forecast(target_ensemble$quantile_0.975)
+  median_value <- format_forecast(target_ensemble$quantile_0.5)
+  lower_value <- format_forecast(target_ensemble$quantile_0.025)
+  upper_value <- format_forecast(target_ensemble$quantile_0.975)
 
-  # format date variables
-  target_end_date_1wk_ahead <- target_ensemble$target_end_date_formatted
-  target_end_date_2wk_ahead <- format(
-    as.Date(target_ensemble$target_end_date) + lubridate::weeks(1),
-    "%B %d, %Y"
-  )
-  first_target_data_date <- format(
-    as.Date(min(target_data$week_ending_date)),
-    "%B %d, %Y"
-  )
-  last_target_data_date <- format(
-    as.Date(max(target_data$week_ending_date)),
-    "%B %d, %Y"
-  )
-  forecast_due_date <- target_ensemble$forecast_due_date_formatted
-
-  # get last reported value
   last_reported_target_data <- target_data |>
     dplyr::filter(
       .data$week_ending_date == max(.data$week_ending_date),
       .data$location == "US"
-    ) |>
-    dplyr::mutate(
-      week_end_date_formatted = format(.data$week_ending_date, "%B %d, %Y")
     )
 
-  last_reported <- config$format_forecast(last_reported_target_data$value)
-  value_unit <- config$value_unit
-  target_description <- config$target_description
-  target_short <- config$target_short
-  data_source <- config$data_source
-  section_header <- config$section_header
+  last_reported_raw <- last_reported_target_data$value
+  last_reported <- format_forecast(last_reported_raw)
 
-  bullets <- c(
-    glue::glue(
-      "The {hub_name} ensemble's one-week-ahead forecast predicts that ",
-      "{target_description} will be ",
-      "approximately {forecast_value}{value_unit} nationally, with ",
-      "{lower_value}{value_unit} to {upper_value}{value_unit} ",
-      "likely reported in the week ending {target_end_date_1wk_ahead}."
+  forecast_raw <- target_ensemble$quantile_0.5
+  change_direction <- compute_change_direction(forecast_raw, last_reported_raw)
+
+  target_start_date <- format(
+    as.Date(min(target_data$week_ending_date)),
+    "%B %d, %Y"
+  )
+
+  n_teams <- contributing_metadata |>
+    dplyr::filter(.data$designated_model) |>
+    dplyr::pull(.data$team_name) |>
+    unique() |>
+    length()
+  n_forecasts <- length(teams_in_ensemble)
+
+  models_included <- paste0("* ", teams_in_ensemble, collapse = "\n")
+  models_not_included <- paste0("* ", teams_not_in_ensemble, collapse = "\n")
+
+  # build named list with keys derived from target type
+  values <- stats::setNames(
+    list(
+      median_value,
+      lower_value,
+      upper_value,
+      change_direction,
+      last_reported,
+      target_start_date,
+      n_teams,
+      n_forecasts,
+      models_included,
+      models_not_included
     ),
-    glue::glue(
-      "This is compared to the {last_reported}{value_unit} reported for the week ",
-      "ending {last_reported_target_data$week_end_date_formatted}, the most ",
-      "recent week of {data_source}."
-    ),
-    glue::glue(
-      "Reported and forecasted data as of {forecast_due_date}."
-    ),
-    glue::glue(
-      "The figure shows {target_description} ",
-      "reported in the United States each week from ",
-      "{first_target_data_date} through {last_target_data_date} and forecasted ",
-      "{target_short} per week for this week and the next ",
-      "2 weeks through {target_end_date_2wk_ahead}."
-    ),
-    glue::glue(
-      "Contributing teams and models in the ensemble: ",
-      "{paste(teams_in_ensemble, collapse = ', ')}"
-    ),
-    glue::glue(
-      "Contributing teams and models not in the ensemble: ",
-      "{paste(teams_not_in_ensemble, collapse = ', ')}"
+    c(
+      paste0(target_type, "_median"),
+      paste0(target_type, "_lower95"),
+      paste0(target_type, "_upper95"),
+      paste0(target_type, "_change_direction"),
+      paste0(target_type, "_last_reported"),
+      paste0(target_type, "_target_start_date"),
+      paste0("n_teams_", target_type),
+      paste0("n_forecasts_", target_type),
+      paste0("models_included_", target_type),
+      paste0("models_not_included_", target_type)
     )
   )
 
+  # add hospital reporting flag if applicable
   if (is_hosp_target(target)) {
-    reporting_rate_flag = check_hospital_reporting_latency(
+    values[["hosp_reporting_flag_text"]] <- check_hospital_reporting_latency(
       reference_date = reference_date,
       disease = disease,
       included_locations = included_locations
     )
-    bullets <- c(bullets, reporting_rate_flag)
   }
 
-  # format as bullet list with section header
-  bullet_text <- paste0("* ", bullets, collapse = "\n")
-  target_text <- glue::glue("## {section_header}\n\n{bullet_text}\n")
-
-  return(target_text)
+  return(values)
 }
 
 
 #' Generate forecast hub webpage text block.
 #'
-#' This function creates formatted text content for
-#' forecast hub visualizations. It processes forecast
-#' data, target data, and team metadata to generate a
-#' text description for the specified targets.
+#' Creates formatted text content for forecast hub
+#' visualizations by loading a template and filling in
+#' computed data values.
 #'
 #' @param reference_date Character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
@@ -279,9 +316,7 @@ generate_target_text_block <- function(
 #' @param weekly_data_path Character, path to the directory
 #' with weekly summary files.
 #' @param targets Character vector of target names to
-#' generate text for (e.g., "wk inc covid hosp"). If
-#' NULL (default), targets are retrieved from the hub
-#' time-series data via [get_unique_hub_targets()].
+#' generate text for.
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
@@ -311,6 +346,7 @@ generate_webtext_block <- function(
   }
 
   hub_name <- get_hub_name(disease)
+  disease_display_name <- get_disease_name(disease)
 
   # read ensemble forecast data
   ensemble_data <- forecasttools::read_tabular(
@@ -352,10 +388,10 @@ generate_webtext_block <- function(
       )
     )
 
-  # generate text block for each target
-  target_text_blocks <- purrr::map_chr(
+  # compute template values for each target
+  target_values <- purrr::map(
     targets,
-    generate_target_text_block,
+    compute_target_webtext_values,
     disease = disease,
     ensemble_data = ensemble_data,
     all_target_data = all_target_data,
@@ -364,16 +400,42 @@ generate_webtext_block <- function(
     hub_name = hub_name,
     reference_date = reference_date,
     included_locations = included_locations
+  ) |>
+    purrr::list_flatten()
+
+  # shared date values
+  us_target_data <- all_target_data |>
+    dplyr::filter(.data$location == "US")
+
+  last_reported_date <- format(
+    as.Date(max(us_target_data$week_ending_date)),
+    "%B %d, %Y"
   )
 
-  disease_display_name <- get_disease_name(disease)
+  first_target_ensemble <- ensemble_data |>
+    dplyr::filter(.data$target == !!targets[1])
 
-  # combine target text blocks with H1 disease header
-  target_sections <- paste(
-    target_text_blocks[target_text_blocks != ""],
-    collapse = "\n\n"
+  target_end_date_1wk <- first_target_ensemble$target_end_date_formatted
+
+  target_end_date_2wk <- format(
+    as.Date(first_target_ensemble$target_end_date) + lubridate::weeks(1),
+    "%B %d, %Y"
   )
-  web_text <- glue::glue("# {disease_display_name}\n\n{target_sections}")
+
+  # all template values
+  template_values <- c(
+    list(
+      hub_name = hub_name,
+      disease = disease_display_name,
+      target_end_date_1wk = target_end_date_1wk,
+      target_end_date_2wk = target_end_date_2wk,
+      last_reported_date = last_reported_date
+    ),
+    target_values
+  )
+
+  template <- load_webtext_template()
+  web_text <- glue::glue_data(template_values, template)
 
   return(web_text)
 }
@@ -393,9 +455,8 @@ generate_webtext_block <- function(
 #' @param hub_reports_path Character, path to forecast hub
 #' reports directory.
 #' @param targets Character vector of target names to
-#' generate text for (e.g., "wk inc covid hosp"). If
-#' NULL (default), targets are retrieved from the hub
-#' time-series data via [get_unique_hub_targets()].
+#' generate text for. Default NULL discovers targets
+#' from hub time-series data.
 #' @param included_locations Character vector of location
 #' codes that are expected to report. Default
 #' hubhelpr::included_locations.
@@ -414,6 +475,10 @@ write_webtext <- function(
   input_format = "csv"
 ) {
   reference_date <- lubridate::as_date(reference_date)
+
+  if (is.null(targets)) {
+    targets <- get_unique_hub_targets(base_hub_path)
+  }
 
   weekly_data_path <- fs::path(
     hub_reports_path,
