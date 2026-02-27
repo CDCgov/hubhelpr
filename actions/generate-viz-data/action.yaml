@@ -68,9 +68,7 @@ runs:
           reference_date = ref_date,
           base_hub_path = base_hub_path,
           hub_reports_path = hub_reports_path,
-          disease = disease,
-          pull_nhsn = TRUE,
-          pull_nssp = TRUE
+          disease = disease
         )
 
         hubhelpr::write_webtext(
