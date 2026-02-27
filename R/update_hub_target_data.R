@@ -305,17 +305,18 @@ update_hub_target_data <- function(
   new_data <- dplyr::bind_rows(nhsn_data, nssp_data)
 
   if (fs::file_exists(output_file)) {
-    existing_data <- forecasttools::read_tabular_file(output_file)
+    existing_data <- forecasttools::read_tabular(output_file)
   } else {
     existing_data <- NULL
   }
 
-  merge_target_data(
+  new_data <- merge_target_data(
     existing_data,
     new_data,
     overwrite_existing = overwrite_existing
-  ) |>
-    forecasttools::write_tabular_file(output_file)
+  )
+
+  forecasttools::write_tabular(new_data, output_file)
 
   return(invisible())
 }
