@@ -83,7 +83,7 @@ purrr::walk(c("covid", "rsv"), function(disease) {
           as_of = lubridate::as_date("2025-08-18")
         )
 
-        # second run :with same data errors by default
+        # second run with same data errors by default
         expect_error(
           hubhelpr::update_hub_target_data(
             base_hub_path = base_hub_path,
