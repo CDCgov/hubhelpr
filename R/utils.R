@@ -68,6 +68,39 @@ get_hub_repo_name <- function(disease) {
 }
 
 
+#' Get GitHub organization owner for a given disease.
+#'
+#' @param disease Character. Disease identifier ("covid",
+#' "rsv", or "flu").
+#' @return Character. GitHub organization name.
+#' @noRd
+get_hub_repo_owner <- function(disease) {
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
+
+  dplyr::case_when(
+    disease == "covid" ~ "CDCgov",
+    disease == "rsv" ~ "CDCgov",
+    disease == "flu" ~ "cdcepi"
+  )
+}
+
+
+#' Get GitHub repository URL for a given disease.
+#'
+#' Constructs full HTTPS GitHub URL for the forecast
+#' hub corresponding to the given disease identifier.
+#'
+#' @param disease Character. Disease identifier ("covid",
+#' "rsv", or "flu").
+#' @return Character. Full HTTPS GitHub URL.
+#' @export
+get_hub_repo_url <- function(disease) {
+  owner <- get_hub_repo_owner(disease)
+  repo_name <- get_hub_repo_name(disease)
+  glue::glue("https://github.com/{owner}/{repo_name}")
+}
+
+
 #' Get display name for a given disease.
 #'
 #' Converts disease identifier to human-readable display
