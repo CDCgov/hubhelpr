@@ -97,7 +97,7 @@ get_hub_repo_owner <- function(disease) {
 get_hub_repo_url <- function(disease) {
   owner <- get_hub_repo_owner(disease)
   repo_name <- get_hub_repo_name(disease)
-  glue::glue("https://github.com/{owner}/{repo_name}")
+  as.character(glue::glue("https://github.com/{owner}/{repo_name}"))
 }
 
 
