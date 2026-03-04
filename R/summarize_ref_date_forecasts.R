@@ -15,8 +15,14 @@
 #' and "population". Adds population-based calculations.
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
-#' @param excluded_locations character vector of location
-#' codes to exclude from the output. Default: character(0).
+#' @param excluded_locations character vector of US state
+#' abbreviations to exclude from the output across all
+#' targets. Converted to hub codes internally. Default:
+#' character(0).
+#' @param excluded_locations_by_target named list mapping
+#' target names to character vectors of US state
+#' abbreviations to exclude for that target only. Default:
+#' list().
 #' @param targets character vector, target name(s) to filter
 #' forecasts. If NULL (default), does not filter by target.
 #' @param model_ids character vector of model IDs to include.
@@ -32,10 +38,18 @@ summarize_ref_date_forecasts <- function(
   population_data,
   horizons_to_include = c(0, 1, 2),
   excluded_locations = character(0),
+  excluded_locations_by_target = list(),
   targets = NULL,
   model_ids = NULL
 ) {
   reference_date <- lubridate::as_date(reference_date)
+
+  # abbreviations to hub codes
+  excluded_location_codes <- if (length(excluded_locations) > 0) {
+    forecasttools::us_location_recode(excluded_locations, "abbr", "hub")
+  } else {
+    character(0)
+  }
 
   model_metadata <- hubData::load_model_metadata(
     base_hub_path,
@@ -47,7 +61,7 @@ summarize_ref_date_forecasts <- function(
   current_forecasts <- hub_content |>
     dplyr::filter(
       .data$reference_date == !!reference_date,
-      !(.data$location %in% !!excluded_locations),
+      !(.data$location %in% !!excluded_location_codes),
       .data$horizon %in% !!horizons_to_include
     ) |>
     hubData::collect_hub() |>
@@ -55,6 +69,17 @@ summarize_ref_date_forecasts <- function(
       forecasttools::nullable_comparison(.data$target, "%in%", !!targets),
       forecasttools::nullable_comparison(.data$model_id, "%in%", !!model_ids)
     )
+
+  # target-specific location exclusions
+  for (tgt in names(excluded_locations_by_target)) {
+    excluded_codes <- forecasttools::us_location_recode(
+      excluded_locations_by_target[[tgt]],
+      "abbr",
+      "hub"
+    )
+    current_forecasts <- current_forecasts |>
+      dplyr::filter(!(.data$target == tgt & .data$location %in% excluded_codes))
+  }
 
   if (nrow(current_forecasts) == 0) {
     model_filter_msg <- if (!is.null(model_ids)) {

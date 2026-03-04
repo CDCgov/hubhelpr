@@ -12,8 +12,10 @@ write_ref_date_summary_all(
   horizons_to_include = c(0, 1, 2),
   population_data = hubhelpr::population_data,
   excluded_locations = character(0),
+  excluded_locations_by_target = list(),
   output_format = "csv",
-  targets = NULL
+  targets = NULL,
+  overwrite_existing = FALSE
 )
 }
 \arguments{
@@ -34,8 +36,14 @@ include in the output. Default: c(0, 1, 2).}
 \item{population_data}{data frame with columns
 "location" and "population". Default: \link{population_data}.}
 
-\item{excluded_locations}{character vector of location
-codes to exclude from the output. Default: character(0).}
+\item{excluded_locations}{character vector of US state
+abbreviations to exclude from the output across all
+targets. Default: character(0).}
+
+\item{excluded_locations_by_target}{named list mapping
+target names to character vectors of US state
+abbreviations to exclude for that target only.
+Default: list().}
 
 \item{output_format}{character, output file format. One
 of "csv", "tsv", or "parquet". Default: "csv".}
@@ -43,6 +51,9 @@ of "csv", "tsv", or "parquet". Default: "csv".}
 \item{targets}{character vector, target name(s) to
 filter forecasts. If NULL (default), does not filter by
 target.}
+
+\item{overwrite_existing}{logical. If TRUE, overwrite
+existing files. Default: FALSE.}
 }
 \value{
 invisibly returns the file path where data was

@@ -141,12 +141,8 @@ write_viz_target_data <- function(
 
   fs::dir_create(output_folder_path)
 
-  if (!fs::file_exists(output_filepath)) {
-    forecasttools::write_tabular(target_data, output_filepath)
-    cli::cli_inform("File saved as: {output_filepath}.")
-  } else {
-    cli::cli_abort("File already exists: {output_filepath}.")
-  }
+  forecasttools::write_tabular(target_data, output_filepath)
+  cli::cli_inform("File saved as: {output_filepath}.")
 
   invisible(output_filepath)
 }

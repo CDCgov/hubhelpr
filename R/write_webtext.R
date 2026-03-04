@@ -499,10 +499,6 @@ write_webtext <- function(
     ext = "md"
   )
 
-  if (fs::file_exists(output_path)) {
-    cli::cli_abort("File already exists: {output_path}.")
-  }
-
   writeLines(web_text, output_path)
   cli::cli_inform("Webtext saved as: {output_path}.")
 

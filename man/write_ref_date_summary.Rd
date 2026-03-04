@@ -12,11 +12,13 @@ write_ref_date_summary(
   file_suffix,
   horizons_to_include = c(0, 1, 2),
   excluded_locations = character(0),
+  excluded_locations_by_target = list(),
   output_format = "csv",
   targets = NULL,
   model_ids = NULL,
   population_data,
-  column_selection = tidyselect::everything()
+  column_selection = tidyselect::everything(),
+  overwrite_existing = FALSE
 )
 }
 \arguments{
@@ -38,8 +40,14 @@ filename (e.g., "map_data", "forecasts_data").}
 \item{horizons_to_include}{integer vector, horizons to
 include in the output. Default: c(0, 1, 2).}
 
-\item{excluded_locations}{character vector of location
-codes to exclude from the output. Default: character(0).}
+\item{excluded_locations}{character vector of US state
+abbreviations to exclude from the output across all
+targets. Default: character(0).}
+
+\item{excluded_locations_by_target}{named list mapping
+target names to character vectors of US state
+abbreviations to exclude for that target only.
+Default: list().}
 
 \item{output_format}{character, output file format. One
 of "csv", "tsv", or "parquet". Default: "csv".}
@@ -57,6 +65,9 @@ include. If NULL (default), includes all models.}
 \item{column_selection}{Columns to include in the output
 table. Accepts tidyselect expressions. Default:
 \code{\link[tidyselect:everything]{tidyselect::everything()}}.}
+
+\item{overwrite_existing}{logical. If TRUE, overwrite
+existing files. Default: FALSE.}
 }
 \value{
 invisibly returns the file path where data was
