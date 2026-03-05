@@ -19,6 +19,10 @@ inputs:
     description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the last day of the current MMWR epiweek."
     required: false
     default: "latest"
+  output_folder:
+    description: "Name of the folder where visualization data files are written."
+    required: false
+    default: "weekly-summaries"
   targets:
     description: "JSON array of full target names (e.g., '[\"wk inc covid hosp\", \"wk inc covid prop ed visits\"]'). Defaults to all unique targets in time-series data."
     required: false
@@ -90,7 +94,7 @@ runs:
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git checkout -b "add-viz-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}"
-        git add .
+        git add "${{ inputs.output_folder }}"
         git commit -m "Update weekly ${{ inputs.disease }} visualization data"
         git push origin "add-viz-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}"
 
