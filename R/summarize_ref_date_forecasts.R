@@ -52,7 +52,9 @@ build_exclusion_df <- function(excluded_locations) {
     tidyr::unnest(cols = "location") |>
     dplyr::mutate(
       location = forecasttools::us_location_recode(
-        .data$location, "abbr", "hub"
+        .data$location,
+        "abbr",
+        "hub"
       )
     )
 }
@@ -107,7 +109,9 @@ summarize_ref_date_forecasts <- function(
 
   global_excluded_codes <- if ("all" %in% names(excluded_locations)) {
     forecasttools::us_location_recode(
-      excluded_locations[["all"]], "abbr", "hub"
+      excluded_locations[["all"]],
+      "abbr",
+      "hub"
     )
   } else {
     character(0)
