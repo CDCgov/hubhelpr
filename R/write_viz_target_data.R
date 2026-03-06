@@ -38,6 +38,8 @@
 #' hubhelpr::included_locations.
 #' @param output_format Character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
+#' @param overwrite_existing logical. If TRUE, overwrite
+#' existing files. Default: FALSE.
 #'
 #' @return Invisibly returns file path where data was
 #' written.
@@ -55,7 +57,8 @@ write_viz_target_data <- function(
   start_date = NULL,
   end_date = NULL,
   included_locations = hubhelpr::included_locations,
-  output_format = "csv"
+  output_format = "csv",
+  overwrite_existing = FALSE
 ) {
   if (use_hub_data) {
     target_data <- hubData::connect_target_timeseries(base_hub_path) |>
@@ -140,6 +143,15 @@ write_viz_target_data <- function(
   )
 
   fs::dir_create(output_folder_path)
+
+  if (fs::file_exists(output_filepath) && !overwrite_existing) {
+    cli::cli_abort(
+      c(
+        "File already exists: {output_filepath}.",
+        "i" = "Use {.arg overwrite_existing = TRUE} to overwrite."
+      )
+    )
+  }
 
   forecasttools::write_tabular(target_data, output_filepath)
   cli::cli_inform("File saved as: {output_filepath}.")

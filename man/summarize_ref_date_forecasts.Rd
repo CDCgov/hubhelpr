@@ -10,8 +10,7 @@ summarize_ref_date_forecasts(
   disease,
   population_data,
   horizons_to_include = c(0, 1, 2),
-  excluded_locations = character(0),
-  excluded_locations_by_target = list(),
+  excluded_locations = NULL,
   targets = NULL,
   model_ids = NULL
 )
@@ -32,15 +31,13 @@ and "population". Adds population-based calculations.}
 \item{horizons_to_include}{integer vector, horizons to
 include in the output. Default: c(0, 1, 2).}
 
-\item{excluded_locations}{character vector of US state
-abbreviations to exclude from the output across all
-targets. Converted to hub codes internally. Default:
-character(0).}
-
-\item{excluded_locations_by_target}{named list mapping
-target names to character vectors of US state
-abbreviations to exclude for that target only. Default:
-list().}
+\item{excluded_locations}{character vector or named list
+specifying US state abbreviations to exclude. If a
+character vector, locations are excluded across all
+targets. If a named list, names should be target names
+(or "all" for global exclusions) mapping to character
+vectors of abbreviations. Converted to hub codes
+internally. Default: NULL.}
 
 \item{targets}{character vector, target name(s) to filter
 forecasts. If NULL (default), does not filter by target.}

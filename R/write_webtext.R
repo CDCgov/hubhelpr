@@ -459,6 +459,8 @@ generate_webtext_block <- function(
 #' @param input_format Character, input file format for
 #' reading summary data files. One of "csv", "tsv", or
 #' "parquet". Default: "csv".
+#' @param overwrite_existing logical. If TRUE, overwrite
+#' existing files. Default: FALSE.
 #'
 #' @export
 write_webtext <- function(
@@ -468,7 +470,8 @@ write_webtext <- function(
   hub_reports_path,
   targets = NULL,
   included_locations = hubhelpr::included_locations,
-  input_format = "csv"
+  input_format = "csv",
+  overwrite_existing = FALSE
 ) {
   reference_date <- lubridate::as_date(reference_date)
 
@@ -498,6 +501,15 @@ write_webtext <- function(
     glue::glue("{reference_date}_{disease}_webtext"),
     ext = "md"
   )
+
+  if (fs::file_exists(output_path) && !overwrite_existing) {
+    cli::cli_abort(
+      c(
+        "File already exists: {output_path}.",
+        "i" = "Use {.arg overwrite_existing = TRUE} to overwrite."
+      )
+    )
+  }
 
   writeLines(web_text, output_path)
   cli::cli_inform("Webtext saved as: {output_path}.")

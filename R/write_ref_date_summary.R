@@ -15,13 +15,12 @@
 #' filename (e.g., "map_data", "forecasts_data").
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
-#' @param excluded_locations character vector of US state
-#' abbreviations to exclude from the output across all
-#' targets. Default: character(0).
-#' @param excluded_locations_by_target named list mapping
-#' target names to character vectors of US state
-#' abbreviations to exclude for that target only.
-#' Default: list().
+#' @param excluded_locations character vector or named list
+#' specifying US state abbreviations to exclude. If a
+#' character vector, locations are excluded across all
+#' targets. If a named list, names should be target names
+#' (or "all" for global exclusions) mapping to character
+#' vectors of abbreviations. Default: NULL.
 #' @param output_format character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
 #' @param targets character vector, target name(s) to
@@ -48,8 +47,7 @@ write_ref_date_summary <- function(
   disease,
   file_suffix,
   horizons_to_include = c(0, 1, 2),
-  excluded_locations = character(0),
-  excluded_locations_by_target = list(),
+  excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
   model_ids = NULL,
@@ -66,7 +64,6 @@ write_ref_date_summary <- function(
     population_data = population_data,
     horizons_to_include = horizons_to_include,
     excluded_locations = excluded_locations,
-    excluded_locations_by_target = excluded_locations_by_target,
     targets = targets,
     model_ids = model_ids
   )
@@ -120,13 +117,12 @@ write_ref_date_summary <- function(
 #' include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
 #' "location" and "population". Default: population_data.
-#' @param excluded_locations character vector of US state
-#' abbreviations to exclude from the output across all
-#' targets. Default: character(0).
-#' @param excluded_locations_by_target named list mapping
-#' target names to character vectors of US state
-#' abbreviations to exclude for that target only.
-#' Default: list().
+#' @param excluded_locations character vector or named list
+#' specifying US state abbreviations to exclude. If a
+#' character vector, locations are excluded across all
+#' targets. If a named list, names should be target names
+#' (or "all" for global exclusions) mapping to character
+#' vectors of abbreviations. Default: NULL.
 #' @param output_format character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
 #' @param targets character vector, target name(s) to
@@ -146,8 +142,7 @@ write_ref_date_summary_ens <- function(
   disease,
   horizons_to_include = c(0, 1, 2),
   population_data = hubhelpr::population_data,
-  excluded_locations = character(0),
-  excluded_locations_by_target = list(),
+  excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
   overwrite_existing = FALSE
@@ -189,7 +184,6 @@ write_ref_date_summary_ens <- function(
     file_suffix = "map_data",
     horizons_to_include = horizons_to_include,
     excluded_locations = excluded_locations,
-    excluded_locations_by_target = excluded_locations_by_target,
     output_format = output_format,
     targets = targets,
     model_ids = ensemble_model_name,
@@ -215,13 +209,12 @@ write_ref_date_summary_ens <- function(
 #' include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
 #' "location" and "population". Default: [population_data].
-#' @param excluded_locations character vector of US state
-#' abbreviations to exclude from the output across all
-#' targets. Default: character(0).
-#' @param excluded_locations_by_target named list mapping
-#' target names to character vectors of US state
-#' abbreviations to exclude for that target only.
-#' Default: list().
+#' @param excluded_locations character vector or named list
+#' specifying US state abbreviations to exclude. If a
+#' character vector, locations are excluded across all
+#' targets. If a named list, names should be target names
+#' (or "all" for global exclusions) mapping to character
+#' vectors of abbreviations. Default: NULL.
 #' @param output_format character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
 #' @param targets character vector, target name(s) to
@@ -241,8 +234,7 @@ write_ref_date_summary_all <- function(
   disease,
   horizons_to_include = c(0, 1, 2),
   population_data = hubhelpr::population_data,
-  excluded_locations = character(0),
-  excluded_locations_by_target = list(),
+  excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
   overwrite_existing = FALSE
@@ -279,7 +271,6 @@ write_ref_date_summary_all <- function(
     file_suffix = "forecasts_data",
     horizons_to_include = horizons_to_include,
     excluded_locations = excluded_locations,
-    excluded_locations_by_target = excluded_locations_by_target,
     output_format = output_format,
     targets = targets,
     model_ids = NULL,
