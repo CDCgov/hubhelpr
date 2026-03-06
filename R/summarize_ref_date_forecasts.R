@@ -27,28 +27,37 @@ normalize_excluded_locations <- function(excluded_locations) {
 #' Build a target-location exclusion data frame.
 #'
 #' Constructs a tibble of target/location pairs to
-#' exclude, from target-specific entries in the
-#' normalized exclusion list (entries other than "all").
-#' The "all" key is handled separately(as pre-filter).
+#' exclude. Entries keyed by "all" are expanded into
+#' one row per available target. Errors if any named
+#' targets in the exclusion list are not in
+#' `available_targets`.
 #'
 #' @param excluded_locations Named list as returned by
 #' `normalize_excluded_locations()`.
+#' @param available_targets character vector of valid
+#' target names.
 #'
 #' @return A tibble with columns "target" and "location"
 #' (hub codes).
 #' @noRd
-build_exclusion_df <- function(excluded_locations) {
-  target_specific <- excluded_locations[
-    names(excluded_locations) != "all"
-  ]
-  if (length(target_specific) == 0) {
-    return(tibble::tibble(target = character(0), location = character(0)))
+build_exclusion_df <- function(excluded_locations, available_targets) {
+  named_targets <- setdiff(names(excluded_locations), "all")
+  invalid_targets <- setdiff(named_targets, available_targets)
+  if (length(invalid_targets) > 0) {
+    cli::cli_abort(
+      "{.arg excluded_locations} contains unknown target{?s}: {.val {invalid_targets}}."
+    )
   }
-  tibble::enframe(
-    target_specific,
-    name = "target",
-    value = "location"
-  ) |>
+
+  global_locs <- excluded_locations[["all"]] %||% character(0)
+  per_target <- excluded_locations[named_targets]
+
+  merged <- lapply(
+    stats::setNames(available_targets, available_targets),
+    \(tgt) unique(c(global_locs, per_target[[tgt]] %||% character(0)))
+  )
+
+  tibble::enframe(merged, name = "target", value = "location") |>
     tidyr::unnest(cols = "location") |>
     dplyr::mutate(
       location = forecasttools::us_location_recode(
@@ -103,19 +112,7 @@ summarize_ref_date_forecasts <- function(
   model_ids = NULL
 ) {
   reference_date <- lubridate::as_date(reference_date)
-
   excluded_locations <- normalize_excluded_locations(excluded_locations)
-  exclusion_df <- build_exclusion_df(excluded_locations)
-
-  global_excluded_codes <- if ("all" %in% names(excluded_locations)) {
-    forecasttools::us_location_recode(
-      excluded_locations[["all"]],
-      "abbr",
-      "hub"
-    )
-  } else {
-    character(0)
-  }
 
   model_metadata <- hubData::load_model_metadata(
     base_hub_path,
@@ -127,7 +124,6 @@ summarize_ref_date_forecasts <- function(
   current_forecasts <- hub_content |>
     dplyr::filter(
       .data$reference_date == !!reference_date,
-      !(.data$location %in% !!global_excluded_codes),
       .data$horizon %in% !!horizons_to_include
     ) |>
     hubData::collect_hub() |>
@@ -135,6 +131,9 @@ summarize_ref_date_forecasts <- function(
       forecasttools::nullable_comparison(.data$target, "%in%", !!targets),
       forecasttools::nullable_comparison(.data$model_id, "%in%", !!model_ids)
     )
+
+  available_targets <- unique(current_forecasts$target)
+  exclusion_df <- build_exclusion_df(excluded_locations, available_targets)
 
   if (nrow(exclusion_df) > 0) {
     current_forecasts <- current_forecasts |>
