@@ -49,12 +49,9 @@ build_exclusion_df <- function(excluded_locations, available_targets) {
     )
   }
 
-  global_locs <- excluded_locations[["all"]] %||% character(0)
-  per_target <- excluded_locations[named_targets]
-
-  merged <- lapply(
-    stats::setNames(available_targets, available_targets),
-    \(tgt) unique(c(global_locs, per_target[[tgt]] %||% character(0)))
+  merged <- purrr::map(
+    purrr::set_names(available_targets),
+    \(tgt) unique(c(excluded_locations[["all"]], excluded_locations[[tgt]]))
   )
 
   tibble::enframe(merged, name = "target", value = "location") |>
