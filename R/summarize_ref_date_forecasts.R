@@ -135,10 +135,8 @@ summarize_ref_date_forecasts <- function(
   available_targets <- unique(current_forecasts$target)
   exclusion_df <- build_exclusion_df(excluded_locations, available_targets)
 
-  if (nrow(exclusion_df) > 0) {
-    current_forecasts <- current_forecasts |>
-      dplyr::anti_join(exclusion_df, by = c("target", "location"))
-  }
+  current_forecasts <- current_forecasts |>
+    dplyr::anti_join(exclusion_df, by = c("target", "location"))
 
   if (nrow(current_forecasts) == 0) {
     model_filter_msg <- if (!is.null(model_ids)) {
