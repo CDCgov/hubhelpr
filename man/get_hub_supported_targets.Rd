@@ -7,16 +7,15 @@
 get_hub_supported_targets(base_hub_path)
 }
 \arguments{
-\item{base_hub_path}{: character
-Path to the base hub directory containing the hub
-configuration (tasks.json).}
+\item{base_hub_path}{Character. Path to the base
+hub directory containing the hub configuration
+(tasks.json).}
 }
 \value{
 Character vector of unique supported target
 names.
 }
 \description{
-Reads the hub's tasks configuration and extracts all
-unique target names the hub accepts. Uses
-\code{\link[=flatten_task_list]{flatten_task_list()}} to parse the task structure.
+Reads a hub's tasks configuration and extracts all
+unique target names that the hub accepts.
 }
