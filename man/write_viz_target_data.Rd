@@ -16,7 +16,8 @@ write_viz_target_data(
   start_date = NULL,
   end_date = NULL,
   included_locations = hubhelpr::included_locations,
-  output_format = "csv"
+  output_format = "csv",
+  overwrite_existing = FALSE
 )
 }
 \arguments{
@@ -62,6 +63,9 @@ hubhelpr::included_locations.}
 
 \item{output_format}{Character, output file format. One
 of "csv", "tsv", or "parquet". Default: "csv".}
+
+\item{overwrite_existing}{logical. If TRUE, overwrite
+existing files. Default: FALSE.}
 }
 \value{
 Invisibly returns file path where data was

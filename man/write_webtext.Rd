@@ -12,7 +12,8 @@ write_webtext(
   hub_reports_path,
   targets = NULL,
   included_locations = hubhelpr::included_locations,
-  input_format = "csv"
+  input_format = "csv",
+  overwrite_existing = FALSE
 )
 }
 \arguments{
@@ -38,6 +39,9 @@ hubhelpr::included_locations.}
 \item{input_format}{Character, input file format for
 reading summary data files. One of "csv", "tsv", or
 "parquet". Default: "csv".}
+
+\item{overwrite_existing}{logical. If TRUE, overwrite
+existing files. Default: FALSE.}
 }
 \description{
 Generates formatted text summary for a single disease

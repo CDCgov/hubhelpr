@@ -1,3 +1,71 @@
+#' Normalize excluded locations to a named list.
+#'
+#' Converts a character vector or named list of excluded
+#' locations into a consistent named list format.
+#'
+#' @param excluded_locations NULL, character vector, or
+#' named list of character vector.
+#'
+#' @return Named list of character vectors.
+#' @noRd
+normalize_excluded_locations <- function(excluded_locations) {
+  if (is.null(excluded_locations)) {
+    return(list())
+  }
+  if (is.character(excluded_locations)) {
+    return(list("all" = excluded_locations))
+  }
+  if (is.list(excluded_locations)) {
+    return(excluded_locations)
+  }
+  cli::cli_abort(
+    "{.arg excluded_locations} must be NULL, a character vector, or a named list."
+  )
+}
+
+
+#' Build a target-location exclusion data frame.
+#'
+#' Constructs a tibble of target/location pairs to
+#' exclude. Entries keyed by "all" are expanded into
+#' one row per available target. Errors if any named
+#' targets in the exclusion list are not in
+#' `available_targets`.
+#'
+#' @param excluded_locations Named list as returned by
+#' `normalize_excluded_locations()`.
+#' @param available_targets character vector of valid
+#' target names.
+#'
+#' @return A tibble with columns "target" and "location"
+#' (hub codes).
+#' @noRd
+build_exclusion_df <- function(excluded_locations, available_targets) {
+  named_targets <- setdiff(names(excluded_locations), "all")
+  invalid_targets <- setdiff(named_targets, available_targets)
+  if (length(invalid_targets) > 0) {
+    cli::cli_abort(
+      "{.arg excluded_locations} contains unknown target{?s}: {.val {invalid_targets}}."
+    )
+  }
+
+  merged <- purrr::map(
+    purrr::set_names(available_targets),
+    \(tgt) unique(c(excluded_locations[["all"]], excluded_locations[[tgt]]))
+  )
+
+  tibble::enframe(merged, name = "target", value = "location") |>
+    tidyr::unnest(cols = "location") |>
+    dplyr::mutate(
+      location = forecasttools::us_location_recode(
+        .data$location,
+        "abbr",
+        "hub"
+      )
+    )
+}
+
+
 #' Summarize forecast hub data for a specific reference date.
 #'
 #' This function generates a tibble of forecast data
@@ -15,8 +83,13 @@
 #' and "population". Adds population-based calculations.
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
-#' @param excluded_locations character vector of location
-#' codes to exclude from the output. Default: character(0).
+#' @param excluded_locations character vector or named list
+#' specifying US state abbreviations to exclude. If a
+#' character vector, locations are excluded across all
+#' targets. If a named list, names should be target names
+#' (or "all" for global exclusions) mapping to character
+#' vectors of abbreviations. Converted to hub codes
+#' internally. Default: NULL.
 #' @param targets character vector, target name(s) to filter
 #' forecasts. If NULL (default), does not filter by target.
 #' @param model_ids character vector of model IDs to include.
@@ -31,11 +104,12 @@ summarize_ref_date_forecasts <- function(
   disease,
   population_data,
   horizons_to_include = c(0, 1, 2),
-  excluded_locations = character(0),
+  excluded_locations = NULL,
   targets = NULL,
   model_ids = NULL
 ) {
   reference_date <- lubridate::as_date(reference_date)
+  excluded_locations <- normalize_excluded_locations(excluded_locations)
 
   model_metadata <- hubData::load_model_metadata(
     base_hub_path,
@@ -47,7 +121,6 @@ summarize_ref_date_forecasts <- function(
   current_forecasts <- hub_content |>
     dplyr::filter(
       .data$reference_date == !!reference_date,
-      !(.data$location %in% !!excluded_locations),
       .data$horizon %in% !!horizons_to_include
     ) |>
     hubData::collect_hub() |>
@@ -55,6 +128,12 @@ summarize_ref_date_forecasts <- function(
       forecasttools::nullable_comparison(.data$target, "%in%", !!targets),
       forecasttools::nullable_comparison(.data$model_id, "%in%", !!model_ids)
     )
+
+  available_targets <- unique(current_forecasts$target)
+  exclusion_df <- build_exclusion_df(excluded_locations, available_targets)
+
+  current_forecasts <- current_forecasts |>
+    dplyr::anti_join(exclusion_df, by = c("target", "location"))
 
   if (nrow(current_forecasts) == 0) {
     model_filter_msg <- if (!is.null(model_ids)) {

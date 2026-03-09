@@ -15,8 +15,12 @@
 #' filename (e.g., "map_data", "forecasts_data").
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
-#' @param excluded_locations character vector of location
-#' codes to exclude from the output. Default: character(0).
+#' @param excluded_locations character vector or named list
+#' specifying US state abbreviations to exclude. If a
+#' character vector, locations are excluded across all
+#' targets. If a named list, names should be target names
+#' (or "all" for global exclusions) mapping to character
+#' vectors of abbreviations. Default: NULL.
 #' @param output_format character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
 #' @param targets character vector, target name(s) to
@@ -29,6 +33,8 @@
 #' @param column_selection Columns to include in the output
 #' table. Accepts tidyselect expressions. Default:
 #' [tidyselect::everything()].
+#' @param overwrite_existing logical. If TRUE, overwrite
+#' existing files. Default: FALSE.
 #'
 #' @return invisibly returns the file path where data was
 #' written
@@ -41,12 +47,13 @@ write_ref_date_summary <- function(
   disease,
   file_suffix,
   horizons_to_include = c(0, 1, 2),
-  excluded_locations = character(0),
+  excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
   model_ids = NULL,
   population_data,
-  column_selection = tidyselect::everything()
+  column_selection = tidyselect::everything(),
+  overwrite_existing = FALSE
 ) {
   reference_date <- lubridate::as_date(reference_date)
 
@@ -79,12 +86,17 @@ write_ref_date_summary <- function(
 
   fs::dir_create(output_folder_path)
 
-  if (!fs::file_exists(output_filepath)) {
-    forecasttools::write_tabular(summary_data, output_filepath)
-    cli::cli_inform("File saved as: {output_filepath}.")
-  } else {
-    cli::cli_abort("File already exists: {output_filepath}.")
+  if (fs::file_exists(output_filepath) && !overwrite_existing) {
+    cli::cli_abort(
+      c(
+        "File already exists: {output_filepath}.",
+        "i" = "Use {.arg overwrite_existing = TRUE} to overwrite."
+      )
+    )
   }
+
+  forecasttools::write_tabular(summary_data, output_filepath)
+  cli::cli_inform("File saved as: {output_filepath}.")
 
   invisible(output_filepath)
 }
@@ -105,13 +117,19 @@ write_ref_date_summary <- function(
 #' include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
 #' "location" and "population". Default: population_data.
-#' @param excluded_locations character vector of location
-#' codes to exclude from the output. Default: character(0).
+#' @param excluded_locations character vector or named list
+#' specifying US state abbreviations to exclude. If a
+#' character vector, locations are excluded across all
+#' targets. If a named list, names should be target names
+#' (or "all" for global exclusions) mapping to character
+#' vectors of abbreviations. Default: NULL.
 #' @param output_format character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
 #' @param targets character vector, target name(s) to
 #' filter forecasts. If NULL (default), does not filter by
 #' target.
+#' @param overwrite_existing logical. If TRUE, overwrite
+#' existing files. Default: FALSE.
 #'
 #' @return invisibly returns the file path where data was
 #' written
@@ -124,9 +142,10 @@ write_ref_date_summary_ens <- function(
   disease,
   horizons_to_include = c(0, 1, 2),
   population_data = hubhelpr::population_data,
-  excluded_locations = character(0),
+  excluded_locations = NULL,
   output_format = "csv",
-  targets = NULL
+  targets = NULL,
+  overwrite_existing = FALSE
 ) {
   hub_name <- get_hub_name(disease)
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
@@ -169,7 +188,8 @@ write_ref_date_summary_ens <- function(
     targets = targets,
     model_ids = ensemble_model_name,
     population_data = population_data,
-    column_selection = ensemble_columns
+    column_selection = ensemble_columns,
+    overwrite_existing = overwrite_existing
   )
 }
 
@@ -189,13 +209,19 @@ write_ref_date_summary_ens <- function(
 #' include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
 #' "location" and "population". Default: [population_data].
-#' @param excluded_locations character vector of location
-#' codes to exclude from the output. Default: character(0).
+#' @param excluded_locations character vector or named list
+#' specifying US state abbreviations to exclude. If a
+#' character vector, locations are excluded across all
+#' targets. If a named list, names should be target names
+#' (or "all" for global exclusions) mapping to character
+#' vectors of abbreviations. Default: NULL.
 #' @param output_format character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
 #' @param targets character vector, target name(s) to
 #' filter forecasts. If NULL (default), does not filter by
 #' target.
+#' @param overwrite_existing logical. If TRUE, overwrite
+#' existing files. Default: FALSE.
 #'
 #' @return invisibly returns the file path where data was
 #' written
@@ -208,9 +234,10 @@ write_ref_date_summary_all <- function(
   disease,
   horizons_to_include = c(0, 1, 2),
   population_data = hubhelpr::population_data,
-  excluded_locations = character(0),
+  excluded_locations = NULL,
   output_format = "csv",
-  targets = NULL
+  targets = NULL,
+  overwrite_existing = FALSE
 ) {
   all_models_columns <- c(
     "location_name",
@@ -248,6 +275,7 @@ write_ref_date_summary_all <- function(
     targets = targets,
     model_ids = NULL,
     population_data = population_data,
-    column_selection = all_models_columns
+    column_selection = all_models_columns,
+    overwrite_existing = overwrite_existing
   )
 }
