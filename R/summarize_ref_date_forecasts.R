@@ -30,19 +30,27 @@ normalize_excluded_locations <- function(excluded_locations) {
 #' exclude. Entries keyed by "all" are expanded into
 #' one row per available target. Errors if any named
 #' targets in the exclusion list are not in
-#' `available_targets`.
+#' `supported_targets`.
 #'
 #' @param excluded_locations Named list as returned by
 #' `normalize_excluded_locations()`.
-#' @param available_targets character vector of valid
-#' target names.
+#' @param available_targets character vector of target
+#' names present in the current forecasts.
+#' @param supported_targets character vector of targets
+#' the hub accepts, as returned by
+#' `get_hub_supported_targets()`. Used to validate
+#' exclusion target names.
 #'
 #' @return A tibble with columns "target" and "location"
 #' (hub codes).
 #' @noRd
-build_exclusion_df <- function(excluded_locations, available_targets) {
+build_exclusion_df <- function(
+  excluded_locations,
+  available_targets,
+  supported_targets
+) {
   named_targets <- setdiff(names(excluded_locations), "all")
-  invalid_targets <- setdiff(named_targets, available_targets)
+  invalid_targets <- setdiff(named_targets, supported_targets)
   if (length(invalid_targets) > 0) {
     cli::cli_abort(
       "{.arg excluded_locations} contains unknown target{?s}: {.val {invalid_targets}}."
@@ -130,7 +138,12 @@ summarize_ref_date_forecasts <- function(
     )
 
   available_targets <- unique(current_forecasts$target)
-  exclusion_df <- build_exclusion_df(excluded_locations, available_targets)
+  supported_targets <- get_hub_supported_targets(base_hub_path)
+  exclusion_df <- build_exclusion_df(
+    excluded_locations,
+    available_targets,
+    supported_targets
+  )
 
   current_forecasts <- current_forecasts |>
     dplyr::anti_join(exclusion_df, by = c("target", "location"))

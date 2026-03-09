@@ -191,6 +191,39 @@ get_unique_hub_targets <- function(base_hub_path) {
 }
 
 
+#' Get hub-supported targets from hub configuration.
+#'
+#' Reads a hub's tasks configuration and extracts all
+#' unique target names that the hub accepts.
+#'
+#' @param base_hub_path Character. Path to the base
+#' hub directory containing the hub configuration
+#' (tasks.json).
+#'
+#' @return Character vector of unique supported target
+#' names.
+#' @export
+get_hub_supported_targets <- function(base_hub_path) {
+  config_tasks <- hubUtils::read_config(base_hub_path, "tasks")
+  round_ids <- hubUtils::get_round_ids(config_tasks)
+
+  targets <- purrr::map(round_ids, \(id) {
+    hubUtils::get_round_model_tasks(config_tasks, id)
+  }) |>
+    purrr::map_df(flatten_task_list) |>
+    dplyr::distinct(.data$target) |>
+    dplyr::pull(target)
+
+  if (length(targets) == 0) {
+    cli::cli_abort(
+      "No targets found in hub configuration (tasks.json)."
+    )
+  }
+
+  return(targets)
+}
+
+
 #' Get human-readable label for a target.
 #'
 #' Converts a full target name to a human-readable label
