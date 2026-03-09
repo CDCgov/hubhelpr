@@ -208,7 +208,7 @@ get_unique_hub_targets <- function(base_hub_path) {
 #' are accepted for a given valid forecastable quantity,
 #' that quantity will be represented multiple times,
 #' with one row for each valid associated `output_type`.
-#' @noRd
+#' @export
 flatten_task <- function(task) {
   checkmate::assert_names(
     names(task),
@@ -254,7 +254,7 @@ flatten_task <- function(task) {
 #' forecastable quantity, that quantity will be
 #' represented multiple times, with one row for each
 #' valid associated `output_type`.
-#' @noRd
+#' @export
 flatten_task_list <- function(task_list, .deduplicate = TRUE) {
   flat_tasks <- purrr::map_df(task_list, flatten_task)
 
