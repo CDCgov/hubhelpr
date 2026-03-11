@@ -167,7 +167,6 @@ is_ed_target <- function(target) {
 }
 
 
-
 #' Transform a modeling task represented as a nested
 #' list to a single data frame.
 #'
