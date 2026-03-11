@@ -11,7 +11,6 @@ An object of class \code{character} of length 2.
 supported_viz_datasets
 }
 \description{
-Character vector of valid dataset identifiers that can
-be passed to \code{\link{write_viz_target_data}}.
+Character vector of valid datasets.
 }
 \keyword{datasets}

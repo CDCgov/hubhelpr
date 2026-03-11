@@ -22,10 +22,9 @@
 #' available vintage. Default "latest". Used only when
 #' use_hub_data = TRUE.
 #' @param datasets Character vector of data sources to pull.
-#' Valid values are those in
-#' \code{\link{supported_viz_datasets}}. Default: NULL
-#' (pulls all supported datasets). Used only when
-#' use_hub_data = FALSE.
+#' Valid values are those in supported_viz_datasets.
+#' Default: NULL (pulls all supported datasets). Used
+#' only when use_hub_data = FALSE.
 #' @param start_date Date, earliest date to include in data.
 #' Default: NULL (no filtering). Used only when
 #' use_hub_data = FALSE.
