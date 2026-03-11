@@ -476,7 +476,7 @@ write_webtext <- function(
   reference_date <- lubridate::as_date(reference_date)
 
   if (is.null(targets)) {
-    targets <- get_unique_hub_targets(base_hub_path)
+    targets <- get_hub_supported_targets(base_hub_path)
   }
 
   weekly_data_path <- fs::path(
