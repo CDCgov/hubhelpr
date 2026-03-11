@@ -10,8 +10,7 @@ excluded_locations <- c("78", "74", "69", "66", "60")
 
 #' Supported data sources for visualization target data.
 #'
-#' Character vector of valid dataset identifiers that can
-#' be passed to \code{\link{write_viz_target_data}}.
+#' Character vector of valid datasets.
 #'
 #' @export
 supported_viz_datasets <- c("nhsn", "nssp")
