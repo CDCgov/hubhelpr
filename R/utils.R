@@ -167,30 +167,6 @@ is_ed_target <- function(target) {
 }
 
 
-#' Get unique targets from hub time-series data.
-#'
-#' Reads the target-data time-series and returns the
-#' unique target names present in the data.
-#'
-#' @param base_hub_path Path to the base hub directory.
-#' @return Character vector of unique target names.
-#' @export
-get_unique_hub_targets <- function(base_hub_path) {
-  targets <- hubData::connect_target_timeseries(base_hub_path) |>
-    dplyr::distinct(target) |>
-    dplyr::collect() |>
-    dplyr::pull(target)
-
-  if (length(targets) == 0) {
-    cli::cli_abort(
-      "No targets found in time-series data."
-    )
-  }
-
-  return(targets)
-}
-
-
 #' Transform a modeling task represented as a nested
 #' list to a single data frame.
 #'
