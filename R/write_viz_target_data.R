@@ -21,12 +21,6 @@
 #' by as.Date(), or "latest" to filter to the most recent
 #' available vintage. Default "latest". Used only when
 #' use_hub_data = TRUE.
-#' @param pull_nhsn Logical, whether to pull NHSN hospital
-#' admissions data. Default: TRUE. Used only when
-#' use_hub_data = FALSE.
-#' @param pull_nssp Logical, whether to pull NSSP emergency
-#' department visit data. Default: TRUE. Used only when
-#' use_hub_data = FALSE.
 #' @param start_date Date, earliest date to include in data.
 #' Default: NULL (no filtering). Used only when
 #' use_hub_data = FALSE.
@@ -52,8 +46,6 @@ write_viz_target_data <- function(
   disease,
   use_hub_data = FALSE,
   as_of = "latest",
-  pull_nhsn = TRUE,
-  pull_nssp = TRUE,
   start_date = NULL,
   end_date = NULL,
   included_locations = hubhelpr::included_locations,
@@ -66,41 +58,26 @@ write_viz_target_data <- function(
       dplyr::filter(.data$location %in% !!included_locations) |>
       dplyr::collect()
   } else {
-    if (!pull_nhsn && !pull_nssp) {
-      cli::cli_abort(
-        "When 'use_hub_data' is FALSE, at least
-        one of 'pull_nhsn' or 'pull_nssp' must be TRUE"
+    nhsn_data <- get_hubverse_format_nhsn_data(
+      disease,
+      start_date = start_date,
+      end_date = end_date
+    ) |>
+      # remove data for reporting dates May 1, 2024 – October 31,
+      # 2024 due to the absence of a reporting mandate. Reporting
+      # rates during this period were much lower,
+      # and data not comparable to other time periods.
+      dplyr::filter(
+        !(.data$date >= lubridate::as_date("2024-05-01") &
+          .data$date <= lubridate::as_date("2024-10-31"))
       )
-    }
-
-    nhsn_data <- if (pull_nhsn) {
-      get_hubverse_format_nhsn_data(
-        disease,
-        start_date = start_date,
-        end_date = end_date
-      ) |>
-        # Remove data for reporting dates May 1, 2024 – October 31,
-        # 2024 due to the absence of a reporting mandate. Reporting
-        # rates during this period were much lower,
-        # and data not comparable to other time periods.
-        dplyr::filter(
-          !(.data$date >= lubridate::as_date("2024-05-01") &
-            .data$date <= lubridate::as_date("2024-10-31"))
-        )
-    } else {
-      NULL
-    }
-    nssp_data <- if (pull_nssp) {
-      get_hubverse_format_nssp_data(
-        disease,
-        base_hub_path,
-        start_date = start_date,
-        end_date = end_date,
-        nssp_update_local = TRUE
-      )
-    } else {
-      NULL
-    }
+    nssp_data <- get_hubverse_format_nssp_data(
+      disease,
+      base_hub_path,
+      start_date = start_date,
+      end_date = end_date,
+      nssp_update_local = TRUE
+    )
     target_data <- dplyr::bind_rows(nhsn_data, nssp_data)
   }
 
