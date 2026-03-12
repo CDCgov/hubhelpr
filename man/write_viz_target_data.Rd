@@ -11,7 +11,6 @@ write_viz_target_data(
   disease,
   use_hub_data = FALSE,
   as_of = "latest",
-  datasets = NULL,
   start_date = NULL,
   end_date = NULL,
   included_locations = hubhelpr::included_locations,
@@ -39,11 +38,6 @@ from sources (FALSE). Default: FALSE.}
 by as.Date(), or "latest" to filter to the most recent
 available vintage. Default "latest". Used only when
 use_hub_data = TRUE.}
-
-\item{datasets}{Character vector of data sources to pull.
-Valid values are those in supported_viz_datasets.
-Default: NULL (pulls all supported datasets). Used
-only when use_hub_data = FALSE.}
 
 \item{start_date}{Date, earliest date to include in data.
 Default: NULL (no filtering). Used only when

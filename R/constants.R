@@ -8,13 +8,6 @@
 #' @export
 excluded_locations <- c("78", "74", "69", "66", "60")
 
-#' Supported data sources for visualization target data.
-#'
-#' Character vector of valid datasets.
-#'
-#' @export
-supported_viz_datasets <- c("nhsn", "nssp")
-
 #' Two digits FIPS codes for locations included in Hubs'
 #' target data.
 #'
