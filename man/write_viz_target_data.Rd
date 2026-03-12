@@ -11,8 +11,6 @@ write_viz_target_data(
   disease,
   use_hub_data = FALSE,
   as_of = "latest",
-  pull_nhsn = TRUE,
-  pull_nssp = TRUE,
   start_date = NULL,
   end_date = NULL,
   included_locations = hubhelpr::included_locations,
@@ -41,14 +39,6 @@ from sources (FALSE). Default: FALSE.}
 by as.Date(), or "latest" to filter to the most recent
 available vintage. Default "latest". Used only when
 use_hub_data = TRUE.}
-
-\item{pull_nhsn}{Logical, whether to pull NHSN hospital
-admissions data. Default: TRUE. Used only when
-use_hub_data = FALSE.}
-
-\item{pull_nssp}{Logical, whether to pull NSSP emergency
-department visit data. Default: TRUE. Used only when
-use_hub_data = FALSE.}
 
 \item{start_date}{Date, earliest date to include in data.
 Default: NULL (no filtering). Used only when
