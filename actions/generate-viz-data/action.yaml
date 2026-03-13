@@ -27,6 +27,10 @@ inputs:
     description: "JSON array of full target names (e.g., '[\"wk inc covid hosp\", \"wk inc covid prop ed visits\"]'). Defaults to all unique targets in time-series data."
     required: false
     default: ""
+  excluded_locations:
+    description: "JSON array of US state/territory abbreviations to exclude from output (e.g., '[\"VI\", \"GU\", \"AS\", \"MP\", \"UM\"]'). Defaults to no exclusions."
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -54,25 +58,35 @@ runs:
           targets <- jsonlite::fromJSON(input_targets)
         }
 
+        input_excluded <- '${{ inputs.excluded_locations }}'
+        if (nchar(input_excluded) == 0) {
+          excluded_locations <- NULL
+        } else {
+          excluded_locations <- jsonlite::fromJSON(input_excluded)
+        }
+
         hubhelpr::write_ref_date_summary_ens(
           reference_date = ref_date,
           base_hub_path = base_hub_path,
           hub_reports_path = hub_reports_path,
-          disease = disease
+          disease = disease,
+          excluded_locations = excluded_locations
         )
 
         hubhelpr::write_ref_date_summary_all(
           reference_date = ref_date,
           base_hub_path = base_hub_path,
           hub_reports_path = hub_reports_path,
-          disease = disease
+          disease = disease,
+          excluded_locations = excluded_locations
         )
 
         hubhelpr::write_viz_target_data(
           reference_date = ref_date,
           base_hub_path = base_hub_path,
           hub_reports_path = hub_reports_path,
-          disease = disease
+          disease = disease,
+          excluded_locations = excluded_locations
         )
 
         hubhelpr::write_webtext(
