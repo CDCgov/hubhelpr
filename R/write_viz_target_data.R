@@ -30,6 +30,13 @@
 #' @param included_locations Character vector of location
 #' codes to include in the output. Default
 #' hubhelpr::included_locations.
+#' @param excluded_locations Character vector or named list
+#' specifying US state abbreviations to exclude. If a
+#' character vector, locations are excluded across all
+#' targets. If a named list, names should be target names
+#' (or "all" for global exclusions) mapping to character
+#' vectors of abbreviations. Converted to hub codes
+#' internally. Default: NULL.
 #' @param output_format Character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
 #' @param overwrite_existing logical. If TRUE, overwrite
@@ -49,6 +56,7 @@ write_viz_target_data <- function(
   start_date = NULL,
   end_date = NULL,
   included_locations = hubhelpr::included_locations,
+  excluded_locations = NULL,
   output_format = "csv",
   overwrite_existing = FALSE
 ) {
@@ -80,6 +88,13 @@ write_viz_target_data <- function(
     )
     target_data <- dplyr::bind_rows(nhsn_data, nssp_data)
   }
+
+  excluded_locations <- normalize_excluded_locations(excluded_locations)
+  supported_targets <- get_hub_supported_targets(base_hub_path)
+  exclusion_df <- build_exclusion_df(excluded_locations, supported_targets)
+
+  target_data <- target_data |>
+    dplyr::anti_join(exclusion_df, by = c("target", "location"))
 
   target_data <- target_data |>
     dplyr::mutate(
