@@ -40,7 +40,14 @@ purrr::walk(c("covid", "rsv"), function(disease) {
         )
         expect_setequal(
           unique(target_ts$location),
-          setdiff(forecasttools::us_location_table$code, excluded_locations)
+          setdiff(
+            forecasttools::us_location_table$code,
+            forecasttools::us_location_recode(
+              hubhelpr::default_excluded_locations,
+              "abbr",
+              "hub"
+            )
+          )
         )
       })
     }

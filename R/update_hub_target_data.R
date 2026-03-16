@@ -69,9 +69,9 @@ merge_target_data <- function(
 #' @param disease Disease name ("covid" or "rsv").
 #' @param as_of As-of date of the data pull. Default is
 #' the system date as determined by [lubridate::today()].
-#' @param included_locations Vector of location codes to
-#' include in the output.
-#' Default value `hubhelpr::included_locations`.
+#' @param excluded_locations Character vector or named list
+#' of US state/territory abbreviations to exclude.
+#' Default: [hubhelpr::default_excluded_locations].
 #' @param start_date First week-ending
 #' date to include for the NHSN dataset. Default value
 #' is NULL (no filtering).
@@ -84,7 +84,7 @@ merge_target_data <- function(
 get_hubverse_format_nhsn_data <- function(
   disease,
   as_of = lubridate::today(),
-  included_locations = hubhelpr::included_locations,
+  excluded_locations = hubhelpr::default_excluded_locations,
   start_date = NULL,
   end_date = NULL
 ) {
@@ -109,8 +109,8 @@ get_hubverse_format_nhsn_data <- function(
       as_of = !!as_of,
       target = glue::glue("wk inc {disease} hosp")
     ) |>
-    dplyr::filter(.data$location %in% !!included_locations) |>
-    dplyr::select(tidyselect::all_of(hubverse_ts_req_cols))
+    dplyr::select(tidyselect::all_of(hubverse_ts_req_cols)) |>
+    apply_location_exclusions(excluded_locations)
 
   return(hubverse_format_nhsn_data)
 }
@@ -124,9 +124,9 @@ get_hubverse_format_nhsn_data <- function(
 #' @param base_hub_path Path to the base hub directory.
 #' @param as_of As-of date of the data pull. Default is
 #' the system date as determined by [lubridate::today()].
-#' @param included_locations Vector of location codes to
-#' include in the output.
-#' Default value `hubhelpr::included_locations`.
+#' @param excluded_locations Character vector or named list
+#' of US state/territory abbreviations to exclude.
+#' Default: [hubhelpr::default_excluded_locations].
 #' @param nssp_update_local Logical. Whether to update NSSP
 #' data from local file `auxiliary-data/latest.parquet`
 #' (default: FALSE).
@@ -143,7 +143,7 @@ get_hubverse_format_nssp_data <- function(
   disease,
   base_hub_path,
   as_of = lubridate::today(),
-  included_locations = hubhelpr::included_locations,
+  excluded_locations = hubhelpr::default_excluded_locations,
   nssp_update_local = FALSE,
   start_date = NULL,
   end_date = NULL
@@ -194,9 +194,9 @@ get_hubverse_format_nssp_data <- function(
       as_of = !!as_of,
       target = glue::glue("wk inc {disease} prop ed visits")
     ) |>
-    dplyr::filter(.data$location %in% !!included_locations) |>
     dplyr::select(tidyselect::all_of(hubverse_ts_req_cols)) |>
-    dplyr::arrange(.data$date, .data$location)
+    dplyr::arrange(.data$date, .data$location) |>
+    apply_location_exclusions(excluded_locations)
 
   return(hubverse_format_nssp_data)
 }
@@ -215,9 +215,9 @@ get_hubverse_format_nssp_data <- function(
 #' @param start_date First week-ending
 #' date to include for the NHSN dataset. Default value
 #' is "2024-11-09".
-#' @param included_locations Vector of location codes to
-#' include in the output.
-#' Default value `hubhelpr::included_locations`.
+#' @param excluded_locations Character vector or named list
+#' of US state/territory abbreviations to exclude.
+#' Default: [hubhelpr::default_excluded_locations].
 #' @param legacy_file Logical. Whether to write legacy
 #' CSV output (default: FALSE).
 #' @param nssp_update_local Logical. Whether to update NSSP
@@ -237,7 +237,7 @@ update_hub_target_data <- function(
   disease,
   as_of = lubridate::today(),
   start_date = lubridate::as_date("2024-11-09"),
-  included_locations = hubhelpr::included_locations,
+  excluded_locations = hubhelpr::default_excluded_locations,
   legacy_file = FALSE,
   nssp_update_local = FALSE,
   overwrite_existing = FALSE
@@ -247,7 +247,7 @@ update_hub_target_data <- function(
   nhsn_data <- get_hubverse_format_nhsn_data(
     disease,
     as_of = as_of,
-    included_locations = included_locations,
+    excluded_locations = excluded_locations,
     start_date = start_date
   )
 
@@ -263,7 +263,7 @@ update_hub_target_data <- function(
     disease,
     base_hub_path,
     as_of = as_of,
-    included_locations = included_locations,
+    excluded_locations = excluded_locations,
     nssp_update_local = nssp_update_local
   )
 

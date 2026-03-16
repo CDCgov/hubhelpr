@@ -10,7 +10,7 @@ summarize_ref_date_forecasts(
   disease,
   population_data,
   horizons_to_include = c(0, 1, 2),
-  excluded_locations = NULL,
+  excluded_locations = hubhelpr::default_excluded_locations,
   targets = NULL,
   model_ids = NULL
 )
@@ -37,7 +37,8 @@ character vector, locations are excluded across all
 targets. If a named list, names should be target names
 (or "all" for global exclusions) mapping to character
 vectors of abbreviations. Converted to hub codes
-internally. Default: NULL.}
+internally. Default:
+\link{default_excluded_locations}.}
 
 \item{targets}{character vector, target name(s) to filter
 forecasts. If NULL (default), does not filter by target.}

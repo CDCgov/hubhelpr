@@ -11,7 +11,7 @@ write_ref_date_summary_ens(
   disease,
   horizons_to_include = c(0, 1, 2),
   population_data = hubhelpr::population_data,
-  excluded_locations = NULL,
+  excluded_locations = hubhelpr::default_excluded_locations,
   output_format = "csv",
   targets = NULL,
   overwrite_existing = FALSE
@@ -40,7 +40,8 @@ specifying US state abbreviations to exclude. If a
 character vector, locations are excluded across all
 targets. If a named list, names should be target names
 (or "all" for global exclusions) mapping to character
-vectors of abbreviations. Default: NULL.}
+vectors of abbreviations. Default:
+\link{default_excluded_locations}.}
 
 \item{output_format}{character, output file format. One
 of "csv", "tsv", or "parquet". Default: "csv".}

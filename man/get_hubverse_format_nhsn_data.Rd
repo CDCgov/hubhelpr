@@ -7,7 +7,7 @@
 get_hubverse_format_nhsn_data(
   disease,
   as_of = lubridate::today(),
-  included_locations = hubhelpr::included_locations,
+  excluded_locations = hubhelpr::default_excluded_locations,
   start_date = NULL,
   end_date = NULL
 )
@@ -18,9 +18,9 @@ get_hubverse_format_nhsn_data(
 \item{as_of}{As-of date of the data pull. Default is
 the system date as determined by \code{\link[lubridate:now]{lubridate::today()}}.}
 
-\item{included_locations}{Vector of location codes to
-include in the output.
-Default value \code{hubhelpr::included_locations}.}
+\item{excluded_locations}{Character vector or named list
+of US state/territory abbreviations to exclude.
+Default: \link{default_excluded_locations}.}
 
 \item{start_date}{First week-ending
 date to include for the NHSN dataset. Default value
