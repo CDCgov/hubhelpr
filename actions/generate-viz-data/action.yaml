@@ -28,9 +28,9 @@ inputs:
     required: false
     default: ""
   excluded_locations:
-    description: "JSON array of US state/territory abbreviations to exclude from output (e.g., '[\"VI\", \"GU\", \"AS\", \"MP\", \"UM\"]'). Defaults to hubhelpr::default_excluded_locations."
+    description: "JSON array of US state/territory abbreviations to exclude from output (e.g., '[\"VI\", \"GU\", \"AS\", \"MP\", \"UM\"]'). Also accepts a JSON object for target-specific exclusions (e.g., '{\"all\": [\"UM\"], \"wk inc covid hosp\": [\"MA\"]}'). Defaults to hubhelpr::default_excluded_locations."
     required: false
-    default: ""
+    default: "[]"
 
 runs:
   using: "composite"
@@ -58,12 +58,9 @@ runs:
           targets <- jsonlite::fromJSON(input_targets)
         }
 
-        input_excluded <- '${{ inputs.excluded_locations }}'
-        if (nchar(input_excluded) == 0) {
-          excluded_locations <- hubhelpr::default_excluded_locations
-        } else {
-          excluded_locations <- jsonlite::fromJSON(input_excluded)
-        }
+        excluded_locations <- jsonlite::fromJSON(
+          '${{ inputs.excluded_locations }}'
+        )
 
         hubhelpr::write_ref_date_summary_ens(
           reference_date = ref_date,
