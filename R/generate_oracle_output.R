@@ -9,20 +9,7 @@ generate_oracle_output <- function(hub_path) {
   fs::dir_create(output_dirpath)
   target_ts <- hubData::connect_target_timeseries(hub_path)
 
-  config_tasks <- hubUtils::read_config(hub_path, "tasks")
-  round_ids <- hubUtils::get_round_ids(config_tasks)
-
-  ## this involves duplication given how hubUtils::get_round_model_tasks
-  ## behaves by default with round ids created from reference dates,
-  ## but to support hubs with round_ids created in other ways, we
-  ## do it this way and then deduplicate as needed.
-  list_of_task_lists <- purrr::map(round_ids, \(id) {
-    hubUtils::get_round_model_tasks(config_tasks, id)
-  })
-
-  unique_tasks <- purrr::map_df(list_of_task_lists, flatten_task_list) |>
-    dplyr::distinct() |>
-    dplyr::mutate(target_end_date = as.Date(.data$target_end_date))
+  unique_tasks <- get_hub_tasks(hub_path, .deduplicate = TRUE)
 
   target_data <- target_ts |>
     forecasttools::hub_target_data_as_of("latest", .drop = TRUE) |>
