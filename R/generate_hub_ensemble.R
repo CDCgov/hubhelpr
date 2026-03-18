@@ -205,8 +205,9 @@ generate_hub_ensemble <- function(
 #'
 #' @param base_hub_path character, path to the base hub
 #' directory.
-#' @param reference_date character or Date, the reference
-#' date for the forecast in YYYY-MM-DD format.
+#' @param reference_dates character or Date vector of
+#' reference dates in YYYY-MM-DD format. If NULL
+#' (default), includes all available reference dates.
 #' @param targets character vector of target names to
 #' include. If NULL (default), includes all supported
 #' targets.
@@ -219,27 +220,29 @@ generate_hub_ensemble <- function(
 #' @export
 count_ensemble_models <- function(
   base_hub_path,
-  reference_date,
+  reference_dates = NULL,
   targets = NULL,
   horizons = NULL
 ) {
-  reference_date <- lubridate::as_date(reference_date)
+  hub_forecasts <- hubData::connect_hub(base_hub_path)
 
-  weekly_forecasts <- hubData::connect_hub(base_hub_path) |>
-    dplyr::filter(
-      .data$reference_date == !!reference_date
-    ) |>
-    hubData::collect_hub()
+  if (!is.null(reference_dates)) {
+    reference_dates <- lubridate::as_date(reference_dates)
+    hub_forecasts <- hub_forecasts |>
+      dplyr::filter(.data$reference_date %in% !!reference_dates)
+  }
 
-  if (nrow(weekly_forecasts) == 0) {
+  hub_forecasts <- hubData::collect_hub(hub_forecasts)
+
+  if (nrow(hub_forecasts) == 0) {
     cli::cli_abort(
-      "No forecast data found for reference date {reference_date}."
+      "No forecast data found for the specified reference date(s)."
     )
   }
 
   hub_submitting_models <- hubData::load_model_metadata(
     base_hub_path,
-    model_ids = unique(weekly_forecasts$model_id)
+    model_ids = unique(hub_forecasts$model_id)
   ) |>
     dplyr::select("model_id", "designated_model") |>
     dplyr::distinct()
@@ -248,17 +251,12 @@ count_ensemble_models <- function(
     dplyr::filter(.data$designated_model) |>
     dplyr::pull("model_id")
 
-  designated_forecasts <- weekly_forecasts |>
-    dplyr::filter(.data$model_id %in% designated_ids)
-
-  if (!is.null(targets)) {
-    designated_forecasts <- designated_forecasts |>
-      dplyr::filter(.data$target %in% !!targets)
-  }
-  if (!is.null(horizons)) {
-    designated_forecasts <- designated_forecasts |>
-      dplyr::filter(.data$horizon %in% !!horizons)
-  }
+  designated_forecasts <- hub_forecasts |>
+    dplyr::filter(
+      .data$model_id %in% designated_ids,
+      forecasttools::nullable_comparison(.data$target, "%in%", !!targets),
+      forecasttools::nullable_comparison(.data$horizon, "%in%", !!horizons)
+    )
 
   model_counts <- designated_forecasts |>
     dplyr::summarise(

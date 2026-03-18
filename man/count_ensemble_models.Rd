@@ -7,7 +7,7 @@ and horizon.}
 \usage{
 count_ensemble_models(
   base_hub_path,
-  reference_date,
+  reference_dates = NULL,
   targets = NULL,
   horizons = NULL
 )
@@ -16,8 +16,9 @@ count_ensemble_models(
 \item{base_hub_path}{character, path to the base hub
 directory.}
 
-\item{reference_date}{character or Date, the reference
-date for the forecast in YYYY-MM-DD format.}
+\item{reference_dates}{character or Date vector of
+reference dates in YYYY-MM-DD format. If NULL
+(default), includes all available reference dates.}
 
 \item{targets}{character vector of target names to
 include. If NULL (default), includes all supported
