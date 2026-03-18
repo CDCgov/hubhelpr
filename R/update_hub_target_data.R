@@ -69,9 +69,9 @@ merge_target_data <- function(
 #' @param disease Disease name ("covid" or "rsv").
 #' @param as_of As-of date of the data pull. Default is
 #' the system date as determined by [lubridate::today()].
-#' @param excluded_locations Character vector or named list
-#' of US state/territory abbreviations to exclude.
-#' Default: [hubhelpr::default_excluded_locations].
+#' @param excluded_locations Character vector of US
+#' state/territory abbreviations to exclude.
+#' Default: NULL (no exclusions).
 #' @param start_date First week-ending
 #' date to include for the NHSN dataset. Default value
 #' is NULL (no filtering).
@@ -84,7 +84,7 @@ merge_target_data <- function(
 get_hubverse_format_nhsn_data <- function(
   disease,
   as_of = lubridate::today(),
-  excluded_locations = hubhelpr::default_excluded_locations,
+  excluded_locations = NULL,
   start_date = NULL,
   end_date = NULL
 ) {
@@ -124,9 +124,9 @@ get_hubverse_format_nhsn_data <- function(
 #' @param base_hub_path Path to the base hub directory.
 #' @param as_of As-of date of the data pull. Default is
 #' the system date as determined by [lubridate::today()].
-#' @param excluded_locations Character vector or named list
-#' of US state/territory abbreviations to exclude.
-#' Default: [hubhelpr::default_excluded_locations].
+#' @param excluded_locations Character vector of US
+#' state/territory abbreviations to exclude.
+#' Default: NULL (no exclusions).
 #' @param nssp_update_local Logical. Whether to update NSSP
 #' data from local file `auxiliary-data/latest.parquet`
 #' (default: FALSE).
@@ -143,7 +143,7 @@ get_hubverse_format_nssp_data <- function(
   disease,
   base_hub_path,
   as_of = lubridate::today(),
-  excluded_locations = hubhelpr::default_excluded_locations,
+  excluded_locations = NULL,
   nssp_update_local = FALSE,
   start_date = NULL,
   end_date = NULL
@@ -215,9 +215,9 @@ get_hubverse_format_nssp_data <- function(
 #' @param start_date First week-ending
 #' date to include for the NHSN dataset. Default value
 #' is "2024-11-09".
-#' @param excluded_locations Character vector or named list
-#' of US state/territory abbreviations to exclude.
-#' Default: [hubhelpr::default_excluded_locations].
+#' @param excluded_locations Character vector of US
+#' state/territory abbreviations to exclude.
+#' Default: NULL (no exclusions).
 #' @param legacy_file Logical. Whether to write legacy
 #' CSV output (default: FALSE).
 #' @param nssp_update_local Logical. Whether to update NSSP
@@ -237,7 +237,7 @@ update_hub_target_data <- function(
   disease,
   as_of = lubridate::today(),
   start_date = lubridate::as_date("2024-11-09"),
-  excluded_locations = hubhelpr::default_excluded_locations,
+  excluded_locations = NULL,
   legacy_file = FALSE,
   nssp_update_local = FALSE,
   overwrite_existing = FALSE

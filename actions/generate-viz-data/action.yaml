@@ -28,7 +28,7 @@ inputs:
     required: false
     default: ""
   excluded_locations:
-    description: "JSON array of US state/territory abbreviations to exclude from output (e.g., '[\"VI\", \"GU\", \"AS\", \"MP\", \"UM\"]'). Also accepts a JSON object for target-specific exclusions (e.g., '{\"all\": [\"UM\"], \"wk inc covid hosp\": [\"MA\"]}'). Defaults to no exclusions."
+    description: "JSON array of US state/territory abbreviations to exclude from output (e.g., '[\"VI\", \"GU\", \"AS\", \"MP\", \"UM\"]'). Defaults to no exclusions."
     required: false
     default: "[]"
 

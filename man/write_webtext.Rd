@@ -11,7 +11,7 @@ write_webtext(
   base_hub_path,
   hub_reports_path,
   targets = NULL,
-  excluded_locations = hubhelpr::default_excluded_locations,
+  excluded_locations = NULL,
   input_format = "csv",
   overwrite_existing = FALSE
 )
@@ -34,8 +34,7 @@ from hub time-series data.}
 
 \item{excluded_locations}{Character vector of US
 state/territory abbreviations to exclude from expected
-reporting locations. Default:
-\link{default_excluded_locations}.}
+reporting locations. Default: NULL (no exclusions).}
 
 \item{input_format}{Character, input file format for
 reading summary data files. One of "csv", "tsv", or

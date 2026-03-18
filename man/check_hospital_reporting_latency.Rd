@@ -7,7 +7,7 @@
 check_hospital_reporting_latency(
   reference_date,
   disease,
-  excluded_locations = hubhelpr::default_excluded_locations
+  excluded_locations = NULL
 )
 }
 \arguments{
@@ -19,8 +19,7 @@ forecast.}
 
 \item{excluded_locations}{Character vector of US
 state/territory abbreviations to exclude from expected
-reporting locations. Default:
-\link{default_excluded_locations}.}
+reporting locations. Default: NULL (no exclusions).}
 }
 \value{
 Character string describing reporting issues,

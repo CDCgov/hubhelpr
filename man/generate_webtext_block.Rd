@@ -10,7 +10,7 @@ generate_webtext_block(
   base_hub_path,
   weekly_data_path,
   targets,
-  excluded_locations = hubhelpr::default_excluded_locations,
+  excluded_locations = NULL,
   input_format = "csv"
 )
 }
@@ -32,8 +32,7 @@ generate text for.}
 
 \item{excluded_locations}{Character vector of US
 state/territory abbreviations to exclude from expected
-reporting locations. Default:
-\link{default_excluded_locations}.}
+reporting locations. Default: NULL (no exclusions).}
 
 \item{input_format}{Character, input file format for
 reading summary data files. One of "csv", "tsv", or

@@ -1,9 +1,1 @@
-#' US state/territory abbreviations excluded
-#' by default from hub data.
-#'
-#' Excludes Virgin Islands (VI), Guam (GU),
-#' American Samoa (AS), Northern Mariana Islands (MP),
-#' and Minor Outlying Islands (UM).
-#'
-#' @export
-default_excluded_locations <- c("VI", "GU", "AS", "MP", "UM")
+# constants used across hubhelpr functions.

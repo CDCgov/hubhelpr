@@ -15,14 +15,10 @@
 #' and "population". Adds population-based calculations.
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
-#' @param excluded_locations character vector or named list
-#' specifying US state abbreviations to exclude. If a
-#' character vector, locations are excluded across all
-#' targets. If a named list, names should be target names
-#' (or "all" for global exclusions) mapping to character
-#' vectors of abbreviations. Converted to hub codes
-#' internally. Default:
-#' [hubhelpr::default_excluded_locations].
+#' @param excluded_locations character vector of US
+#' state/territory abbreviations to exclude. Converted
+#' to hub codes internally. Default: NULL (no
+#' exclusions).
 #' @param targets character vector, target name(s) to filter
 #' forecasts. If NULL (default), does not filter by target.
 #' @param model_ids character vector of model IDs to include.
@@ -37,7 +33,7 @@ summarize_ref_date_forecasts <- function(
   disease,
   population_data,
   horizons_to_include = c(0, 1, 2),
-  excluded_locations = hubhelpr::default_excluded_locations,
+  excluded_locations = NULL,
   targets = NULL,
   model_ids = NULL
 ) {
@@ -61,11 +57,9 @@ summarize_ref_date_forecasts <- function(
       forecasttools::nullable_comparison(.data$model_id, "%in%", !!model_ids)
     )
 
-  supported_targets <- get_hub_supported_targets(base_hub_path)
   current_forecasts <- apply_location_exclusions(
     current_forecasts,
-    excluded_locations,
-    supported_targets
+    excluded_locations
   )
 
   if (nrow(current_forecasts) == 0) {

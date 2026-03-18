@@ -27,14 +27,10 @@
 #' @param end_date Date, latest date to include in data.
 #' Default: NULL (no filtering). Used only when
 #' use_hub_data = FALSE.
-#' @param excluded_locations Character vector or named list
-#' specifying US state abbreviations to exclude. If a
-#' character vector, locations are excluded across all
-#' targets. If a named list, names should be target names
-#' (or "all" for global exclusions) mapping to character
-#' vectors of abbreviations. Converted to hub codes
-#' internally. Default:
-#' [hubhelpr::default_excluded_locations].
+#' @param excluded_locations Character vector of US
+#' state/territory abbreviations to exclude. Converted
+#' to hub codes internally. Default: NULL (no
+#' exclusions).
 #' @param output_format Character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
 #' @param overwrite_existing logical. If TRUE, overwrite
@@ -53,7 +49,7 @@ write_viz_target_data <- function(
   as_of = "latest",
   start_date = NULL,
   end_date = NULL,
-  excluded_locations = hubhelpr::default_excluded_locations,
+  excluded_locations = NULL,
   output_format = "csv",
   overwrite_existing = FALSE
 ) {
@@ -85,11 +81,9 @@ write_viz_target_data <- function(
     target_data <- dplyr::bind_rows(nhsn_data, nssp_data)
   }
 
-  supported_targets <- get_hub_supported_targets(base_hub_path)
   target_data <- apply_location_exclusions(
     target_data,
-    excluded_locations,
-    supported_targets
+    excluded_locations
   )
 
   target_data <- target_data |>

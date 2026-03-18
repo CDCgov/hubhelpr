@@ -11,23 +11,26 @@
 #' "rsv").
 #' @param excluded_locations Character vector of US
 #' state/territory abbreviations to exclude from expected
-#' reporting locations. Default:
-#' [hubhelpr::default_excluded_locations].
+#' reporting locations. Default: NULL (no exclusions).
 #'
 #' @return Character string describing reporting issues,
 #' or empty string if no issues.
 check_hospital_reporting_latency <- function(
   reference_date,
   disease,
-  excluded_locations = hubhelpr::default_excluded_locations
+  excluded_locations = NULL
 ) {
   desired_weekendingdate <- as.Date(reference_date) - lubridate::dweeks(1)
 
-  excluded_codes <- forecasttools::us_location_recode(
-    excluded_locations,
-    "abbr",
-    "hub"
-  )
+  if (!is.null(excluded_locations) && length(excluded_locations) > 0) {
+    excluded_codes <- forecasttools::us_location_recode(
+      excluded_locations,
+      "abbr",
+      "hub"
+    )
+  } else {
+    excluded_codes <- character(0)
+  }
   expected_locations <- setdiff(
     forecasttools::us_location_table$code,
     excluded_codes
@@ -330,8 +333,7 @@ compute_target_webtext_values <- function(
 #' generate text for.
 #' @param excluded_locations Character vector of US
 #' state/territory abbreviations to exclude from expected
-#' reporting locations. Default:
-#' [hubhelpr::default_excluded_locations].
+#' reporting locations. Default: NULL (no exclusions).
 #' @param input_format Character, input file format for
 #' reading summary data files. One of "csv", "tsv", or
 #' "parquet". Default: "csv".
@@ -345,7 +347,7 @@ generate_webtext_block <- function(
   base_hub_path,
   weekly_data_path,
   targets,
-  excluded_locations = hubhelpr::default_excluded_locations,
+  excluded_locations = NULL,
   input_format = "csv"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
@@ -467,8 +469,7 @@ generate_webtext_block <- function(
 #' from hub time-series data.
 #' @param excluded_locations Character vector of US
 #' state/territory abbreviations to exclude from expected
-#' reporting locations. Default:
-#' [hubhelpr::default_excluded_locations].
+#' reporting locations. Default: NULL (no exclusions).
 #' @param input_format Character, input file format for
 #' reading summary data files. One of "csv", "tsv", or
 #' "parquet". Default: "csv".
@@ -482,7 +483,7 @@ write_webtext <- function(
   base_hub_path,
   hub_reports_path,
   targets = NULL,
-  excluded_locations = hubhelpr::default_excluded_locations,
+  excluded_locations = NULL,
   input_format = "csv",
   overwrite_existing = FALSE
 ) {

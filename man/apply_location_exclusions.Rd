@@ -4,32 +4,21 @@
 \alias{apply_location_exclusions}
 \title{Apply location exclusions to a data frame.}
 \usage{
-apply_location_exclusions(data, excluded_locations, supported_targets = NULL)
+apply_location_exclusions(data, excluded_locations)
 }
 \arguments{
 \item{data}{Data frame with a "location" column
-containing hub-format location codes, and optionally
-a "target" column.}
+containing hub-format location codes.}
 
-\item{excluded_locations}{NULL, character vector, or
-named list of US state/territory abbreviations to
-exclude. If a character vector, locations are excluded
-across all rows. If a named list, names should be
-target names (or "all" for global exclusions) mapping
-to character vectors of abbreviations. Default: NULL.}
-
-\item{supported_targets}{Character vector of valid
-target names. Required for target-specific exclusions
-when \code{excluded_locations} is a named list with
-non-"all" keys. Default: NULL.}
+\item{excluded_locations}{Character vector of US
+state/territory abbreviations to exclude, or NULL
+for no exclusions.}
 }
 \value{
 Data frame with excluded rows removed.
 }
 \description{
 Removes rows from a data frame based on excluded
-location abbreviations. Supports target-specific
-exclusions when \code{supported_targets} is provided and
-the data contains a "target" column; otherwise
-applies blanket exclusion across all rows.
+location abbreviations. Abbreviations are converted
+to hub codes internally before filtering.
 }

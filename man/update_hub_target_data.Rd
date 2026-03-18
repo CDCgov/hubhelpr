@@ -9,7 +9,7 @@ update_hub_target_data(
   disease,
   as_of = lubridate::today(),
   start_date = lubridate::as_date("2024-11-09"),
-  excluded_locations = hubhelpr::default_excluded_locations,
+  excluded_locations = NULL,
   legacy_file = FALSE,
   nssp_update_local = FALSE,
   overwrite_existing = FALSE
@@ -27,9 +27,9 @@ the system date as determined by \code{\link[lubridate:now]{lubridate::today()}}
 date to include for the NHSN dataset. Default value
 is "2024-11-09".}
 
-\item{excluded_locations}{Character vector or named list
-of US state/territory abbreviations to exclude.
-Default: \link{default_excluded_locations}.}
+\item{excluded_locations}{Character vector of US
+state/territory abbreviations to exclude.
+Default: NULL (no exclusions).}
 
 \item{legacy_file}{Logical. Whether to write legacy
 CSV output (default: FALSE).}
