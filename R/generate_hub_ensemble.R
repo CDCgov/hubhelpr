@@ -192,3 +192,79 @@ generate_hub_ensemble <- function(
   )
   return(invisible())
 }
+
+
+#' Count hub contributing models per target, location,
+#' and horizon.
+#'
+#' Gets the number of designated models that
+#' contributed forecasts for each combination of target,
+#' location, reference date, and horizon; useful for
+#' checking minimum model thresholds for ensemble
+#' reporting.
+#'
+#' @param base_hub_path character, path to the base hub
+#' directory.
+#' @param reference_date character or Date, the reference
+#' date for the forecast in YYYY-MM-DD format.
+#' @param targets character vector of target names to
+#' include. If NULL (default), includes all supported
+#' targets.
+#' @param horizons integer vector of horizons to include.
+#' If NULL (default), includes all available horizons.
+#'
+#' @return A tibble with columns `reference_date`,
+#' `target`, `location`, `horizon`, and `n_models`.
+#'
+#' @export
+count_ensemble_models <- function(
+  base_hub_path,
+  reference_date,
+  targets = NULL,
+  horizons = NULL
+) {
+  reference_date <- lubridate::as_date(reference_date)
+
+  weekly_forecasts <- hubData::connect_hub(base_hub_path) |>
+    dplyr::filter(
+      .data$reference_date == !!reference_date
+    ) |>
+    hubData::collect_hub()
+
+  if (nrow(weekly_forecasts) == 0) {
+    cli::cli_abort(
+      "No forecast data found for reference date {reference_date}."
+    )
+  }
+
+  hub_submitting_models <- hubData::load_model_metadata(
+    base_hub_path,
+    model_ids = unique(weekly_forecasts$model_id)
+  ) |>
+    dplyr::select("model_id", "designated_model") |>
+    dplyr::distinct()
+
+  designated_ids <- hub_submitting_models |>
+    dplyr::filter(.data$designated_model) |>
+    dplyr::pull("model_id")
+
+  designated_forecasts <- weekly_forecasts |>
+    dplyr::filter(.data$model_id %in% designated_ids)
+
+  if (!is.null(targets)) {
+    designated_forecasts <- designated_forecasts |>
+      dplyr::filter(.data$target %in% !!targets)
+  }
+  if (!is.null(horizons)) {
+    designated_forecasts <- designated_forecasts |>
+      dplyr::filter(.data$horizon %in% !!horizons)
+  }
+
+  model_counts <- designated_forecasts |>
+    dplyr::summarise(
+      n_models = dplyr::n_distinct(.data$model_id),
+      .by = c("reference_date", "target", "location", "horizon")
+    )
+
+  return(model_counts)
+}
