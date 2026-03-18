@@ -167,7 +167,6 @@ is_ed_target <- function(target) {
 }
 
 
-
 #' Get hub-supported targets from hub configuration.
 #'
 #' Reads a hub's tasks configuration and extracts all
@@ -182,8 +181,8 @@ is_ed_target <- function(target) {
 #' @export
 get_hub_supported_targets <- function(base_hub_path) {
   targets <- get_hub_tasks(base_hub_path) |>
-      dplyr::distinct(.data$target) |>
-      dplyr::pull()
+    dplyr::distinct(.data$target) |>
+    dplyr::pull()
 
   if (length(targets) == 0) {
     cli::cli_abort(

@@ -96,15 +96,16 @@ get_hub_tasks <- function(hub_path, .deduplicate = TRUE) {
   ## do it this way and then deduplicate as needed.
 
   tasks <- purrr::map(round_ids, \(id) {
-      hubUtils::get_round_model_tasks(config_tasks, id)
+    hubUtils::get_round_model_tasks(config_tasks, id)
   }) |>
-      purrr::map_df(flatten_task_list) |>
-      dplyr::mutate(dplyr::across(
-                               c("reference_date", "target_end_date"),
-                               as.Date))
+    purrr::map_df(flatten_task_list) |>
+    dplyr::mutate(dplyr::across(
+      c("reference_date", "target_end_date"),
+      as.Date
+    ))
 
-  if(.deduplicate) {
-      tasks <- tasks |> dplyr::distinct()
+  if (.deduplicate) {
+    tasks <- tasks |> dplyr::distinct()
   }
 
   return(tasks)
