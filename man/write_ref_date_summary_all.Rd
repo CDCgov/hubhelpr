@@ -35,12 +35,9 @@ include in the output. Default: c(0, 1, 2).}
 \item{population_data}{data frame with columns
 "location" and "population". Default: \link{population_data}.}
 
-\item{excluded_locations}{character vector or named list
-specifying US state abbreviations to exclude. If a
-character vector, locations are excluded across all
-targets. If a named list, names should be target names
-(or "all" for global exclusions) mapping to character
-vectors of abbreviations. Default: NULL.}
+\item{excluded_locations}{character vector of US
+state/territory abbreviations to exclude. Default:
+NULL (no exclusions).}
 
 \item{output_format}{character, output file format. One
 of "csv", "tsv", or "parquet". Default: "csv".}

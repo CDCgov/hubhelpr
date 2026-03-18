@@ -11,7 +11,7 @@ write_webtext(
   base_hub_path,
   hub_reports_path,
   targets = NULL,
-  included_locations = hubhelpr::included_locations,
+  excluded_locations = NULL,
   input_format = "csv",
   overwrite_existing = FALSE
 )
@@ -32,9 +32,9 @@ reports directory.}
 generate text for. Default NULL discovers targets
 from hub time-series data.}
 
-\item{included_locations}{Character vector of location
-codes that are expected to report. Default
-hubhelpr::included_locations.}
+\item{excluded_locations}{Character vector of US
+state/territory abbreviations to exclude from expected
+reporting locations. Default: NULL (no exclusions).}
 
 \item{input_format}{Character, input file format for
 reading summary data files. One of "csv", "tsv", or
