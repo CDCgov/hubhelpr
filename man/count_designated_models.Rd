@@ -2,8 +2,8 @@
 % Please edit documentation in R/generate_hub_ensemble.R
 \name{count_designated_models}
 \alias{count_designated_models}
-\title{Count hub contributing models per target, location,
-and horizon.}
+\title{Count designated models per reference_date, target,
+location, and horizon.}
 \usage{
 count_designated_models(
   base_hub_path,

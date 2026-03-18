@@ -194,8 +194,8 @@ generate_hub_ensemble <- function(
 }
 
 
-#' Count hub contributing models per target, location,
-#' and horizon.
+#' Count designated models per reference_date, target,
+#' location, and horizon.
 #'
 #' Gets the number of designated models that
 #' contributed forecasts for each combination of target,
