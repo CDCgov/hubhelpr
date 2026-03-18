@@ -218,7 +218,7 @@ generate_hub_ensemble <- function(
 #' `target`, `location`, `horizon`, and `n_models`.
 #'
 #' @export
-count_ensemble_models <- function(
+count_designated_models <- function(
   base_hub_path,
   reference_dates = NULL,
   targets = NULL,
