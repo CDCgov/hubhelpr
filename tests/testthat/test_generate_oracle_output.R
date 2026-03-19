@@ -63,24 +63,32 @@ test_that(
   }
 )
 
-test_that("write_oracle_output writes the expected table to a configurable directory", {
-  output_dir <- withr::local_tempdir()
-  purrr::walk(example_hub_paths_to_test, \(hub_path) {
-    write_oracle_output(
-      hub_path,
-      output_dirpath = output_dir,
-      ts_date_col = "target_end_date"
-    )
-    result <- forecasttools::read_tabular(fs::path(
-      output_dir,
-      "oracle-output",
-      ext = "parquet"
-    )) |>
-      dplyr::filter(.data$output_type == "quantile")
-    expected <- .get_expected_quantile_oracle_output(hub_path)
-    .expect_oracle_tables_equivalent(result, expected)
-  })
-})
+test_that(
+  paste0(
+    "write_oracle_output writes the expected table to ",
+    "a configurable directory, creating it if it does not yet exist"
+  ),
+  {
+    purrr::walk(example_hub_paths_to_test, \(hub_path) {
+      tmpdir <- withr::local_tempdir()
+      output_path <- fs::path(tmpdir, "target-data")
+      expect_false(fs::dir_exists(output_path))
+      write_oracle_output(
+        hub_path,
+        output_dirpath = output_path,
+        ts_date_col = "target_end_date"
+      )
+      result <- forecasttools::read_tabular(fs::path(
+        output_path,
+        "oracle-output",
+        ext = "parquet"
+      )) |>
+        dplyr::filter(.data$output_type == "quantile")
+      expected <- .get_expected_quantile_oracle_output(hub_path)
+      .expect_oracle_tables_equivalent(result, expected)
+    })
+  }
+)
 
 test_that("generate_oracle_output is an alias for write_oracle_output", {
   expect_equal(generate_oracle_output, write_oracle_output)
