@@ -68,7 +68,7 @@ test_that("write_oracle_output writes the expected table to a configurable direc
   purrr::walk(example_hub_paths_to_test, \(hub_path) {
     write_oracle_output(
       hub_path,
-      output_dirpath <- output_dir,
+      output_dirpath = output_dir,
       ts_date_col = "target_end_date"
     )
     result <- forecasttools::read_tabular(fs::path(
