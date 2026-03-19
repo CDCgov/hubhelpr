@@ -4,19 +4,19 @@
 \alias{get_hub_tasks}
 \title{Get a \code{tibble} of all modeling tasks specified on the Hub.}
 \usage{
-get_hub_tasks(hub_path, .deduplicate = TRUE)
+get_hub_tasks(hub_path)
 }
 \arguments{
 \item{hub_path}{Path to the hub root.}
-
-\item{.deduplicate}{deduplicate the resulting
-\code{\link[tibble:tibble]{tibble}} using \code{\link[dplyr:distinct]{dplyr::distinct()}}?
-Default \code{TRUE}.}
 }
 \value{
-A \code{\link[tibble:tibble]{tibble}} of modeling tasks.
+A \code{\link[tibble:tibble]{tibble}} of modeling tasks,
 }
 \description{
-By default, deduplicates the \code{\link[tibble:tibble]{tibble}}
-using \code{\link[dplyr:distinct]{dplyr::distinct()}}.
+Get a \code{tibble} of all modeling tasks specified on the Hub.
+}
+\examples{
+
+get_hub_tasks(system.file("testhubs/v6/target_dir", package = "hubUtils"))
+
 }

@@ -1,112 +1,117 @@
 #' Utilities for working with Hub modeling tasks
 
-#' Transform a modeling task represented as a nested
-#' list to a single data frame.
+#' Get a vector of unique round ids for a modeling hub
 #'
-#' @param task Nested list representing a modeling task,
-#' as one entry of the output of
-#' [hubUtils::get_round_model_tasks()]. Must have a
-#' `target_end_date` specification.
-#' @return A [`tibble`][tibble::tibble()] of all
-#' potentially valid submittable outputs for the
-#' modeling task defined in `task`. Each row of the
-#' table represents a single valid forecastable quantity
-#' (e.g. "`target` X on `target_end_date` Y in `location`
-#' Z"), plus a valid submittable output_type for
-#' forecasting that quantity. If multiple `output_type`s
-#' are accepted for a given valid forecastable quantity,
-#' that quantity will be represented multiple times,
-#' with one row for each valid associated `output_type`.
+#' Wrapper of [hubUtils::get_round_ids()] that returns a
+#' flat vector of unique round_id values regardless of whether
+#' `round_id_from_variable` is `TRUE` or `FALSE`.
+#'
+#' [hubUtils::get_round_ids()] with `flatten = "all"` returns a vector,
+#' but may duplicate round_ids when `round_id_from_variable: true`.
+#' [hubUtils::get_round_ids()] with `flatten = "model_task"` handles
+#' both `round_id_from_variable: true` and `round_id_from_variable: false`,
+#' but returns a list. This function provides a workaround by calling
+#' [purrr::list_c()] on the output of [hubUtils::get_round_ids()] with
+#' `flatten = "model_task"`.
+#'
+#' @param config_tasks List of Hub tasks, as the
+#' output of [hubUtils::read_config()] or the `config_tasks`
+#' attribute of a [`<hub_connection>`][hubData::connect_hub()].
+#' @return Unique round ids, as a vector.
+#'
+#' @examples
+#' hub_con <- hubData::connect_hub(
+#'  system.file("testhubs/simple", package = "hubUtils")
+#' )
+#' config_tasks <- attr(hub_con, "config_tasks")
+#'
+#' get_round_ids_vec(config_tasks)
+#'
 #' @export
-flatten_task <- function(task) {
-  checkmate::assert_names(
-    names(task),
-    must.include = c("output_type", "task_ids")
-  )
-  checkmate::assert_names(
-    names(task$task_ids),
-    must.include = "target_end_date"
-  )
-  output_types <- names(task$output_type)
-
-  task_params <- purrr::map(task$task_ids, \(x) c(x$required, x$optional)) |>
-    purrr::discard_at(c("horizon", "reference_date"))
-  ## discard columns that are redundant with `target_end_date`
-
-  return(do.call(
-    tidyr::crossing,
-    c(task_params, list(output_type = output_types))
-  ))
+get_round_ids_vec <- function(config_tasks) {
+  return(purrr::list_c(hubUtils::get_round_ids(config_tasks, "model_task")))
 }
 
 
-#' Transform a group of modeling tasks represented as a
-#' list of nested lists into a single data frame.
+#' Get a vector of representative round ids for a modeling hub
 #'
-#' Calls `flatten_task()` on each entry of the task list.
+#' Wrapper of [hubUtils::get_round_ids()] that returns a
+#' flat vector of round_id values that fully specify and uniquely index
+#' the set of available task ids regardless of whether `round_id_from_variable: true`.
 #'
-#' @param task_list List of tasks. Each entry should
-#' itself be a nested list that can be passed to
-#' `flatten_task()`.
-#' @param .deduplicate deduplicate the output if the
-#' same flat configuration is found multiple times
-#' while flattening the task list? Default `TRUE`.
+#' Functions such as [hubValidations::expand_model_out_grid()] will create
+#' duplicate values when `round_id_from_variable: true` if they are called on all
+#' valid round_id values, since what we actually want to do is call them once
+#' for each unique `round_idx`. But since [hubValidations::expand_model_out_grid()]
+#' expects a round_id rather than a round_idx for input, the solution is to
+#' compute a set of _representative_ `round id` values, one for each unique `round_idx`.
+#' Note that when `round_id_from_variable: false`, this should simply by the set of
+#' `round_id` values.
 #'
-#' @return A [`tibble`][tibble::tibble()] of all
-#' potentially valid submittable outputs for all the
-#' modeling tasks defined in `task_list`. Each row of
-#' the table represents a single valid forecastable
-#' quantity (e.g. "`target` X on `target_end_date` Y in
-#' `location` Z"), plus a valid submittable output_type
-#' for forecasting that quantity. If multiple
-#' `output_type`s are accepted for a given valid
-#' forecastable quantity, that quantity will be
-#' represented multiple times, with one row for each
-#' valid associated `output_type`.
+#' @param config_tasks List of Hub tasks, as the
+#' output of [hubUtils::read_config()] or the `config_tasks`
+#' attribute of a [`<hub_connection>`][hubData::connect_hub()].
+#' @return Representative round ids, as a vector.
+#'
+#' @examples
+#'
+#' hub_con <- hubData::connect_hub(
+#'  system.file("testhubs/simple", package = "hubUtils")
+#' )
+#' config_tasks <- attr(hub_con, "config_tasks")
+#'
+#' # multiple round ids derived from `reference_date` values via
+#' # `round_id_from_variable: true`
+#' all_round_ids <- hubUtils::get_round_ids(config_tasks)
+#' all_round_ids
+#'
+#' # But these all correspond to a single `round_idx`:
+#' purrr::map_vec(all_round_ids, \(id) hubUtils::get_round_idx(config_tasks, id))
+#'
+#' # get representative round ids returns a single "representative" id
+#' # corresponding to this single `round_idx`:
+#' get_representative_round_ids(config_tasks)
+#'
 #' @export
-flatten_task_list <- function(task_list, .deduplicate = TRUE) {
-  flat_tasks <- purrr::map_df(task_list, flatten_task)
+get_representative_round_ids <- function(config_tasks) {
+  ids <- get_round_ids_vec(config_tasks)
+  rep_ids <- purrr::map_df(ids, \(id) {
+    tibble::tibble(id = id, idx = hubUtils::get_round_idx(config_tasks, id))
+  }) |>
+    dplyr::distinct(.data$idx, .keep_all = TRUE) |>
+    dplyr::pull(.data$id)
 
-  if (.deduplicate) {
-    flat_tasks <- dplyr::distinct(flat_tasks)
-  }
-
-  return(flat_tasks)
+  return(rep_ids)
 }
+
 
 #' Get a `tibble` of all modeling tasks specified on the Hub.
 #'
-#' By default, deduplicates the [`tibble`][tibble::tibble()]
-#' using [dplyr::distinct()].
-#'
 #' @param hub_path Path to the hub root.
-#' @param .deduplicate deduplicate the resulting
-#' [`tibble`][tibble::tibble()] using [dplyr::distinct()]?
-#' Default `TRUE`.
-#' @return A [`tibble`][tibble::tibble()] of modeling tasks.
+#' @return A [`tibble`][tibble::tibble()] of modeling tasks,
+#'
+#' @examples
+#'
+#' get_hub_tasks(system.file("testhubs/v6/target_dir", package = "hubUtils"))
 #'
 #' @export
-get_hub_tasks <- function(hub_path, .deduplicate = TRUE) {
-  config_tasks <- hubUtils::read_config(hub_path, "tasks")
-  round_ids <- hubUtils::get_round_ids(config_tasks)
+get_hub_tasks <- function(hub_path) {
+  hub_con <- hubData::connect_hub(hub_path)
+  config_tasks <- attr(hub_con, "config_tasks")
 
-  ## this involves duplication given how hubUtils::get_round_model_tasks
-  ## behaves by default with round ids created from reference dates,
-  ## but to support hubs with round_ids created in other ways, we
-  ## do it this way and then deduplicate as needed.
+  rep_round_ids <- get_representative_round_ids(config_tasks)
 
-  tasks <- purrr::map(round_ids, \(id) {
-    hubUtils::get_round_model_tasks(config_tasks, id)
-  }) |>
-    purrr::map_df(flatten_task_list) |>
-    dplyr::mutate(dplyr::across(
-      c("reference_date", "target_end_date"),
-      as.Date
-    ))
-
-  if (.deduplicate) {
-    tasks <- tasks |> dplyr::distinct()
-  }
+  tasks <- purrr::map_df(rep_round_ids, \(id) {
+    hubValidations::expand_model_out_grid(
+      config_tasks,
+      id,
+      derived_task_ids = "target_end_date",
+      required_vals_only = FALSE,
+      force_output_types = FALSE
+    ) |>
+      dplyr::select(-"output_type_id") |>
+      dplyr::distinct()
+  })
 
   return(tasks)
 }
