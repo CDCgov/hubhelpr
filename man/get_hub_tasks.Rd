@@ -4,10 +4,13 @@
 \alias{get_hub_tasks}
 \title{Get a \code{tibble} of all modeling tasks specified on the Hub.}
 \usage{
-get_hub_tasks(hub_path)
+get_hub_tasks(hub_path, ...)
 }
 \arguments{
 \item{hub_path}{Path to the hub root.}
+
+\item{...}{additional arguments passed to
+\code{\link[hubValidations:expand_model_out_grid]{hubValidations::expand_model_out_grid()}}.}
 }
 \value{
 A \code{\link[tibble:tibble]{tibble}} of modeling tasks,

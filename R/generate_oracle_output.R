@@ -8,7 +8,22 @@
 #' @export
 generate_oracle_output_table <- function(hub_path, ts_date_col = "date") {
   target_ts <- hubData::connect_target_timeseries(hub_path)
-  unique_tasks <- get_hub_tasks(hub_path)
+
+  ## need one row for each unique combination of target_end_date
+  ## and predictable quantity. Do not need repeated rows for, e.g.
+  ## incident admissions on 2025-01-01 as predicted on two different
+  ## reference dates (i.e. same predictable quantity and target end
+  ## date, but distinct reference dates / horizons)
+  required_oracle_values <- get_hub_tasks(hub_path) |>
+    dplyr::mutate(
+      target_end_date = forecasttools::target_end_dates_from_horizons(
+        .data$reference_date,
+        .data$horizon,
+        "weeks"
+      )
+    ) |>
+    dplyr::select(-"reference_date", -"horizon") |>
+    dplyr::distinct()
 
   target_data <- target_ts |>
     forecasttools::hub_target_data_as_of("latest", .drop = TRUE) |>
@@ -16,12 +31,12 @@ generate_oracle_output_table <- function(hub_path, ts_date_col = "date") {
     dplyr::rename(target_end_date = !!ts_date_col)
 
   join_key <- intersect(
-    colnames(unique_tasks),
+    colnames(required_oracle_values),
     colnames(target_data)
   )
 
   oracle_output <- dplyr::inner_join(
-    unique_tasks,
+    required_oracle_values,
     target_data,
     by = join_key
   ) |>
