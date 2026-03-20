@@ -2,8 +2,7 @@
 % Please edit documentation in R/tasks.R
 \name{get_round_ids_vec}
 \alias{get_round_ids_vec}
-\title{Utilities for working with Hub modeling tasks
-Get a vector of unique round ids for a modeling hub}
+\title{Get a vector of unique round ids for a modeling hub}
 \usage{
 get_round_ids_vec(config_tasks)
 }
