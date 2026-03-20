@@ -1,4 +1,4 @@
-#' Utilities for working with Hub modeling tasks
+# Utilities for working with Hub modeling tasks
 
 #' Get a vector of unique round ids for a modeling hub
 #'

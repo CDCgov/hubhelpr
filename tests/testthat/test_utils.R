@@ -3,9 +3,9 @@
 .test_hub_supported_targets_against_oracle <- function(hub) {
   test_that(
     glue::glue(
-      "get_hub_supported_targets() output is ",
-      "with the set of unique targets in the ",
-      "oracle output for test hub {hub}"
+      "get_hub_supported_targets() output is consistent ",
+      "with the set of unique targets in the oracle ",
+      "output for test hub {hub}"
     ),
     {
       expected <- hubData::connect_target_oracle_output(hub) |>
