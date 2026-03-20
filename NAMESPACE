@@ -3,6 +3,7 @@
 export(assert_data_up_to_date)
 export(check_authorized_users)
 export(check_changes_for_autoapproval)
+export(count_designated_models)
 export(excluded_locations)
 export(generate_hub_baseline)
 export(generate_hub_ensemble)
