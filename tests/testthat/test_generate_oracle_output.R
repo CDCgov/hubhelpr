@@ -4,7 +4,14 @@
       hub_path
     ) |>
       dplyr::filter(.data$output_type == "quantile") |>
-      dplyr::collect()
+      dplyr::collect() |>
+      dplyr::filter(.data$target_end_date > min(.data$target_end_date))
+    ## hub provided oracle output includes a target_end_date that
+    ## is not in fact a valid forecast target (namely,
+    ## first reference_date, which is not valid because
+    ## because the 0 horizon is not permitted.
+    ## We filter out the earliest target end date to
+    ## account for this.
   )
 }
 
@@ -29,20 +36,6 @@
   expect_equal(result_sorted, expected_sorted)
 }
 
-example_hub_paths_to_test <- purrr::pmap_vec(
-  tidyr::crossing(
-    version = c("v5", "v6"),
-    type = c("target_dir", "target_file")
-  ),
-  \(version, type) {
-    system.file(
-      fs::path("testhubs", version, type),
-      package = "hubUtils"
-    )
-  }
-)
-
-
 test_that(
   paste0(
     "oracle output can recreate canonical oracle output ",
@@ -51,7 +44,8 @@ test_that(
     "targets without true values in the timeseries like cdfs)"
   ),
   {
-    purrr::walk(example_hub_paths_to_test, \(hub_path) {
+    ## example_hub_paths defined in testthat/setup.R
+    purrr::walk(example_hub_paths, \(hub_path) {
       result <- generate_oracle_output_table(
         hub_path,
         ts_date_col = "target_end_date"
@@ -69,7 +63,8 @@ test_that(
     "a configurable directory, creating it if it does not yet exist"
   ),
   {
-    purrr::walk(example_hub_paths_to_test, \(hub_path) {
+    ## example_hub_paths defined in testthat/setup.R
+    purrr::walk(example_hub_paths, \(hub_path) {
       tmpdir <- withr::local_tempdir()
       output_path <- fs::path(tmpdir, "target-data")
       expect_false(fs::dir_exists(output_path))

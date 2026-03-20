@@ -7,22 +7,23 @@
 #' @return the oracle output table, as a [`tibble`][tibble::tibble()].
 #' @export
 generate_oracle_output_table <- function(hub_path, ts_date_col = "date") {
-  hub_con <- hubData::connect_hub(hub_path)
   target_ts <- hubData::connect_target_timeseries(hub_path)
-  config_tasks <- attr(hub_con, "config_tasks")
-  round_ids <- hubUtils::get_round_ids(config_tasks)
 
-  ## this involves duplication given how hubUtils::get_round_model_tasks
-  ## behaves by default with round ids created from reference dates,
-  ## but to support hubs with round_ids created in other ways, we
-  ## do it this way and then deduplicate as needed.
-  list_of_task_lists <- purrr::map(round_ids, \(id) {
-    hubUtils::get_round_model_tasks(config_tasks, id)
-  })
-
-  unique_tasks <- purrr::map_df(list_of_task_lists, flatten_task_list) |>
-    dplyr::distinct() |>
-    dplyr::mutate(target_end_date = as.Date(.data$target_end_date))
+  ## need one row for each unique combination of target_end_date
+  ## and predictable quantity. Do not need repeated rows for, e.g.
+  ## incident admissions on 2025-01-01 as predicted on two different
+  ## reference dates (i.e. same predictable quantity and target end
+  ## date, but distinct reference dates / horizons)
+  required_oracle_values <- get_hub_tasks(hub_path) |>
+    dplyr::mutate(
+      target_end_date = forecasttools::target_end_dates_from_horizons(
+        .data$reference_date,
+        .data$horizon,
+        "weeks"
+      )
+    ) |>
+    dplyr::select(-"reference_date", -"horizon") |>
+    dplyr::distinct()
 
   target_data <- target_ts |>
     forecasttools::hub_target_data_as_of("latest", .drop = TRUE) |>
@@ -30,12 +31,12 @@ generate_oracle_output_table <- function(hub_path, ts_date_col = "date") {
     dplyr::rename(target_end_date = !!ts_date_col)
 
   join_key <- intersect(
-    colnames(unique_tasks),
+    colnames(required_oracle_values),
     colnames(target_data)
   )
 
   oracle_output <- dplyr::inner_join(
-    unique_tasks,
+    required_oracle_values,
     target_data,
     by = join_key
   ) |>
