@@ -16,7 +16,7 @@
 #'
 #' @return Character string describing reporting issues,
 #' or empty string if no issues.
-check_hospital_reporting_latency <- function(
+check_hospital_reporting_rate <- function(
   reference_date,
   disease,
   excluded_locations = NULL
@@ -311,7 +311,7 @@ compute_target_webtext_values <- function(
     hosp_exclusions <- if (!is.null(normalized)) {
       get_target_exclusions(normalized, target)
     }
-    values[["hosp_reporting_flag_text"]] <- check_hospital_reporting_latency(
+    values[["hosp_reporting_flag_text"]] <- check_hospital_reporting_rate(
       reference_date = reference_date,
       disease = disease,
       excluded_locations = hosp_exclusions
