@@ -1,0 +1,90 @@
+.get_expected_quantile_oracle_output <- function(hub_path) {
+  return(
+    hubData::connect_target_oracle_output(
+      hub_path
+    ) |>
+      dplyr::filter(.data$output_type == "quantile") |>
+      dplyr::collect() |>
+      dplyr::filter(.data$target_end_date > min(.data$target_end_date))
+    ## hub provided oracle output includes a target_end_date that
+    ## is not in fact a valid forecast target (namely,
+    ## first reference_date, which is not valid because
+    ## because the 0 horizon is not permitted.
+    ## We filter out the earliest target end date to
+    ## account for this.
+  )
+}
+
+.expect_oracle_tables_equivalent <- function(result, expected) {
+  expected_names <- names(expected)
+  checkmate::expect_names(names(result), permutation.of = expected_names)
+  result_sorted <- result |>
+    dplyr::mutate(output_type_id = as.character(.data$output_type_id)) |>
+    dplyr::select(dplyr::all_of(expected_names)) |>
+    dplyr::arrange(
+      .data$target,
+      .data$location,
+      .data$target_end_date
+    )
+  expected_sorted <- expected |>
+    dplyr::mutate(output_type_id = as.character(.data$output_type_id)) |>
+    dplyr::arrange(
+      .data$target,
+      .data$location,
+      .data$target_end_date
+    )
+  expect_equal(result_sorted, expected_sorted)
+}
+
+test_that(
+  paste0(
+    "oracle output can recreate canonical oracle output ",
+    "for the example forecast hubs in hubUtils ",
+    "for quantile targets (no guarantee for derived ",
+    "targets without true values in the timeseries like cdfs)"
+  ),
+  {
+    ## example_hub_paths defined in testthat/setup.R
+    purrr::walk(example_hub_paths, \(hub_path) {
+      result <- generate_oracle_output_table(
+        hub_path,
+        ts_date_col = "target_end_date"
+      ) |>
+        dplyr::filter(.data$output_type == "quantile")
+      expected <- .get_expected_quantile_oracle_output(hub_path)
+      .expect_oracle_tables_equivalent(result, expected)
+    })
+  }
+)
+
+test_that(
+  paste0(
+    "write_oracle_output writes the expected table to ",
+    "a configurable directory, creating it if it does not yet exist"
+  ),
+  {
+    ## example_hub_paths defined in testthat/setup.R
+    purrr::walk(example_hub_paths, \(hub_path) {
+      tmpdir <- withr::local_tempdir()
+      output_path <- fs::path(tmpdir, "target-data")
+      expect_false(fs::dir_exists(output_path))
+      write_oracle_output(
+        hub_path,
+        output_dirpath = output_path,
+        ts_date_col = "target_end_date"
+      )
+      result <- forecasttools::read_tabular(fs::path(
+        output_path,
+        "oracle-output",
+        ext = "parquet"
+      )) |>
+        dplyr::filter(.data$output_type == "quantile")
+      expected <- .get_expected_quantile_oracle_output(hub_path)
+      .expect_oracle_tables_equivalent(result, expected)
+    })
+  }
+)
+
+test_that("generate_oracle_output is an alias for write_oracle_output", {
+  expect_equal(generate_oracle_output, write_oracle_output)
+})
