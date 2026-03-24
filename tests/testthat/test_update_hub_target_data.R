@@ -126,8 +126,7 @@ httptest2::with_mock_dir(mockdir_tests, {
   nhsn_mock <- hubhelpr::get_hubverse_format_nhsn_data(
     disease = "covid",
     as_of = lubridate::as_date("2025-08-18"),
-    start_date = lubridate::as_date("2024-11-09"),
-    excluded_locations = test_excluded_locations
+    start_date = lubridate::as_date("2024-11-09")
   )
 })
 

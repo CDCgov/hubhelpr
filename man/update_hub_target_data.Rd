@@ -27,9 +27,13 @@ the system date as determined by \code{\link[lubridate:now]{lubridate::today()}}
 date to include for the NHSN dataset. Default value
 is "2024-11-09".}
 
-\item{excluded_locations}{Character vector of US
-state/territory abbreviations to exclude.
-Default: NULL (no exclusions).}
+\item{excluded_locations}{NULL, character vector, or
+named list of US state/territory abbreviations to
+exclude. If a character vector, locations are excluded
+across all targets. If a named list, names should be
+target names (or "all" for global exclusions) mapping
+to character vectors of abbreviations. Default: NULL
+(no exclusions).}
 
 \item{legacy_file}{Logical. Whether to write legacy
 CSV output (default: FALSE).}

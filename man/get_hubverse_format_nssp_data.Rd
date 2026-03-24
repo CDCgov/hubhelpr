@@ -8,7 +8,6 @@ get_hubverse_format_nssp_data(
   disease,
   base_hub_path,
   as_of = lubridate::today(),
-  excluded_locations = NULL,
   nssp_update_local = FALSE,
   start_date = NULL,
   end_date = NULL
@@ -21,10 +20,6 @@ get_hubverse_format_nssp_data(
 
 \item{as_of}{As-of date of the data pull. Default is
 the system date as determined by \code{\link[lubridate:now]{lubridate::today()}}.}
-
-\item{excluded_locations}{Character vector of US
-state/territory abbreviations to exclude.
-Default: NULL (no exclusions).}
 
 \item{nssp_update_local}{Logical. Whether to update NSSP
 data from local file \code{auxiliary-data/latest.parquet}

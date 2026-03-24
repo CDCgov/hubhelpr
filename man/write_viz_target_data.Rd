@@ -47,10 +47,13 @@ use_hub_data = FALSE.}
 Default: NULL (no filtering). Used only when
 use_hub_data = FALSE.}
 
-\item{excluded_locations}{Character vector of US
-state/territory abbreviations to exclude. Converted
-to hub codes internally. Default: NULL (no
-exclusions).}
+\item{excluded_locations}{NULL, character vector, or
+named list of US state/territory abbreviations to
+exclude. If a character vector, locations are excluded
+across all targets. If a named list, names should be
+target names (or "all" for global exclusions) mapping
+to character vectors of abbreviations. Converted to
+hub codes internally. Default: NULL (no exclusions).}
 
 \item{output_format}{Character, output file format. One
 of "csv", "tsv", or "parquet". Default: "csv".}

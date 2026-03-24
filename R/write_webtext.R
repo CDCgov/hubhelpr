@@ -9,9 +9,9 @@
 #' forecast.
 #' @param disease Character, disease name ("covid" or
 #' "rsv").
-#' @param excluded_locations Character vector of US
+#' @param excluded_locations NULL or character vector of US
 #' state/territory abbreviations to exclude from expected
-#' reporting locations. Default: NULL (no exclusions).
+#' reporting locations.
 #'
 #' @return Character string describing reporting issues,
 #' or empty string if no issues.
@@ -187,8 +187,10 @@ compute_change_direction <- function(
 #' @param all_model_metadata Data frame of model metadata.
 #' @param hub_name Character, hub name.
 #' @param reference_date Date, the reference date.
-#' @param excluded_locations Character vector of US
-#' state/territory abbreviations to exclude.
+#' @param excluded_locations NULL, character vector, or
+#' named list of US state/territory abbreviations to
+#' exclude. Flattened to a character vector for hospital
+#' reporting latency checks.
 #'
 #' @return Named list of template placeholder values with
 #' keys prefixed by the target data type.
@@ -307,7 +309,7 @@ compute_target_webtext_values <- function(
     values[["hosp_reporting_flag_text"]] <- check_hospital_reporting_latency(
       reference_date = reference_date,
       disease = disease,
-      excluded_locations = excluded_locations
+      excluded_locations = flatten_excluded_locations(excluded_locations)
     )
   }
 
@@ -331,9 +333,13 @@ compute_target_webtext_values <- function(
 #' with weekly summary files.
 #' @param targets Character vector of target names to
 #' generate text for.
-#' @param excluded_locations Character vector of US
-#' state/territory abbreviations to exclude from expected
-#' reporting locations. Default: NULL (no exclusions).
+#' @param excluded_locations NULL, character vector, or
+#' named list of US state/territory abbreviations to
+#' exclude. If a character vector, locations are excluded
+#' across all targets. If a named list, names should be
+#' target names (or "all" for global exclusions) mapping
+#' to character vectors of abbreviations. Default: NULL
+#' (no exclusions).
 #' @param input_format Character, input file format for
 #' reading summary data files. One of "csv", "tsv", or
 #' "parquet". Default: "csv".
@@ -467,9 +473,13 @@ generate_webtext_block <- function(
 #' @param targets Character vector of target names to
 #' generate text for. Default NULL discovers targets
 #' from hub time-series data.
-#' @param excluded_locations Character vector of US
-#' state/territory abbreviations to exclude from expected
-#' reporting locations. Default: NULL (no exclusions).
+#' @param excluded_locations NULL, character vector, or
+#' named list of US state/territory abbreviations to
+#' exclude. If a character vector, locations are excluded
+#' across all targets. If a named list, names should be
+#' target names (or "all" for global exclusions) mapping
+#' to character vectors of abbreviations. Default: NULL
+#' (no exclusions).
 #' @param input_format Character, input file format for
 #' reading summary data files. One of "csv", "tsv", or
 #' "parquet". Default: "csv".

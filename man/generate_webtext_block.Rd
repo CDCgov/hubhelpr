@@ -30,9 +30,13 @@ with weekly summary files.}
 \item{targets}{Character vector of target names to
 generate text for.}
 
-\item{excluded_locations}{Character vector of US
-state/territory abbreviations to exclude from expected
-reporting locations. Default: NULL (no exclusions).}
+\item{excluded_locations}{NULL, character vector, or
+named list of US state/territory abbreviations to
+exclude. If a character vector, locations are excluded
+across all targets. If a named list, names should be
+target names (or "all" for global exclusions) mapping
+to character vectors of abbreviations. Default: NULL
+(no exclusions).}
 
 \item{input_format}{Character, input file format for
 reading summary data files. One of "csv", "tsv", or
