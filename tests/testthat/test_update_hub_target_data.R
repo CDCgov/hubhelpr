@@ -21,6 +21,14 @@ purrr::walk(c("covid", "rsv"), function(disease) {
       output_file <- fs::path(base_hub_path, "target-data/time-series.parquet")
       fs::dir_create(fs::path(base_hub_path, "target-data"))
 
+      test_targets <- c(
+        glue::glue("wk inc {disease} hosp"),
+        glue::glue("wk inc {disease} prop ed visits")
+      )
+      local_mocked_bindings(
+        get_hub_supported_targets = function(...) test_targets
+      )
+
       httptest2::with_mock_dir(mockdir_tests, {
         hubhelpr::update_hub_target_data(
           base_hub_path = base_hub_path,
@@ -85,6 +93,14 @@ purrr::walk(c("covid", "rsv"), function(disease) {
         paste0("base_hub_dup_", disease, "_")
       )
       fs::dir_create(fs::path(base_hub_path, "target-data"))
+
+      test_targets <- c(
+        glue::glue("wk inc {disease} hosp"),
+        glue::glue("wk inc {disease} prop ed visits")
+      )
+      local_mocked_bindings(
+        get_hub_supported_targets = function(...) test_targets
+      )
 
       httptest2::with_mock_dir(mockdir_tests, {
         # first run succeeds

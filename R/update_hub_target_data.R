@@ -296,12 +296,14 @@ update_hub_target_data <- function(
 
   new_data <- dplyr::bind_rows(nhsn_data, nssp_data)
 
-  supported_targets <- get_hub_supported_targets(base_hub_path)
-  new_data <- apply_target_location_exclusions(
-    new_data,
-    excluded_locations,
-    supported_targets
-  )
+  if (!is.null(excluded_locations) && length(excluded_locations) > 0) {
+    supported_targets <- get_hub_supported_targets(base_hub_path)
+    new_data <- apply_target_location_exclusions(
+      new_data,
+      excluded_locations,
+      supported_targets
+    )
+  }
 
   if (fs::file_exists(output_file)) {
     existing_data <- forecasttools::read_tabular(output_file)
