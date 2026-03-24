@@ -2,6 +2,8 @@
 #'
 #' Converts a character vector or named list of excluded
 #' locations into a consistent named list format.
+#' Validates that all abbreviations are valid US
+#' state/territory abbreviations.
 #'
 #' @param excluded_locations NULL, character vector, or
 #' named list of character vectors.
@@ -14,6 +16,7 @@ normalize_excluded_locations <- function(excluded_locations) {
     return(NULL)
   }
   if (is.character(excluded_locations)) {
+    assert_valid_location_abbrs(excluded_locations)
     return(list("all" = excluded_locations))
   }
   if (is.list(excluded_locations)) {
@@ -22,6 +25,7 @@ normalize_excluded_locations <- function(excluded_locations) {
         x,
         .var.name = "excluded_locations list values"
       )
+      assert_valid_location_abbrs(x)
     })
     return(excluded_locations)
   }
@@ -31,81 +35,59 @@ normalize_excluded_locations <- function(excluded_locations) {
 }
 
 
-#' Build a target-location exclusion data frame.
+#' Assert that location abbreviations are valid.
 #'
-#' Constructs a tibble of target/location pairs to
-#' exclude. Entries keyed by "all" are expanded into
-#' one row per supported target. Errors if any named
-#' targets in the exclusion list are not in
-#' `supported_targets`.
+#' Checks that all provided abbreviations are present
+#' in the US location table (from forecasttools).
+#' Errors with a message listing any invalid
+#' abbreviations.
 #'
-#' @param excluded_locations Named list as returned by
-#' `normalize_excluded_locations()`.
-#' @param supported_targets Character vector of targets
-#' the hub accepts, as returned by
-#' `get_hub_supported_targets()`.
+#' @param abbrs Character vector of abbreviations to
+#' validate.
 #'
-#' @return A tibble with columns "target" and "location"
-#' (hub codes).
+#' @return Invisible NULL. Called for side effects.
 #' @noRd
-build_exclusion_df <- function(excluded_locations, supported_targets) {
-  named_targets <- setdiff(names(excluded_locations), "all")
-  invalid_targets <- setdiff(named_targets, supported_targets)
-  if (length(invalid_targets) > 0) {
+assert_valid_location_abbrs <- function(abbrs) {
+  valid_abbrs <- forecasttools::us_location_table$abbr
+  invalid <- setdiff(abbrs, valid_abbrs)
+  if (length(invalid) > 0) {
     cli::cli_abort(
-      "{.arg excluded_locations} contains unknown target{?s}: {.val {invalid_targets}}."
+      "{.arg excluded_locations} contains invalid abbreviation{?s}: {.val {invalid}}."
     )
   }
-
-  merged <- purrr::map(
-    purrr::set_names(supported_targets),
-    \(tgt) unique(c(excluded_locations[["all"]], excluded_locations[[tgt]]))
-  )
-
-  tibble::enframe(merged, name = "target", value = "location") |>
-    tidyr::unnest(cols = "location") |>
-    dplyr::mutate(
-      location = forecasttools::us_location_recode(
-        .data$location,
-        "abbr",
-        "hub"
-      )
-    )
 }
 
 
-#' Flatten excluded locations to a character vector.
+#' Get excluded abbreviations for a specific target.
 #'
-#' Extracts all unique location abbreviations from an
-#' excluded locations specification; some call
-#' sites need a flat character vector of abbreviations
-#' (e.g., functions operating on single-target data
-#' without a target column).
+#' Extracts the abbreviations that should be excluded
+#' for a given target from a normalized exclusion list,
+#' combining global ("all") exclusions with any
+#' target-specific ones.
 #'
-#' @param excluded_locations NULL, character vector, or
-#' named list of character vectors.
+#' @param normalized Named list as returned by
+#' `normalize_excluded_locations()`.
+#' @param target Character, the target name.
 #'
-#' @return Character vector of unique abbreviations, or
-#' NULL if input is NULL or zero-length.
+#' @return Character vector of unique abbreviations to
+#' exclude for this target.
 #' @noRd
-flatten_excluded_locations <- function(excluded_locations) {
-  normalized <- normalize_excluded_locations(excluded_locations)
-  if (is.null(normalized)) {
-    return(NULL)
-  }
-  unique(unlist(normalized, use.names = FALSE))
+get_target_exclusions <- function(normalized, target) {
+  unique(c(normalized[["all"]], normalized[[target]]))
 }
 
 
 #' Apply target-specific location exclusions to a data
 #' frame.
 #'
-#' Removes rows from data frame based on target-specific
-#' excluded location abbreviations. Supports uniform
-#' exclusions (character vector applied to all targets)
-#' and target-specific exclusions (named list with target
-#' names as keys). Filters on the "target" and
-#' "location" columns via anti-join.
+#' Removes rows from a data frame based on
+#' target-specific excluded location abbreviations.
+#' Supports uniform exclusions (character vector applied
+#' to all targets) and target-specific exclusions (named
+#' list with target names as keys). Validates target
+#' names against the targets present in the data.
+#' Filters on the "target" and "location" columns via
+#' anti-join.
 #'
 #' @param data Data frame with "target" and "location"
 #' columns.
@@ -115,28 +97,80 @@ flatten_excluded_locations <- function(excluded_locations) {
 #' excluded across all targets. If a named list, names
 #' should be target names (or "all" for global
 #' exclusions) mapping to character vectors of
-#' abbreviations. Default: NULL (no exclusions).
-#' @param supported_targets Character vector of valid
-#' target names, as returned by
-#' [get_hub_supported_targets()].
+#' abbreviations.
 #'
 #' @return Data frame with excluded rows removed.
 #' @export
 apply_target_location_exclusions <- function(
   data,
-  excluded_locations,
-  supported_targets
+  excluded_locations
 ) {
-  excluded_locations <- normalize_excluded_locations(excluded_locations)
-  if (is.null(excluded_locations)) {
+  normalized <- normalize_excluded_locations(excluded_locations)
+  if (is.null(normalized)) {
     return(data)
   }
 
-  exclusion_df <- build_exclusion_df(excluded_locations, supported_targets)
+  data_targets <- unique(data$target)
+  named_targets <- setdiff(names(normalized), "all")
+  unmatched <- setdiff(named_targets, data_targets)
+  if (length(unmatched) > 0) {
+    cli::cli_warn(
+      "{.arg excluded_locations} contains target{?s} not in data: {.val {unmatched}}."
+    )
+  }
+
+  exclusion_df <- purrr::map_df(data_targets, \(tgt) {
+    excl_abbrs <- get_target_exclusions(normalized, tgt)
+    if (length(excl_abbrs) == 0) {
+      return(tibble::tibble(target = character(), location = character()))
+    }
+    tibble::tibble(
+      target = tgt,
+      location = forecasttools::us_location_recode(excl_abbrs, "abbr", "hub")
+    )
+  })
 
   dplyr::anti_join(
     data,
     exclusion_df,
     by = c("target", "location")
   )
+}
+
+
+#' Filter data to included locations only.
+#'
+#' Only keeps rows where location is in the set of
+#' valid US locations minus any excluded locations for
+#' that target.
+#'
+#' @param data Data frame with "target" and "location"
+#' columns.
+#' @param excluded_locations NULL, character vector, or
+#' named list of US state/territory abbreviations to
+#' exclude.
+#'
+#' @return Data frame filtered to included locations.
+#' @noRd
+filter_to_included_locations <- function(
+  data,
+  excluded_locations
+) {
+  normalized <- normalize_excluded_locations(excluded_locations)
+  all_valid_codes <- forecasttools::us_location_table$code
+
+  purrr::map_df(unique(data$target), \(tgt) {
+    if (!is.null(normalized)) {
+      excl_abbrs <- get_target_exclusions(normalized, tgt)
+      excl_codes <- forecasttools::us_location_recode(
+        excl_abbrs,
+        "abbr",
+        "hub"
+      )
+      included_codes <- setdiff(all_valid_codes, excl_codes)
+    } else {
+      included_codes <- all_valid_codes
+    }
+    dplyr::filter(data, .data$target == tgt, .data$location %in% included_codes)
+  })
 }

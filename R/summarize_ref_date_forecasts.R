@@ -60,11 +60,9 @@ summarize_ref_date_forecasts <- function(
       forecasttools::nullable_comparison(.data$model_id, "%in%", !!model_ids)
     )
 
-  supported_targets <- get_hub_supported_targets(base_hub_path)
   current_forecasts <- apply_target_location_exclusions(
     current_forecasts,
-    excluded_locations,
-    supported_targets
+    excluded_locations
   )
 
   if (nrow(current_forecasts) == 0) {

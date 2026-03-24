@@ -17,9 +17,10 @@ forecast.}
 \item{disease}{Character, disease name ("covid" or
 "rsv").}
 
-\item{excluded_locations}{NULL or character vector of US
-state/territory abbreviations to exclude from expected
-reporting locations.}
+\item{excluded_locations}{Character vector of US
+state/territory abbreviations to exclude from
+expected reporting locations. Default: NULL (no
+exclusions).}
 }
 \value{
 Character string describing reporting issues,

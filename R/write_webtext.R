@@ -9,9 +9,10 @@
 #' forecast.
 #' @param disease Character, disease name ("covid" or
 #' "rsv").
-#' @param excluded_locations NULL or character vector of US
-#' state/territory abbreviations to exclude from expected
-#' reporting locations.
+#' @param excluded_locations Character vector of US
+#' state/territory abbreviations to exclude from
+#' expected reporting locations. Default: NULL (no
+#' exclusions).
 #'
 #' @return Character string describing reporting issues,
 #' or empty string if no issues.
@@ -189,8 +190,8 @@ compute_change_direction <- function(
 #' @param reference_date Date, the reference date.
 #' @param excluded_locations NULL, character vector, or
 #' named list of US state/territory abbreviations to
-#' exclude. Flattened to a character vector for hospital
-#' reporting latency checks.
+#' exclude. Target-specific exclusions are resolved
+#' before passing to hospital reporting latency checks.
 #'
 #' @return Named list of template placeholder values with
 #' keys prefixed by the target data type.
@@ -306,10 +307,14 @@ compute_target_webtext_values <- function(
 
   # add hospital reporting flag if applicable
   if (is_hosp_target(target)) {
+    normalized <- normalize_excluded_locations(excluded_locations)
+    hosp_exclusions <- if (!is.null(normalized)) {
+      get_target_exclusions(normalized, target)
+    }
     values[["hosp_reporting_flag_text"]] <- check_hospital_reporting_latency(
       reference_date = reference_date,
       disease = disease,
-      excluded_locations = flatten_excluded_locations(excluded_locations)
+      excluded_locations = hosp_exclusions
     )
   }
 

@@ -84,12 +84,17 @@ write_viz_target_data <- function(
     target_data <- dplyr::bind_rows(nhsn_data, nssp_data)
   }
 
-  supported_targets <- get_hub_supported_targets(base_hub_path)
-  target_data <- apply_target_location_exclusions(
-    target_data,
-    excluded_locations,
-    supported_targets
-  )
+  if (use_hub_data) {
+    target_data <- apply_target_location_exclusions(
+      target_data,
+      excluded_locations
+    )
+  } else {
+    target_data <- filter_to_included_locations(
+      target_data,
+      excluded_locations
+    )
+  }
 
   target_data <- target_data |>
     dplyr::mutate(
