@@ -1,38 +1,19 @@
 #' Write forecast summary to disk.
 #'
-#' This function calls `summarize_ref_date_forecasts()` and writes the
-#' resulting tibble to disk in the specified format.
+#' This helper writes a summary data frame to disk in the specified
+#' format.
 #'
+#' @param summary_data data frame to write.
 #' @param reference_date character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
-#' @param base_hub_path character, path to the forecast hub
-#' directory.
 #' @param hub_reports_path character, path to forecast hub
 #' reports directory.
 #' @param disease character, disease name ("covid" or
 #' "rsv").
 #' @param file_suffix character, suffix to append to
 #' filename (e.g., "map_data", "forecasts_data").
-#' @param horizons_to_include integer vector, horizons to
-#' include in the output. Default: c(0, 1, 2).
-#' @param excluded_locations character vector or named list
-#' specifying US state abbreviations to exclude. If a
-#' character vector, locations are excluded across all
-#' targets. If a named list, names should be target names
-#' (or "all" for global exclusions) mapping to character
-#' vectors of abbreviations. Default: NULL.
 #' @param output_format character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
-#' @param targets character vector, target name(s) to
-#' filter forecasts. If NULL (default), does not filter by
-#' target.
-#' @param model_ids character vector of model IDs to
-#' include. If NULL (default), includes all models.
-#' @param population_data data frame with columns
-#' "location" and "population".
-#' @param column_selection Columns to include in the output
-#' table. Accepts tidyselect expressions. Default:
-#' [tidyselect::everything()].
 #' @param overwrite_existing logical. If TRUE, overwrite
 #' existing files. Default: FALSE.
 #'
@@ -106,6 +87,9 @@ write_ref_date_summary <- function(
 #' @param targets character vector, target name(s) to
 #' filter forecasts. If NULL (default), does not filter by
 #' target.
+#' @param n_models_for_reporting integer, minimum number of
+#' designated model submissions required to include an
+#' ensemble forecast in the report. Default: 2.
 #' @param overwrite_existing logical. If TRUE, overwrite
 #' existing files. Default: FALSE.
 #'
@@ -166,20 +150,18 @@ write_ref_date_summary_ens <- function(
     model_ids = ensemble_model_name
   )
 
-  to_report <- count_designated_models(
+  reportable_forecasts <- count_designated_models(
     reference_dates = reference_date,
     base_hub_path = base_hub_path
   ) |>
-    dplyr::filter(.data$n_models >= n_models_for_reporting) |>
+    dplyr::filter(.data$n_models >= !!n_models_for_reporting) |>
     dplyr::select(-"n_models")
 
-  summary_data <- dplyr::inner_join(
-    summary_data,
-    to_report,
-    by = c("reference_date", "target", "location", "horizon")
-  )
-
-  summary_data <- summary_data |>
+  summary_data |>
+    dplyr::inner_join(
+      reportable_forecasts,
+      by = c("reference_date", "target", "location", "horizon")
+    ) |>
     dplyr::select({{ ensemble_columns }}) |>
     write_ref_date_summary(
       reference_date = reference_date,
@@ -261,7 +243,7 @@ write_ref_date_summary_all <- function(
     model_full_name = "model_name"
   )
 
-  summary_data <- summarize_ref_date_forecasts(
+  summarize_ref_date_forecasts(
     reference_date = reference_date,
     base_hub_path = base_hub_path,
     disease = disease,
@@ -269,9 +251,7 @@ write_ref_date_summary_all <- function(
     horizons_to_include = horizons_to_include,
     excluded_locations = excluded_locations,
     targets = targets
-  )
-
-  summary_data <- summary_data |>
+  ) |>
     dplyr::select({{ all_models_columns }}) |>
     write_ref_date_summary(
       reference_date = reference_date,
