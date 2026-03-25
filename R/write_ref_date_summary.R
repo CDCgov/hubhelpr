@@ -41,36 +41,14 @@
 #'
 #' @export
 write_ref_date_summary <- function(
+  summary_data,
   reference_date,
-  base_hub_path,
   hub_reports_path,
   disease,
   file_suffix,
-  horizons_to_include = c(0, 1, 2),
-  excluded_locations = NULL,
   output_format = "csv",
-  targets = NULL,
-  model_ids = NULL,
-  population_data,
-  column_selection = tidyselect::everything(),
   overwrite_existing = FALSE
 ) {
-  reference_date <- lubridate::as_date(reference_date)
-
-  summary_data <- summarize_ref_date_forecasts(
-    reference_date = reference_date,
-    base_hub_path = base_hub_path,
-    disease = disease,
-    population_data = population_data,
-    horizons_to_include = horizons_to_include,
-    excluded_locations = excluded_locations,
-    targets = targets,
-    model_ids = model_ids
-  )
-
-  summary_data <- summary_data |>
-    dplyr::select({{ column_selection }})
-
   output_folder_path <- fs::path(
     hub_reports_path,
     "weekly-summaries",
@@ -145,7 +123,8 @@ write_ref_date_summary_ens <- function(
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
-  overwrite_existing = FALSE
+  overwrite_existing = FALSE,
+  n_models_for_reporting = 2
 ) {
   hub_name <- get_hub_name(disease)
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
@@ -176,21 +155,40 @@ write_ref_date_summary_ens <- function(
     model = "model_id"
   )
 
-  write_ref_date_summary(
+  summary_data <- summarize_ref_date_forecasts(
     reference_date = reference_date,
     base_hub_path = base_hub_path,
-    hub_reports_path = hub_reports_path,
     disease = disease,
-    file_suffix = "map_data",
+    population_data = population_data,
     horizons_to_include = horizons_to_include,
     excluded_locations = excluded_locations,
-    output_format = output_format,
     targets = targets,
-    model_ids = ensemble_model_name,
-    population_data = population_data,
-    column_selection = ensemble_columns,
-    overwrite_existing = overwrite_existing
+    model_ids = ensemble_model_name
   )
+
+  to_report <- count_designated_models(
+    reference_dates = reference_date,
+    base_hub_path = base_hub_path
+  ) |>
+    dplyr::filter(.data$n_models >= n_models_for_reporting) |>
+    dplyr::select(-"n_models")
+
+  summary_data <- dplyr::inner_join(
+    summary_data,
+    to_report,
+    by = c("reference_date", "target", "location", "horizon")
+  )
+
+  summary_data <- summary_data |>
+    dplyr::select({{ ensemble_columns }}) |>
+    write_ref_date_summary(
+      reference_date = reference_date,
+      hub_reports_path = hub_reports_path,
+      disease = disease,
+      file_suffix = "map_data",
+      output_format = output_format,
+      overwrite_existing = overwrite_existing
+    )
 }
 
 
@@ -263,19 +261,24 @@ write_ref_date_summary_all <- function(
     model_full_name = "model_name"
   )
 
-  write_ref_date_summary(
+  summary_data <- summarize_ref_date_forecasts(
     reference_date = reference_date,
     base_hub_path = base_hub_path,
-    hub_reports_path = hub_reports_path,
     disease = disease,
-    file_suffix = "forecasts_data",
+    population_data = population_data,
     horizons_to_include = horizons_to_include,
     excluded_locations = excluded_locations,
-    output_format = output_format,
-    targets = targets,
-    model_ids = NULL,
-    population_data = population_data,
-    column_selection = all_models_columns,
-    overwrite_existing = overwrite_existing
+    targets = targets
   )
+
+  summary_data <- summary_data |>
+    dplyr::select({{ all_models_columns }}) |>
+    write_ref_date_summary(
+      reference_date = reference_date,
+      hub_reports_path = hub_reports_path,
+      disease = disease,
+      file_suffix = "forecasts_data",
+      output_format = output_format,
+      overwrite_existing = overwrite_existing
+    )
 }
