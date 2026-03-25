@@ -258,10 +258,36 @@ count_designated_models <- function(
       forecasttools::nullable_comparison(.data$horizon, "%in%", !!horizons)
     )
 
-  model_counts <- designated_forecasts |>
+  hub_task_grid <- get_hub_tasks(base_hub_path) |>
+    dplyr::distinct(
+      .data$reference_date,
+      .data$target,
+      .data$location,
+      .data$horizon
+    ) |>
+    dplyr::filter(
+      forecasttools::nullable_comparison(
+        .data$reference_date,
+        "%in%",
+        !!reference_dates
+      ),
+      forecasttools::nullable_comparison(.data$target, "%in%", !!targets),
+      forecasttools::nullable_comparison(.data$horizon, "%in%", !!horizons)
+    )
+
+  designated_counts <- designated_forecasts |>
     dplyr::summarise(
       n_models = dplyr::n_distinct(.data$model_id),
       .by = c("reference_date", "target", "location", "horizon")
+    )
+
+  model_counts <- hub_task_grid |>
+    dplyr::left_join(
+      designated_counts,
+      by = c("reference_date", "target", "location", "horizon")
+    ) |>
+    dplyr::mutate(
+      n_models = dplyr::coalesce(.data$n_models, 0L)
     )
 
   return(model_counts)
