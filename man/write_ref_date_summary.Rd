@@ -5,27 +5,25 @@
 \title{Write forecast summary to disk.}
 \usage{
 write_ref_date_summary(
+  summary_data,
   reference_date,
-  base_hub_path,
   hub_reports_path,
   disease,
   file_suffix,
-  horizons_to_include = c(0, 1, 2),
-  excluded_locations = NULL,
   output_format = "csv",
-  targets = NULL,
-  model_ids = NULL,
-  population_data,
-  column_selection = tidyselect::everything(),
   overwrite_existing = FALSE
 )
 }
 \arguments{
+\item{summary_data}{Summary of forecast data
+for a given reference date, usually the output of
+summarize_ref_date_forecasts() after column selection.
+Must include: \code{location_name}, \code{horizon},
+\code{target}, \code{target_data_type}, \verb{quantile_*}, \code{target_end_date},
+\code{forecast_due_date}, and \code{model}.}
+
 \item{reference_date}{character, the reference date for
 the forecast in YYYY-MM-DD format (ISO-8601).}
-
-\item{base_hub_path}{character, path to the forecast hub
-directory.}
 
 \item{hub_reports_path}{character, path to forecast hub
 reports directory.}
@@ -36,32 +34,8 @@ reports directory.}
 \item{file_suffix}{character, suffix to append to
 filename (e.g., "map_data", "forecasts_data").}
 
-\item{horizons_to_include}{integer vector, horizons to
-include in the output. Default: c(0, 1, 2).}
-
-\item{excluded_locations}{character vector or named list
-specifying US state abbreviations to exclude. If a
-character vector, locations are excluded across all
-targets. If a named list, names should be target names
-(or "all" for global exclusions) mapping to character
-vectors of abbreviations. Default: NULL.}
-
 \item{output_format}{character, output file format. One
 of "csv", "tsv", or "parquet". Default: "csv".}
-
-\item{targets}{character vector, target name(s) to
-filter forecasts. If NULL (default), does not filter by
-target.}
-
-\item{model_ids}{character vector of model IDs to
-include. If NULL (default), includes all models.}
-
-\item{population_data}{data frame with columns
-"location" and "population".}
-
-\item{column_selection}{Columns to include in the output
-table. Accepts tidyselect expressions. Default:
-\code{\link[tidyselect:everything]{tidyselect::everything()}}.}
 
 \item{overwrite_existing}{logical. If TRUE, overwrite
 existing files. Default: FALSE.}
@@ -71,6 +45,6 @@ invisibly returns the file path where data was
 written
 }
 \description{
-This function calls \code{summarize_ref_date_forecasts()} and writes the
-resulting tibble to disk in the specified format.
+This helper writes a summary data frame to disk in the specified
+format.
 }

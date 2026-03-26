@@ -15,7 +15,7 @@
 #'
 #' @return Character string describing reporting issues,
 #' or empty string if no issues.
-check_hospital_reporting_latency <- function(
+check_hospital_reporting_rate <- function(
   reference_date,
   disease,
   included_locations = hubhelpr::included_locations
@@ -290,7 +290,7 @@ compute_target_webtext_values <- function(
 
   # add hospital reporting flag if applicable
   if (is_hosp_target(target)) {
-    values[["hosp_reporting_flag_text"]] <- check_hospital_reporting_latency(
+    values[["hosp_reporting_flag_text"]] <- check_hospital_reporting_rate(
       reference_date = reference_date,
       disease = disease,
       included_locations = included_locations

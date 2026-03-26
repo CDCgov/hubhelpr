@@ -1,46 +1,26 @@
+ci:
+    autofix_commit_msg: |
+        [pre-commit.ci] auto fixes from pre-commit.com hooks
+        for more information, see https://pre-commit.ci
+    autofix_prs: true
+    autoupdate_branch: ""
+    autoupdate_commit_msg: "[pre-commit.ci] pre-commit autoupdate"
+    autoupdate_schedule: weekly
+    skip: []
+    submodules: false
 repos:
-#####
-# Basic file cleanliness
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
     -   id: check-added-large-files
     -   id: check-yaml
+        args: ["--allow-multiple-documents"]
     -   id: check-toml
     -   id: end-of-file-fixer
     -   id: mixed-line-ending
     -   id: trailing-whitespace
-#####
-# Python
-- repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.15.7
-  hooks:
-    # Sort imports
-    - id: ruff
-      args: ['check', '--select', 'I', '--fix']
-    # Run the linter
-    - id: ruff
-      args: ['--line-length', '79']
-    # Run the formatter
-    - id: ruff-format
-      args: ['--line-length', '79']
-#####
-# Java
-- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-  rev: v2.16.0
-  hooks:
-  - id: pretty-format-java
-    args: [--aosp,--autofix]
-#####
-# Julia
-# Due to lack of first-class Julia support, this needs Julia local install
-#   and JuliaFormatter.jl installed in the library
-# - repo: https://github.com/domluna/JuliaFormatter.jl
-#   rev: v1.0.39
-#   hooks:
-#   - id: julia-formatter
-#####
-# Secrets
+    -   id: pretty-format-json
+        args: ["--autofix", "--no-sort-keys"]
 -   repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
     hooks:
