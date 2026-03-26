@@ -107,8 +107,8 @@ write_ref_date_summary_ens <- function(
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
-  overwrite_existing = FALSE,
-  n_models_for_reporting = 2
+  n_models_for_reporting = 2,
+  overwrite_existing = FALSE
 ) {
   hub_name <- get_hub_name(disease)
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
@@ -152,7 +152,9 @@ write_ref_date_summary_ens <- function(
 
   reportable_forecasts <- count_designated_models(
     reference_dates = reference_date,
-    base_hub_path = base_hub_path
+    base_hub_path = base_hub_path,
+    targets = targets,
+    horizons = horizons_to_include
   ) |>
     dplyr::filter(.data$n_models >= !!n_models_for_reporting) |>
     dplyr::select(-"n_models")
