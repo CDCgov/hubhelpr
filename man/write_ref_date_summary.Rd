@@ -15,7 +15,12 @@ write_ref_date_summary(
 )
 }
 \arguments{
-\item{summary_data}{data frame to write.}
+\item{summary_data}{Summary of forecast data
+for a given reference date, usually the output of
+summarize_ref_date_forecasts() after column selection.
+Must include: \code{location_name}, \code{horizon},
+\code{target}, \code{target_data_type}, \verb{quantile_*}, \code{target_end_date},
+\code{forecast_due_date}, and \code{model}.}
 
 \item{reference_date}{character, the reference date for
 the forecast in YYYY-MM-DD format (ISO-8601).}

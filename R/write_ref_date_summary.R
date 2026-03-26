@@ -3,7 +3,12 @@
 #' This helper writes a summary data frame to disk in the specified
 #' format.
 #'
-#' @param summary_data data frame to write.
+#' @param summary_data Summary of forecast data
+#' for a given reference date, usually the output of
+#' summarize_ref_date_forecasts() after column selection.
+#' Must include: `location_name`, `horizon`,
+#' `target`, `target_data_type`, `quantile_*`, `target_end_date`,
+#' `forecast_due_date`, and `model`.
 #' @param reference_date character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
 #' @param hub_reports_path character, path to forecast hub
