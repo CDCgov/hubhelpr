@@ -14,8 +14,8 @@ write_ref_date_summary_ens(
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
-  overwrite_existing = FALSE,
-  n_models_for_reporting = 2
+  n_models_for_reporting = 2,
+  overwrite_existing = FALSE
 )
 }
 \arguments{
@@ -50,12 +50,12 @@ of "csv", "tsv", or "parquet". Default: "csv".}
 filter forecasts. If NULL (default), does not filter by
 target.}
 
-\item{overwrite_existing}{logical. If TRUE, overwrite
-existing files. Default: FALSE.}
-
 \item{n_models_for_reporting}{integer, minimum number of
 designated model submissions required to include an
 ensemble forecast in the report. Default: 2.}
+
+\item{overwrite_existing}{logical. If TRUE, overwrite
+existing files. Default: FALSE.}
 }
 \value{
 invisibly returns the file path where data was
