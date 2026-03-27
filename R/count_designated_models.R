@@ -84,13 +84,13 @@ count_designated_models <- function(
   designated_counts <- designated_forecasts |>
     dplyr::summarise(
       n_models = dplyr::n_distinct(.data$model_id),
-      .by = c("reference_date", "target", "location", "horizon")
+      .by = c("reference_date", "target", "location", "horizon", "output_type")
     )
 
   model_counts <- hub_task_grid |>
     dplyr::left_join(
       designated_counts,
-      by = c("reference_date", "target", "location", "horizon")
+      by = c("reference_date", "target", "location", "horizon", "output_type")
     ) |>
     dplyr::mutate(
       n_models = dplyr::coalesce(.data$n_models, 0L)
