@@ -18,7 +18,8 @@
 #' @param horizons integer vector of horizons to include.
 #' If NULL (default), includes all available horizons.
 #' @param output_types character vector of output types
-#' to include. Default: "quantile".
+#' to include. If NULL (default), includes all available
+#' output types.
 #'
 #' @return A tibble with columns `reference_date`,
 #' `target`, `location`, `horizon`, `output_type`,
@@ -30,7 +31,7 @@ count_designated_models <- function(
   reference_dates = NULL,
   targets = NULL,
   horizons = NULL,
-  output_types = "quantile"
+  output_types = NULL
 ) {
   hub_forecasts <- hubData::connect_hub(base_hub_path)
 
