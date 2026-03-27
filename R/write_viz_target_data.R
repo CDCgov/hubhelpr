@@ -27,16 +27,13 @@
 #' @param end_date Date, latest date to include in data.
 #' Default: NULL (no filtering). Used only when
 #' use_hub_data = FALSE.
-#' @param included_locations Character vector of location
-#' codes to include in the output. Default
-#' hubhelpr::included_locations.
-#' @param excluded_locations Character vector or named list
-#' specifying US state abbreviations to exclude. If a
-#' character vector, locations are excluded across all
-#' targets. If a named list, names should be target names
-#' (or "all" for global exclusions) mapping to character
-#' vectors of abbreviations. Converted to hub codes
-#' internally. Default: NULL.
+#' @param excluded_locations NULL, character vector, or
+#' named list of US state/territory abbreviations to
+#' exclude. If a character vector, locations are excluded
+#' across all targets. If a named list, names should be
+#' target names (or "all" for global exclusions) mapping
+#' to character vectors of abbreviations. Converted to
+#' hub codes internally. Default: NULL (no exclusions).
 #' @param output_format Character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
 #' @param overwrite_existing logical. If TRUE, overwrite
@@ -55,7 +52,6 @@ write_viz_target_data <- function(
   as_of = "latest",
   start_date = NULL,
   end_date = NULL,
-  included_locations = hubhelpr::included_locations,
   excluded_locations = NULL,
   output_format = "csv",
   overwrite_existing = FALSE
@@ -63,7 +59,6 @@ write_viz_target_data <- function(
   if (use_hub_data) {
     target_data <- hubData::connect_target_timeseries(base_hub_path) |>
       forecasttools::hub_target_data_as_of(as_of = as_of) |>
-      dplyr::filter(.data$location %in% !!included_locations) |>
       dplyr::collect()
   } else {
     nhsn_data <- get_hubverse_format_nhsn_data(
@@ -89,12 +84,17 @@ write_viz_target_data <- function(
     target_data <- dplyr::bind_rows(nhsn_data, nssp_data)
   }
 
-  excluded_locations <- normalize_excluded_locations(excluded_locations)
-  supported_targets <- get_hub_supported_targets(base_hub_path)
-  exclusion_df <- build_exclusion_df(excluded_locations, supported_targets)
-
-  target_data <- target_data |>
-    dplyr::anti_join(exclusion_df, by = c("target", "location"))
+  if (use_hub_data) {
+    target_data <- apply_target_location_exclusions(
+      target_data,
+      excluded_locations
+    )
+  } else {
+    target_data <- filter_to_included_locations(
+      target_data,
+      excluded_locations
+    )
+  }
 
   target_data <- target_data |>
     dplyr::mutate(

@@ -13,7 +13,6 @@ write_viz_target_data(
   as_of = "latest",
   start_date = NULL,
   end_date = NULL,
-  included_locations = hubhelpr::included_locations,
   excluded_locations = NULL,
   output_format = "csv",
   overwrite_existing = FALSE
@@ -48,17 +47,13 @@ use_hub_data = FALSE.}
 Default: NULL (no filtering). Used only when
 use_hub_data = FALSE.}
 
-\item{included_locations}{Character vector of location
-codes to include in the output. Default
-hubhelpr::included_locations.}
-
-\item{excluded_locations}{Character vector or named list
-specifying US state abbreviations to exclude. If a
-character vector, locations are excluded across all
-targets. If a named list, names should be target names
-(or "all" for global exclusions) mapping to character
-vectors of abbreviations. Converted to hub codes
-internally. Default: NULL.}
+\item{excluded_locations}{NULL, character vector, or
+named list of US state/territory abbreviations to
+exclude. If a character vector, locations are excluded
+across all targets. If a named list, names should be
+target names (or "all" for global exclusions) mapping
+to character vectors of abbreviations. Converted to
+hub codes internally. Default: NULL (no exclusions).}
 
 \item{output_format}{Character, output file format. One
 of "csv", "tsv", or "parquet". Default: "csv".}

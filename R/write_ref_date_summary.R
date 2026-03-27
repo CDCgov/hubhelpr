@@ -81,12 +81,13 @@ write_ref_date_summary <- function(
 #' include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
 #' "location" and "population". Default: population_data.
-#' @param excluded_locations character vector or named list
-#' specifying US state abbreviations to exclude. If a
-#' character vector, locations are excluded across all
-#' targets. If a named list, names should be target names
-#' (or "all" for global exclusions) mapping to character
-#' vectors of abbreviations. Default: NULL.
+#' @param excluded_locations NULL, character vector, or
+#' named list of US state/territory abbreviations to
+#' exclude. If a character vector, locations are excluded
+#' across all targets. If a named list, names should be
+#' target names (or "all" for global exclusions) mapping
+#' to character vectors of abbreviations. Default: NULL
+#' (no exclusions).
 #' @param output_format character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
 #' @param targets character vector, target name(s) to
@@ -196,12 +197,13 @@ write_ref_date_summary_ens <- function(
 #' include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
 #' "location" and "population". Default: [population_data].
-#' @param excluded_locations character vector or named list
-#' specifying US state abbreviations to exclude. If a
-#' character vector, locations are excluded across all
-#' targets. If a named list, names should be target names
-#' (or "all" for global exclusions) mapping to character
-#' vectors of abbreviations. Default: NULL.
+#' @param excluded_locations NULL, character vector, or
+#' named list of US state/territory abbreviations to
+#' exclude. If a character vector, locations are excluded
+#' across all targets. If a named list, names should be
+#' target names (or "all" for global exclusions) mapping
+#' to character vectors of abbreviations. Default: NULL
+#' (no exclusions).
 #' @param output_format character, output file format. One
 #' of "csv", "tsv", or "parquet". Default: "csv".
 #' @param targets character vector, target name(s) to

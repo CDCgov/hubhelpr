@@ -11,6 +11,8 @@ if (fs::dir_exists(mockdir_tests)) {
   )
 }
 
+test_excluded_locations <- c("VI", "GU", "AS", "MP", "UM")
+
 purrr::walk(c("covid", "rsv"), function(disease) {
   test_that(
     glue::glue("update_hub_target_data returns expected data for {disease}"),
@@ -24,6 +26,7 @@ purrr::walk(c("covid", "rsv"), function(disease) {
           base_hub_path = base_hub_path,
           disease = disease,
           as_of = lubridate::as_date("2025-08-18"),
+          excluded_locations = test_excluded_locations
         )
 
         target_ts <- forecasttools::read_tabular_file(output_file)
@@ -38,9 +41,17 @@ purrr::walk(c("covid", "rsv"), function(disease) {
             glue::glue("wk inc {disease} hosp")
           )
         )
+        excluded_codes <- forecasttools::us_location_recode(
+          test_excluded_locations,
+          "abbr",
+          "hub"
+        )
         expect_setequal(
           unique(target_ts$location),
-          setdiff(forecasttools::us_location_table$code, excluded_locations)
+          setdiff(
+            forecasttools::us_location_table$code,
+            excluded_codes
+          )
         )
       })
     }
@@ -80,7 +91,8 @@ purrr::walk(c("covid", "rsv"), function(disease) {
         hubhelpr::update_hub_target_data(
           base_hub_path = base_hub_path,
           disease = disease,
-          as_of = lubridate::as_date("2025-08-18")
+          as_of = lubridate::as_date("2025-08-18"),
+          excluded_locations = test_excluded_locations
         )
 
         # second run with same data errors by default
@@ -88,7 +100,8 @@ purrr::walk(c("covid", "rsv"), function(disease) {
           hubhelpr::update_hub_target_data(
             base_hub_path = base_hub_path,
             disease = disease,
-            as_of = lubridate::as_date("2025-08-18")
+            as_of = lubridate::as_date("2025-08-18"),
+            excluded_locations = test_excluded_locations
           ),
           "overwrite"
         )
@@ -99,6 +112,7 @@ purrr::walk(c("covid", "rsv"), function(disease) {
           base_hub_path = base_hub_path,
           disease = disease,
           as_of = lubridate::as_date("2025-08-18"),
+          excluded_locations = test_excluded_locations,
           overwrite_existing = TRUE
         )
       })
