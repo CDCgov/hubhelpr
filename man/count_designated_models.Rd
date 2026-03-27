@@ -9,7 +9,8 @@ count_designated_models(
   base_hub_path,
   reference_dates = NULL,
   targets = NULL,
-  horizons = NULL
+  horizons = NULL,
+  output_type = "quantile"
 )
 }
 \arguments{
