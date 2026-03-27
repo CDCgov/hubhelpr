@@ -10,7 +10,7 @@ count_designated_models(
   reference_dates = NULL,
   targets = NULL,
   horizons = NULL,
-  output_type = "quantile"
+  output_types = "quantile"
 )
 }
 \arguments{
@@ -27,10 +27,14 @@ targets.}
 
 \item{horizons}{integer vector of horizons to include.
 If NULL (default), includes all available horizons.}
+
+\item{output_types}{character vector of output types
+to include. Default: "quantile".}
 }
 \value{
 A tibble with columns \code{reference_date},
-\code{target}, \code{location}, \code{horizon}, and \code{n_models}.
+\code{target}, \code{location}, \code{horizon}, \code{output_type},
+and \code{n_models}.
 }
 \description{
 Gets the number of designated models that

@@ -17,9 +17,12 @@
 #' targets.
 #' @param horizons integer vector of horizons to include.
 #' If NULL (default), includes all available horizons.
+#' @param output_types character vector of output types
+#' to include. Default: "quantile".
 #'
 #' @return A tibble with columns `reference_date`,
-#' `target`, `location`, `horizon`, and `n_models`.
+#' `target`, `location`, `horizon`, `output_type`,
+#' and `n_models`.
 #'
 #' @export
 count_designated_models <- function(
@@ -27,7 +30,7 @@ count_designated_models <- function(
   reference_dates = NULL,
   targets = NULL,
   horizons = NULL,
-  output_type = "quantile"
+  output_types = "quantile"
 ) {
   hub_forecasts <- hubData::connect_hub(base_hub_path)
 
@@ -60,7 +63,12 @@ count_designated_models <- function(
     dplyr::filter(
       .data$model_id %in% designated_ids,
       forecasttools::nullable_comparison(.data$target, "%in%", !!targets),
-      forecasttools::nullable_comparison(.data$horizon, "%in%", !!horizons)
+      forecasttools::nullable_comparison(.data$horizon, "%in%", !!horizons),
+      forecasttools::nullable_comparison(
+        .data$output_type,
+        "%in%",
+        !!output_types
+      )
     )
 
   hub_task_grid <- get_hub_tasks(base_hub_path) |>
@@ -78,7 +86,12 @@ count_designated_models <- function(
         !!reference_dates
       ),
       forecasttools::nullable_comparison(.data$target, "%in%", !!targets),
-      forecasttools::nullable_comparison(.data$horizon, "%in%", !!horizons)
+      forecasttools::nullable_comparison(.data$horizon, "%in%", !!horizons),
+      forecasttools::nullable_comparison(
+        .data$output_type,
+        "%in%",
+        !!output_types
+      )
     )
 
   designated_counts <- designated_forecasts |>
