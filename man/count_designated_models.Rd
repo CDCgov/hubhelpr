@@ -10,7 +10,7 @@ count_designated_models(
   reference_dates = NULL,
   targets = NULL,
   horizons = NULL,
-  output_types = "quantile"
+  output_types = NULL
 )
 }
 \arguments{
@@ -29,7 +29,8 @@ targets.}
 If NULL (default), includes all available horizons.}
 
 \item{output_types}{character vector of output types
-to include. Default: "quantile".}
+to include. If NULL (default), includes all available
+output types.}
 }
 \value{
 A tibble with columns \code{reference_date},

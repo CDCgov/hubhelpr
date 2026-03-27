@@ -159,7 +159,8 @@ write_ref_date_summary_ens <- function(
     reference_dates = reference_date,
     base_hub_path = base_hub_path,
     targets = targets,
-    horizons = horizons_to_include
+    horizons = horizons_to_include,
+    output_types = c("quantile")
   ) |>
     dplyr::filter(.data$n_models >= !!n_models_for_reporting) |>
     dplyr::select(-"n_models")

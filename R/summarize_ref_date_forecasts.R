@@ -122,6 +122,7 @@ summarize_ref_date_forecasts <- function(
   current_forecasts <- hub_content |>
     dplyr::filter(
       .data$reference_date == !!reference_date,
+      .data$output_type == "quantile",
       .data$horizon %in% !!horizons_to_include
     ) |>
     hubData::collect_hub() |>
