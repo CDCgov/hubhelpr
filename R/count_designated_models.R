@@ -26,7 +26,8 @@ count_designated_models <- function(
   base_hub_path,
   reference_dates = NULL,
   targets = NULL,
-  horizons = NULL
+  horizons = NULL,
+  output_type = "quantile"
 ) {
   hub_forecasts <- hubData::connect_hub(base_hub_path)
 
