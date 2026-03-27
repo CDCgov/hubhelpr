@@ -18,8 +18,8 @@
 #' @param horizons integer vector of horizons to include.
 #' If NULL (default), includes all available horizons.
 #' @param output_types character vector of output types
-#' to include. If NULL (default), includes all available
-#' output types.
+#' to include. Default: NULL (include all available
+#' output types).
 #'
 #' @return A tibble with columns `reference_date`,
 #' `target`, `location`, `horizon`, `output_type`,
