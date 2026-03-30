@@ -89,7 +89,8 @@ write_viz_target_data <- function(
     target_data <- dplyr::bind_rows(nhsn_data, nssp_data)
     target_data <- filter_to_included_locations(
       target_data,
-      excluded_locations
+      excluded_locations,
+      base_hub_path
     )
   }
 

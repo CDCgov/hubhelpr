@@ -123,17 +123,20 @@ apply_target_location_exclusions <- function(
     )
   }
 
-  data_targets <- unique(data$target)
-  exclusion_df <- purrr::map_df(data_targets, \(tgt) {
-    excl_abbrs <- get_target_exclusions(normalized, tgt)
-    if (length(excl_abbrs) == 0) {
-      return(tibble::tibble(target = character(), location = character()))
-    }
-    tibble::tibble(
-      target = tgt,
-      location = forecasttools::us_location_recode(excl_abbrs, "abbr", "hub")
-    )
-  })
+  exclusion_df <- dplyr::tibble(target = hub_supported_targets) |>
+    dplyr::mutate(
+      location = purrr::map(
+        .data$target,
+        \(tgt) {
+          forecasttools::us_location_recode(
+            get_target_exclusions(normalized, tgt),
+            "abbr",
+            "hub"
+          )
+        }
+      )
+    ) |>
+    tidyr::unnest_longer("location")
 
   dplyr::anti_join(
     data,
@@ -154,17 +157,22 @@ apply_target_location_exclusions <- function(
 #' @param excluded_locations NULL, character vector, or
 #' named list of US state/territory abbreviations to
 #' exclude.
+#' @param base_hub_path Character, path to the forecast
+#' hub directory. Used to determine hub-supported
+#' targets.
 #'
 #' @return Data frame filtered to included locations.
 #' @noRd
 filter_to_included_locations <- function(
   data,
-  excluded_locations
+  excluded_locations,
+  base_hub_path
 ) {
   normalized <- normalize_excluded_locations(excluded_locations)
   all_valid_codes <- forecasttools::us_location_table$code
+  hub_supported_targets <- get_hub_supported_targets(base_hub_path)
 
-  purrr::map_df(unique(data$target), \(tgt) {
+  purrr::map_df(hub_supported_targets, \(tgt) {
     if (!is.null(normalized)) {
       excl_abbrs <- get_target_exclusions(normalized, tgt)
       excl_codes <- forecasttools::us_location_recode(

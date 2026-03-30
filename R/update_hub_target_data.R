@@ -298,7 +298,8 @@ update_hub_target_data <- function(
 
   new_data <- filter_to_included_locations(
     new_data,
-    excluded_locations
+    excluded_locations,
+    base_hub_path
   )
 
   if (fs::file_exists(output_file)) {
