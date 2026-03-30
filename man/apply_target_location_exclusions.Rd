@@ -5,7 +5,7 @@
 \title{Apply target-specific location exclusions to a data
 frame.}
 \usage{
-apply_target_location_exclusions(data, excluded_locations)
+apply_target_location_exclusions(data, excluded_locations, base_hub_path)
 }
 \arguments{
 \item{data}{Data frame with "target" and "location"
@@ -18,6 +18,10 @@ excluded across all targets. If a named list, names
 should be target names (or "all" for global
 exclusions) mapping to character vectors of
 abbreviations.}
+
+\item{base_hub_path}{Character, path to the forecast
+hub directory. Used to validate target names against
+hub-supported targets.}
 }
 \value{
 Data frame with excluded rows removed.
@@ -28,7 +32,7 @@ target-specific excluded location abbreviations.
 Supports uniform exclusions (character vector applied
 to all targets) and target-specific exclusions (named
 list with target names as keys). Validates target
-names against the targets present in the data.
-Filters on the "target" and "location" columns via
-anti-join.
+names against hub-supported targets from the hub
+configuration. Filters on the "target" and "location"
+columns via anti-join.
 }

@@ -62,7 +62,8 @@ summarize_ref_date_forecasts <- function(
 
   current_forecasts <- apply_target_location_exclusions(
     current_forecasts,
-    excluded_locations
+    excluded_locations,
+    base_hub_path
   )
 
   if (nrow(current_forecasts) == 0) {

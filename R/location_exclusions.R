@@ -85,9 +85,9 @@ get_target_exclusions <- function(normalized, target) {
 #' Supports uniform exclusions (character vector applied
 #' to all targets) and target-specific exclusions (named
 #' list with target names as keys). Validates target
-#' names against the targets present in the data.
-#' Filters on the "target" and "location" columns via
-#' anti-join.
+#' names against hub-supported targets from the hub
+#' configuration. Filters on the "target" and "location"
+#' columns via anti-join.
 #'
 #' @param data Data frame with "target" and "location"
 #' columns.
@@ -98,27 +98,32 @@ get_target_exclusions <- function(normalized, target) {
 #' should be target names (or "all" for global
 #' exclusions) mapping to character vectors of
 #' abbreviations.
+#' @param base_hub_path Character, path to the forecast
+#' hub directory. Used to validate target names against
+#' hub-supported targets.
 #'
 #' @return Data frame with excluded rows removed.
 #' @export
 apply_target_location_exclusions <- function(
   data,
-  excluded_locations
+  excluded_locations,
+  base_hub_path
 ) {
   normalized <- normalize_excluded_locations(excluded_locations)
   if (is.null(normalized)) {
     return(data)
   }
 
-  data_targets <- unique(data$target)
+  hub_supported_targets <- get_hub_supported_targets(base_hub_path)
   named_targets <- setdiff(names(normalized), "all")
-  unmatched <- setdiff(named_targets, data_targets)
+  unmatched <- setdiff(named_targets, hub_supported_targets)
   if (length(unmatched) > 0) {
     cli::cli_warn(
-      "{.arg excluded_locations} contains target{?s} not in data: {.val {unmatched}}."
+      "{.arg excluded_locations} contains target{?s} not in hub config: {.val {unmatched}}."
     )
   }
 
+  data_targets <- unique(data$target)
   exclusion_df <- purrr::map_df(data_targets, \(tgt) {
     excl_abbrs <- get_target_exclusions(normalized, tgt)
     if (length(excl_abbrs) == 0) {
