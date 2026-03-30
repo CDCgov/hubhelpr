@@ -146,11 +146,11 @@ apply_target_location_exclusions <- function(
 }
 
 
-#' Filter data to included locations only.
+#' Filter data to expected locations only.
 #'
 #' Only keeps rows where location is in the set of
-#' valid US locations minus any excluded locations for
-#' that target.
+#' expected US locations minus any excluded locations
+#' for that target.
 #'
 #' @param data Data frame with "target" and "location"
 #' columns.
@@ -160,16 +160,19 @@ apply_target_location_exclusions <- function(
 #' @param base_hub_path Character, path to the forecast
 #' hub directory. Used to determine hub-supported
 #' targets.
+#' @param expected_locations Character vector of location
+#' codes to consider valid. Default:
+#' `forecasttools::us_location_table$code`.
 #'
-#' @return Data frame filtered to included locations.
+#' @return Data frame filtered to expected locations.
 #' @noRd
-filter_to_included_locations <- function(
+filter_to_expected_locations <- function(
   data,
   excluded_locations,
-  base_hub_path
+  base_hub_path,
+  expected_locations = forecasttools::us_location_table$code
 ) {
   normalized <- normalize_excluded_locations(excluded_locations)
-  all_valid_codes <- forecasttools::us_location_table$code
   hub_supported_targets <- get_hub_supported_targets(base_hub_path)
 
   purrr::map_df(hub_supported_targets, \(tgt) {
@@ -180,9 +183,9 @@ filter_to_included_locations <- function(
         "abbr",
         "hub"
       )
-      included_codes <- setdiff(all_valid_codes, excl_codes)
+      included_codes <- setdiff(expected_locations, excl_codes)
     } else {
-      included_codes <- all_valid_codes
+      included_codes <- expected_locations
     }
     dplyr::filter(data, .data$target == tgt, .data$location %in% included_codes)
   })

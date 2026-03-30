@@ -296,7 +296,7 @@ update_hub_target_data <- function(
 
   new_data <- dplyr::bind_rows(nhsn_data, nssp_data)
 
-  new_data <- filter_to_included_locations(
+  new_data <- filter_to_expected_locations(
     new_data,
     excluded_locations,
     base_hub_path
