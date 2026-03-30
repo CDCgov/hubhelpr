@@ -13,10 +13,25 @@ if (fs::dir_exists(mockdir_tests)) {
 
 test_excluded_locations <- c("VI", "GU", "AS", "MP", "UM")
 
+# mock get_hub_supported_targets for a disease; avoid
+# full hub-config directory in temp test hubs
+mock_supported_targets <- function(disease, env = parent.frame()) {
+  targets <- c(
+    glue::glue("wk inc {disease} hosp"),
+    glue::glue("wk inc {disease} prop ed visits")
+  )
+  local_mocked_bindings(
+    get_hub_supported_targets = function(...) targets,
+    .package = "hubhelpr",
+    .env = env
+  )
+}
+
 purrr::walk(c("covid", "rsv"), function(disease) {
   test_that(
     glue::glue("update_hub_target_data returns expected data for {disease}"),
     {
+      mock_supported_targets(disease)
       base_hub_path <- withr::local_tempdir(paste0("base_hub_", disease, "_"))
       output_file <- fs::path(base_hub_path, "target-data/time-series.parquet")
       fs::dir_create(fs::path(base_hub_path, "target-data"))
@@ -81,6 +96,7 @@ purrr::walk(c("covid", "rsv"), function(disease) {
       "update_hub_target_data errors on duplicate run for {disease}"
     ),
     {
+      mock_supported_targets(disease)
       base_hub_path <- withr::local_tempdir(
         paste0("base_hub_dup_", disease, "_")
       )
