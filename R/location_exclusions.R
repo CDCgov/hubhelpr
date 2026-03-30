@@ -175,18 +175,37 @@ filter_to_expected_locations <- function(
   normalized <- normalize_excluded_locations(excluded_locations)
   hub_supported_targets <- get_hub_supported_targets(base_hub_path)
 
-  purrr::map_df(hub_supported_targets, \(tgt) {
-    if (!is.null(normalized)) {
-      excl_abbrs <- get_target_exclusions(normalized, tgt)
-      excl_codes <- forecasttools::us_location_recode(
-        excl_abbrs,
-        "abbr",
-        "hub"
-      )
-      included_codes <- setdiff(expected_locations, excl_codes)
-    } else {
-      included_codes <- expected_locations
-    }
-    dplyr::filter(data, .data$target == tgt, .data$location %in% included_codes)
-  })
+  expected_df <- tidyr::crossing(
+    target = hub_supported_targets,
+    location = expected_locations
+  )
+
+  if (!is.null(normalized)) {
+    exclusion_df <- dplyr::tibble(target = hub_supported_targets) |>
+      dplyr::mutate(
+        location = purrr::map(
+          .data$target,
+          \(tgt) {
+            forecasttools::us_location_recode(
+              get_target_exclusions(normalized, tgt),
+              "abbr",
+              "hub"
+            )
+          }
+        )
+      ) |>
+      tidyr::unnest_longer("location")
+
+    expected_df <- dplyr::anti_join(
+      expected_df,
+      exclusion_df,
+      by = c("target", "location")
+    )
+  }
+
+  dplyr::inner_join(
+    data,
+    expected_df,
+    by = c("target", "location")
+  )
 }
