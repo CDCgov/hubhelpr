@@ -26,7 +26,7 @@ check_hospital_reporting_rate <- function(
 
   expected_locations <- setdiff(
     forecasttools::us_location_table$code,
-     forecasttools::us_location_recode(
+    forecasttools::us_location_recode(
       excluded_hosp_locations,
       "abbr",
       "hub"
