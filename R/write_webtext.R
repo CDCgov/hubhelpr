@@ -9,12 +9,10 @@
 #' forecast.
 #' @param disease Character, disease name ("covid" or
 #' "rsv").
-#' @param excluded_locations NULL, character vector, or
-#' named list of US state/territory abbreviations to
-#' exclude from expected reporting locations. If a named
-#' list, all values are flattened into a single character
-#' vector since this function operates on a single
-#' target. Default: NULL (no exclusions).
+#' @param excluded_locations Character vector of US
+#' state/territory abbreviations to exclude from
+#' expected reporting locations. Default: NULL (no
+#' exclusions).
 #'
 #' @return Character string describing reporting issues,
 #' or empty string if no issues.
@@ -25,11 +23,9 @@ check_hospital_reporting_rate <- function(
 ) {
   desired_weekendingdate <- as.Date(reference_date) - lubridate::dweeks(1)
 
-  normalized <- normalize_excluded_locations(excluded_locations)
-  if (!is.null(normalized)) {
-    excluded_abbrs <- unique(unlist(normalized, use.names = FALSE))
+  if (!is.null(excluded_locations) && length(excluded_locations) > 0) {
     excluded_codes <- forecasttools::us_location_recode(
-      excluded_abbrs,
+      excluded_locations,
       "abbr",
       "hub"
     )
