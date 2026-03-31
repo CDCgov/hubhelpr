@@ -7,7 +7,7 @@
 check_hospital_reporting_rate(
   reference_date,
   disease,
-  excluded_locations = NULL
+  excluded_hosp_locations = NULL
 )
 }
 \arguments{
@@ -17,10 +17,11 @@ forecast.}
 \item{disease}{Character, disease name ("covid" or
 "rsv").}
 
-\item{excluded_locations}{Character vector of US
+\item{excluded_hosp_locations}{Character vector of US
 state/territory abbreviations to exclude from
-expected reporting locations. Default: NULL (no
-exclusions).}
+expected reporting locations. Pre-resolved for the
+hospital admissions target by the caller. Default:
+NULL (no exclusions).}
 }
 \value{
 Character string describing reporting issues,

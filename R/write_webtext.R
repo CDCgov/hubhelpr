@@ -9,23 +9,26 @@
 #' forecast.
 #' @param disease Character, disease name ("covid" or
 #' "rsv").
-#' @param excluded_locations Character vector of US
+#' @param excluded_hosp_locations Character vector of US
 #' state/territory abbreviations to exclude from
-#' expected reporting locations. Default: NULL (no
-#' exclusions).
+#' expected reporting locations. Pre-resolved for the
+#' hospital admissions target by the caller. Default:
+#' NULL (no exclusions).
 #'
 #' @return Character string describing reporting issues,
 #' or empty string if no issues.
 check_hospital_reporting_rate <- function(
   reference_date,
   disease,
-  excluded_locations = NULL
+  excluded_hosp_locations = NULL
 ) {
   desired_weekendingdate <- as.Date(reference_date) - lubridate::dweeks(1)
 
-  if (!is.null(excluded_locations) && length(excluded_locations) > 0) {
+  if (
+    !is.null(excluded_hosp_locations) && length(excluded_hosp_locations) > 0
+  ) {
     excluded_codes <- forecasttools::us_location_recode(
-      excluded_locations,
+      excluded_hosp_locations,
       "abbr",
       "hub"
     )
@@ -314,7 +317,7 @@ compute_target_webtext_values <- function(
     values[["hosp_reporting_flag_text"]] <- check_hospital_reporting_rate(
       reference_date = reference_date,
       disease = disease,
-      excluded_locations = hosp_exclusions
+      excluded_hosp_locations = hosp_exclusions
     )
   }
 
