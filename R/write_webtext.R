@@ -24,20 +24,13 @@ check_hospital_reporting_rate <- function(
 ) {
   desired_weekendingdate <- as.Date(reference_date) - lubridate::dweeks(1)
 
-  if (
-    !is.null(excluded_hosp_locations) && length(excluded_hosp_locations) > 0
-  ) {
-    excluded_codes <- forecasttools::us_location_recode(
+  expected_locations <- setdiff(
+    forecasttools::us_location_table$code,
+     forecasttools::us_location_recode(
       excluded_hosp_locations,
       "abbr",
       "hub"
     )
-  } else {
-    excluded_codes <- character(0)
-  }
-  expected_locations <- setdiff(
-    forecasttools::us_location_table$code,
-    excluded_codes
   )
 
   disease_abbr <- dplyr::case_match(
