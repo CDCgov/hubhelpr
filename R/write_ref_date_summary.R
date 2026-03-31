@@ -228,7 +228,6 @@ write_ref_date_summary_ens <- function(
       horizons_to_include = horizons_to_include,
       n_models_for_ens_reporting = n_models_for_ens_reporting
     ) |>
-    dplyr::arrange(.data$location_sort_order, .data$location_name) |>
     dplyr::select({{ ensemble_columns }}) |>
     write_ref_date_summary(
       reference_date = reference_date,
@@ -343,9 +342,6 @@ write_ref_date_summary_all <- function(
     dplyr::filter(.data$model_id != !!ensemble_model_name)
 
   dplyr::bind_rows(non_ensemble, ensemble_summary_data) |>
-    dplyr::mutate(
-      location_sort_order = ifelse(.data$location_name == "United States", 0, 1)
-    ) |>
     dplyr::arrange(.data$location_sort_order, .data$location_name) |>
     dplyr::select({{ all_models_columns }}) |>
     write_ref_date_summary(
