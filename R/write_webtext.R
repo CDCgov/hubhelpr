@@ -9,18 +9,29 @@
 #' forecast.
 #' @param disease Character, disease name ("covid" or
 #' "rsv").
-#' @param included_locations Character vector of location
-#' codes that are expected to report. Default
-#' hubhelpr::included_locations.
+#' @param excluded_hosp_locations Character vector of US
+#' state/territory abbreviations to exclude from
+#' expected reporting locations. Pre-resolved for the
+#' hospital admissions target by the caller. Default:
+#' NULL (no exclusions).
 #'
 #' @return Character string describing reporting issues,
 #' or empty string if no issues.
 check_hospital_reporting_rate <- function(
   reference_date,
   disease,
-  included_locations = hubhelpr::included_locations
+  excluded_hosp_locations = NULL
 ) {
   desired_weekendingdate <- as.Date(reference_date) - lubridate::dweeks(1)
+
+  expected_locations <- setdiff(
+    forecasttools::us_location_table$code,
+    forecasttools::us_location_recode(
+      excluded_hosp_locations,
+      "abbr",
+      "hub"
+    )
+  )
 
   disease_abbr <- dplyr::case_match(
     disease,
@@ -33,7 +44,7 @@ check_hospital_reporting_rate <- function(
   )
 
   included_jurisdictions <- forecasttools::us_location_recode(
-    included_locations,
+    expected_locations,
     "code",
     "hrd"
   )
@@ -63,7 +74,7 @@ check_hospital_reporting_rate <- function(
     )
 
   locations_in_data <- unique(percent_hosp_reporting_below80$location)
-  missing_locations <- setdiff(included_locations, locations_in_data)
+  missing_locations <- setdiff(expected_locations, locations_in_data)
 
   if (length(missing_locations) > 0) {
     missing_location_names <- forecasttools::us_location_recode(
@@ -173,8 +184,10 @@ compute_change_direction <- function(
 #' @param all_model_metadata Data frame of model metadata.
 #' @param hub_name Character, hub name.
 #' @param reference_date Date, the reference date.
-#' @param included_locations Character vector of location
-#' codes.
+#' @param excluded_locations NULL, character vector, or
+#' named list of US state/territory abbreviations to
+#' exclude. Target-specific exclusions are resolved
+#' before passing to hospital reporting latency checks.
 #'
 #' @return Named list of template placeholder values with
 #' keys prefixed by the target data type.
@@ -188,7 +201,7 @@ compute_target_webtext_values <- function(
   all_model_metadata,
   hub_name,
   reference_date,
-  included_locations
+  excluded_locations
 ) {
   target_type <- get_target_data_type(target)
 
@@ -290,10 +303,14 @@ compute_target_webtext_values <- function(
 
   # add hospital reporting flag if applicable
   if (is_hosp_target(target)) {
+    normalized <- normalize_excluded_locations(excluded_locations)
+    hosp_exclusions <- if (!is.null(normalized)) {
+      get_target_exclusions(normalized, target)
+    }
     values[["hosp_reporting_flag_text"]] <- check_hospital_reporting_rate(
       reference_date = reference_date,
       disease = disease,
-      included_locations = included_locations
+      excluded_hosp_locations = hosp_exclusions
     )
   }
 
@@ -317,9 +334,13 @@ compute_target_webtext_values <- function(
 #' with weekly summary files.
 #' @param targets Character vector of target names to
 #' generate text for.
-#' @param included_locations Character vector of location
-#' codes that are expected to report. Default
-#' hubhelpr::included_locations.
+#' @param excluded_locations NULL, character vector, or
+#' named list of US state/territory abbreviations to
+#' exclude. If a character vector, locations are excluded
+#' across all targets. If a named list, names should be
+#' target names (or "all" for global exclusions) mapping
+#' to character vectors of abbreviations. Default: NULL
+#' (no exclusions).
 #' @param input_format Character, input file format for
 #' reading summary data files. One of "csv", "tsv", or
 #' "parquet". Default: "csv".
@@ -333,7 +354,7 @@ generate_webtext_block <- function(
   base_hub_path,
   weekly_data_path,
   targets,
-  included_locations = hubhelpr::included_locations,
+  excluded_locations = NULL,
   input_format = "csv"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
@@ -395,7 +416,7 @@ generate_webtext_block <- function(
     all_model_metadata = all_model_metadata,
     hub_name = hub_name,
     reference_date = reference_date,
-    included_locations = included_locations
+    excluded_locations = excluded_locations
   ) |>
     purrr::list_flatten()
 
@@ -453,9 +474,13 @@ generate_webtext_block <- function(
 #' @param targets Character vector of target names to
 #' generate text for. Default NULL discovers targets
 #' from hub time-series data.
-#' @param included_locations Character vector of location
-#' codes that are expected to report. Default
-#' hubhelpr::included_locations.
+#' @param excluded_locations NULL, character vector, or
+#' named list of US state/territory abbreviations to
+#' exclude. If a character vector, locations are excluded
+#' across all targets. If a named list, names should be
+#' target names (or "all" for global exclusions) mapping
+#' to character vectors of abbreviations. Default: NULL
+#' (no exclusions).
 #' @param input_format Character, input file format for
 #' reading summary data files. One of "csv", "tsv", or
 #' "parquet". Default: "csv".
@@ -469,7 +494,7 @@ write_webtext <- function(
   base_hub_path,
   hub_reports_path,
   targets = NULL,
-  included_locations = hubhelpr::included_locations,
+  excluded_locations = NULL,
   input_format = "csv",
   overwrite_existing = FALSE
 ) {
@@ -492,7 +517,7 @@ write_webtext <- function(
     base_hub_path = base_hub_path,
     weekly_data_path = weekly_data_path,
     targets = targets,
-    included_locations = included_locations,
+    excluded_locations = excluded_locations,
     input_format = input_format
   )
 

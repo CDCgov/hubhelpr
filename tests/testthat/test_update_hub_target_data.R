@@ -11,10 +11,27 @@ if (fs::dir_exists(mockdir_tests)) {
   )
 }
 
+test_excluded_locations <- c("VI", "GU", "AS", "MP", "UM")
+
+# mock get_hub_supported_targets for a disease; avoid
+# full hub-config directory in temp test hubs
+mock_supported_targets <- function(disease, env = parent.frame()) {
+  targets <- c(
+    glue::glue("wk inc {disease} hosp"),
+    glue::glue("wk inc {disease} prop ed visits")
+  )
+  local_mocked_bindings(
+    get_hub_supported_targets = function(...) targets,
+    .package = "hubhelpr",
+    .env = env
+  )
+}
+
 purrr::walk(c("covid", "rsv"), function(disease) {
   test_that(
     glue::glue("update_hub_target_data returns expected data for {disease}"),
     {
+      mock_supported_targets(disease)
       base_hub_path <- withr::local_tempdir(paste0("base_hub_", disease, "_"))
       output_file <- fs::path(base_hub_path, "target-data/time-series.parquet")
       fs::dir_create(fs::path(base_hub_path, "target-data"))
@@ -24,9 +41,12 @@ purrr::walk(c("covid", "rsv"), function(disease) {
           base_hub_path = base_hub_path,
           disease = disease,
           as_of = lubridate::as_date("2025-08-18"),
+          excluded_locations = test_excluded_locations
         )
 
-        target_ts <- forecasttools::read_tabular_file(output_file)
+        target_ts <- forecasttools::read_tabular(
+          output_file
+        )
         expect_equal(
           names(target_ts),
           c("date", "observation", "location", "as_of", "target")
@@ -38,9 +58,17 @@ purrr::walk(c("covid", "rsv"), function(disease) {
             glue::glue("wk inc {disease} hosp")
           )
         )
+        excluded_codes <- forecasttools::us_location_recode(
+          test_excluded_locations,
+          "abbr",
+          "hub"
+        )
         expect_setequal(
           unique(target_ts$location),
-          setdiff(forecasttools::us_location_table$code, excluded_locations)
+          setdiff(
+            forecasttools::us_location_table$code,
+            excluded_codes
+          )
         )
       })
     }
@@ -70,6 +98,7 @@ purrr::walk(c("covid", "rsv"), function(disease) {
       "update_hub_target_data errors on duplicate run for {disease}"
     ),
     {
+      mock_supported_targets(disease)
       base_hub_path <- withr::local_tempdir(
         paste0("base_hub_dup_", disease, "_")
       )
@@ -80,7 +109,8 @@ purrr::walk(c("covid", "rsv"), function(disease) {
         hubhelpr::update_hub_target_data(
           base_hub_path = base_hub_path,
           disease = disease,
-          as_of = lubridate::as_date("2025-08-18")
+          as_of = lubridate::as_date("2025-08-18"),
+          excluded_locations = test_excluded_locations
         )
 
         # second run with same data errors by default
@@ -88,7 +118,8 @@ purrr::walk(c("covid", "rsv"), function(disease) {
           hubhelpr::update_hub_target_data(
             base_hub_path = base_hub_path,
             disease = disease,
-            as_of = lubridate::as_date("2025-08-18")
+            as_of = lubridate::as_date("2025-08-18"),
+            excluded_locations = test_excluded_locations
           ),
           "overwrite"
         )
@@ -99,6 +130,7 @@ purrr::walk(c("covid", "rsv"), function(disease) {
           base_hub_path = base_hub_path,
           disease = disease,
           as_of = lubridate::as_date("2025-08-18"),
+          excluded_locations = test_excluded_locations,
           overwrite_existing = TRUE
         )
       })

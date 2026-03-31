@@ -10,7 +10,7 @@ generate_webtext_block(
   base_hub_path,
   weekly_data_path,
   targets,
-  included_locations = hubhelpr::included_locations,
+  excluded_locations = NULL,
   input_format = "csv"
 )
 }
@@ -30,9 +30,13 @@ with weekly summary files.}
 \item{targets}{Character vector of target names to
 generate text for.}
 
-\item{included_locations}{Character vector of location
-codes that are expected to report. Default
-hubhelpr::included_locations.}
+\item{excluded_locations}{NULL, character vector, or
+named list of US state/territory abbreviations to
+exclude. If a character vector, locations are excluded
+across all targets. If a named list, names should be
+target names (or "all" for global exclusions) mapping
+to character vectors of abbreviations. Default: NULL
+(no exclusions).}
 
 \item{input_format}{Character, input file format for
 reading summary data files. One of "csv", "tsv", or

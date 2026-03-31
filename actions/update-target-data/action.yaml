@@ -30,6 +30,10 @@ inputs:
     description: "Whether to overwrite existing target data files ('true' or 'false')."
     required: false
     default: "false"
+  excluded_locations:
+    description: "JSON array or object of US state/territory abbreviations to exclude. Array (e.g., '[\"VI\", \"GU\"]') excludes from all targets. Object (e.g., '{\"all\": [\"VI\"], \"wk inc covid hosp\": [\"GU\"]}') supports target-specific exclusions. Defaults to no exclusions."
+    required: false
+    default: "[]"
 
 runs:
   using: "composite"
@@ -42,10 +46,16 @@ runs:
         DATA_CDC_GOV_API_KEY_SECRET: ${{ inputs.api_key_secret }}
       run: |
         today <- lubridate::today()
+
+        excluded_locations <- jsonlite::fromJSON(
+          '${{ inputs.excluded_locations }}'
+        )
+
         hubhelpr::update_hub_target_data(
           base_hub_path = "${{ inputs.base_hub_path }}",
           disease = "${{ inputs.disease }}",
           as_of = today,
+          excluded_locations = excluded_locations,
           legacy_file = as.logical("${{ inputs.legacy_file }}"),
           nssp_update_local = as.logical("${{ inputs.nssp_update_local }}"),
           overwrite_existing = as.logical("${{ inputs.overwrite_existing }}")
