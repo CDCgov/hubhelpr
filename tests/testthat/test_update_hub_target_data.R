@@ -45,8 +45,7 @@ purrr::walk(c("covid", "rsv"), function(disease) {
         )
 
         target_ts <- forecasttools::read_tabular(
-          output_file,
-          as_data_frame = TRUE
+          output_file
         )
         expect_equal(
           names(target_ts),
