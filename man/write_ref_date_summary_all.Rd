@@ -14,6 +14,7 @@ write_ref_date_summary_all(
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
+  n_models_for_ens_reporting = 2,
   overwrite_existing = FALSE
 )
 }
@@ -49,6 +50,10 @@ of "csv", "tsv", or "parquet". Default: "csv".}
 \item{targets}{character vector, target name(s) to
 filter forecasts. If NULL (default), does not filter by
 target.}
+
+\item{n_models_for_ens_reporting}{integer, minimum number of
+designated model submissions required to include an
+ensemble forecast in the report. Default: 2.}
 
 \item{overwrite_existing}{logical. If TRUE, overwrite
 existing files. Default: FALSE.}

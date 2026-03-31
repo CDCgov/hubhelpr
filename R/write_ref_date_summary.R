@@ -66,6 +66,69 @@ write_ref_date_summary <- function(
 }
 
 
+#' Filter hub ensemble using minimum designated
+#' submission threshold for reporting.
+#'
+#' @param ensemble_summary_data Hub ensemble forecast summary data,
+#' usually output of summarize_ref_date_forecasts() filtered to
+#' include only ensemble. Must include `model_id`,
+#' `reference_date`, `target`, `location`, and `horizon`.
+#' @param ensemble_model_name character, model id for the hub
+#' ensemble.
+#' @param reference_date character, the reference date for
+#' the forecast in YYYY-MM-DD format.
+#' @param base_hub_path character, path to the forecast hub
+#' directory.
+#' @param targets character vector, target name(s) to
+#' filter forecasts. If NULL (default), does not filter by
+#' target.
+#' @param horizons_to_include integer vector, horizons to
+#' include in the output.
+#' @param n_models_for_ens_reporting integer, minimum number of
+#' designated model submissions required to include an
+#' ensemble forecast in the report.
+#'
+#' @return summary_data with ensemble rows filtered by
+#' reportability threshold
+#' @noRd
+filter_reportable_ensemble <- function(
+  ensemble_summary_data,
+  ensemble_model_name,
+  reference_date,
+  base_hub_path,
+  targets,
+  horizons_to_include,
+  n_models_for_ens_reporting
+) {
+  model_ids_present <- unique(ensemble_summary_data$model_id)
+
+  if (model_ids_present != ensemble_model_name) {
+    cli::cli_abort(
+      c(
+        "Expected ensemble_summary_data to contain only ensemble model rows.",
+        "x" = "Found models: {paste(model_ids_present, collapse = ', ')}."
+      )
+    )
+  }
+
+  reportable_ens_forecasts <- count_designated_models(
+    reference_dates = reference_date,
+    base_hub_path = base_hub_path,
+    targets = targets,
+    horizons = horizons_to_include,
+    output_types = c("quantile")
+  ) |>
+    dplyr::filter(.data$n_models >= !!n_models_for_ens_reporting) |>
+    dplyr::select(-"n_models")
+
+  ensemble_summary_data |>
+    dplyr::inner_join(
+      reportable_ens_forecasts,
+      by = c("reference_date", "target", "location", "horizon")
+    )
+}
+
+
 #' Write ensemble forecast summary to disk.
 #'
 #' This function generates and writes ensemble-only forecast data.
@@ -93,7 +156,7 @@ write_ref_date_summary <- function(
 #' @param targets character vector, target name(s) to
 #' filter forecasts. If NULL (default), does not filter by
 #' target.
-#' @param n_models_for_reporting integer, minimum number of
+#' @param n_models_for_ens_reporting integer, minimum number of
 #' designated model submissions required to include an
 #' ensemble forecast in the report. Default: 2.
 #' @param overwrite_existing logical. If TRUE, overwrite
@@ -113,7 +176,7 @@ write_ref_date_summary_ens <- function(
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
-  n_models_for_reporting = 2,
+  n_models_for_ens_reporting = 2,
   overwrite_existing = FALSE
 ) {
   hub_name <- get_hub_name(disease)
@@ -156,21 +219,16 @@ write_ref_date_summary_ens <- function(
     model_ids = ensemble_model_name
   )
 
-  reportable_forecasts <- count_designated_models(
-    reference_dates = reference_date,
-    base_hub_path = base_hub_path,
-    targets = targets,
-    horizons = horizons_to_include,
-    output_types = c("quantile")
-  ) |>
-    dplyr::filter(.data$n_models >= !!n_models_for_reporting) |>
-    dplyr::select(-"n_models")
-
   summary_data |>
-    dplyr::inner_join(
-      reportable_forecasts,
-      by = c("reference_date", "target", "location", "horizon")
+    filter_reportable_ensemble(
+      ensemble_model_name = ensemble_model_name,
+      reference_date = reference_date,
+      base_hub_path = base_hub_path,
+      targets = targets,
+      horizons_to_include = horizons_to_include,
+      n_models_for_ens_reporting = n_models_for_ens_reporting
     ) |>
+    dplyr::arrange(.data$location_sort_order, .data$location_name) |>
     dplyr::select({{ ensemble_columns }}) |>
     write_ref_date_summary(
       reference_date = reference_date,
@@ -210,6 +268,9 @@ write_ref_date_summary_ens <- function(
 #' @param targets character vector, target name(s) to
 #' filter forecasts. If NULL (default), does not filter by
 #' target.
+#' @param n_models_for_ens_reporting integer, minimum number of
+#' designated model submissions required to include an
+#' ensemble forecast in the report. Default: 2.
 #' @param overwrite_existing logical. If TRUE, overwrite
 #' existing files. Default: FALSE.
 #'
@@ -227,8 +288,12 @@ write_ref_date_summary_all <- function(
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
+  n_models_for_ens_reporting = 2,
   overwrite_existing = FALSE
 ) {
+  hub_name <- get_hub_name(disease)
+  ensemble_model_name <- glue::glue("{hub_name}-ensemble")
+
   all_models_columns <- c(
     "location_name",
     "abbreviation",
@@ -253,7 +318,7 @@ write_ref_date_summary_all <- function(
     model_full_name = "model_name"
   )
 
-  summarize_ref_date_forecasts(
+  summary_data <- summarize_ref_date_forecasts(
     reference_date = reference_date,
     base_hub_path = base_hub_path,
     disease = disease,
@@ -261,7 +326,27 @@ write_ref_date_summary_all <- function(
     horizons_to_include = horizons_to_include,
     excluded_locations = excluded_locations,
     targets = targets
-  ) |>
+  )
+
+  ensemble_summary_data <- summary_data |>
+    dplyr::filter(.data$model_id == !!ensemble_model_name) |>
+    filter_reportable_ensemble(
+      ensemble_model_name = ensemble_model_name,
+      reference_date = reference_date,
+      base_hub_path = base_hub_path,
+      targets = targets,
+      horizons_to_include = horizons_to_include,
+      n_models_for_ens_reporting = n_models_for_ens_reporting
+    )
+
+  non_ensemble <- summary_data |>
+    dplyr::filter(.data$model_id != !!ensemble_model_name)
+
+  dplyr::bind_rows(non_ensemble, ensemble_summary_data) |>
+    dplyr::mutate(
+      location_sort_order = ifelse(.data$location_name == "United States", 0, 1)
+    ) |>
+    dplyr::arrange(.data$location_sort_order, .data$location_name) |>
     dplyr::select({{ all_models_columns }}) |>
     write_ref_date_summary(
       reference_date = reference_date,
