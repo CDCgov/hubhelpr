@@ -44,7 +44,7 @@ purrr::walk(c("covid", "rsv"), function(disease) {
           excluded_locations = test_excluded_locations
         )
 
-        target_ts <- forecasttools::read_tabular_file(output_file)
+        target_ts <- forecasttools::read_tabular(output_file, as_data_frame = TRUE)
         expect_equal(
           names(target_ts),
           c("date", "observation", "location", "as_of", "target")
