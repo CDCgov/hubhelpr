@@ -270,11 +270,23 @@ update_hub_target_data <- function(
   output_dirpath <- fs::path(base_hub_path, "target-data")
   fs::dir_create(output_dirpath)
 
+  output_file <- fs::path(output_dirpath, "time-series", ext = "parquet")
+
+  combined_target_data <- dplyr::bind_rows(nhsn_data, nssp_data)
+
+  filtered_target_data <- filter_to_expected_locations(
+    combined_target_data,
+    excluded_locations,
+    base_hub_path
+  )
+
   if (legacy_file) {
     legacy_file_name <- glue::glue(
       "{disease}-hospital-admissions.csv"
     )
-    nhsn_data |>
+    filtered_hosp_data <- filtered_target_data |>
+      dplyr::filter(grepl("hosp$", .data$target))
+    filtered_hosp_data |>
       dplyr::mutate(
         state = forecasttools::us_location_recode(
           .data$location,
@@ -292,29 +304,19 @@ update_hub_target_data <- function(
       )
   }
 
-  output_file <- fs::path(output_dirpath, "time-series", ext = "parquet")
-
-  new_data <- dplyr::bind_rows(nhsn_data, nssp_data)
-
-  new_data <- filter_to_expected_locations(
-    new_data,
-    excluded_locations,
-    base_hub_path
-  )
-
   if (fs::file_exists(output_file)) {
-    existing_data <- forecasttools::read_tabular(output_file)
+    existing_target_data <- forecasttools::read_tabular(output_file)
   } else {
-    existing_data <- NULL
+    existing_target_data <- NULL
   }
 
-  merged_data <- merge_target_data(
-    existing_data,
-    new_data,
+  merged_target_data <- merge_target_data(
+    existing_target_data,
+    filtered_target_data,
     overwrite_existing = overwrite_existing
   )
 
-  forecasttools::write_tabular(merged_data, output_file)
+  forecasttools::write_tabular(merged_target_data, output_file)
 
   return(invisible())
 }
