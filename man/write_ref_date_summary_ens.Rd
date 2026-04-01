@@ -19,19 +19,19 @@ write_ref_date_summary_ens(
 )
 }
 \arguments{
-\item{reference_date}{character, the reference date for
-the forecast in YYYY-MM-DD format (ISO-8601).}
+\item{reference_date}{character, the reference date
+for the forecast in YYYY-MM-DD format (ISO-8601).}
 
-\item{base_hub_path}{character, path to the forecast hub
-directory.}
+\item{base_hub_path}{character, path to the forecast
+hub directory.}
 
-\item{hub_reports_path}{character, path to forecast hub
-reports directory.}
+\item{hub_reports_path}{character, path to forecast
+hub reports directory.}
 
 \item{disease}{character, disease name ("covid" or "rsv").}
 
-\item{horizons_to_include}{integer vector, horizons to
-include in the output. Default: c(0, 1, 2).}
+\item{horizons_to_include}{integer vector, horizons
+to include in the output. Default: c(0, 1, 2).}
 
 \item{population_data}{data frame with columns
 "location" and "population". Default: population_data.}
@@ -44,24 +44,25 @@ target names (or "all" for global exclusions) mapping
 to character vectors of abbreviations. Default: NULL
 (no exclusions).}
 
-\item{output_format}{character, output file format. One
-of "csv", "tsv", or "parquet". Default: "csv".}
+\item{output_format}{character, output file format.
+One of "csv", "tsv", or "parquet". Default: "csv".}
 
 \item{targets}{character vector, target name(s) to
-filter forecasts. If NULL (default), does not filter by
-target.}
+filter forecasts. If NULL (default), does not filter
+by target.}
 
-\item{n_models_for_ens_reporting}{integer, minimum number of
-designated model submissions required to include an
-ensemble forecast in the report. Default: 2.}
+\item{n_models_for_ens_reporting}{integer, minimum
+number of designated model submissions required to
+include an ensemble forecast in the report. Default: 2.}
 
 \item{overwrite_existing}{logical. If TRUE, overwrite
 existing files. Default: FALSE.}
 }
 \value{
 invisibly returns the file path where data was
-written
+written.
 }
 \description{
-This function generates and writes ensemble-only forecast data.
+This function generates and writes ensemble-only
+forecast data.
 }
