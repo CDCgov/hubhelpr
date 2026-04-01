@@ -19,14 +19,14 @@ write_ref_date_summary(
 for a given reference date, usually the output of
 summarize_ref_date_forecasts() after column selection.
 Must include: \code{location_name}, \code{horizon},
-\code{target}, \code{target_data_type}, \verb{quantile_*}, \code{target_end_date},
-\code{forecast_due_date}, and \code{model}.}
+\code{target}, \code{target_data_type}, \verb{quantile_*},
+\code{target_end_date}, \code{forecast_due_date}, and \code{model}.}
 
-\item{reference_date}{character, the reference date for
-the forecast in YYYY-MM-DD format (ISO-8601).}
+\item{reference_date}{character, the reference date
+for the forecast in YYYY-MM-DD format (ISO-8601).}
 
-\item{hub_reports_path}{character, path to forecast hub
-reports directory.}
+\item{hub_reports_path}{character, path to forecast
+hub reports directory.}
 
 \item{disease}{character, disease name ("covid" or
 "rsv").}
@@ -34,17 +34,17 @@ reports directory.}
 \item{file_suffix}{character, suffix to append to
 filename (e.g., "map_data", "forecasts_data").}
 
-\item{output_format}{character, output file format. One
-of "csv", "tsv", or "parquet". Default: "csv".}
+\item{output_format}{character, output file format.
+One of "csv", "tsv", or "parquet". Default: "csv".}
 
 \item{overwrite_existing}{logical. If TRUE, overwrite
 existing files. Default: FALSE.}
 }
 \value{
-invisibly returns the file path where data was
-written
+invisibly returns the file path where data
+was written.
 }
 \description{
-This helper writes a summary data frame to disk in the specified
-format.
+This helper writes a summary data frame to disk in
+the specified format.
 }

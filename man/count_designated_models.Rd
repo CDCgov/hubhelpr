@@ -29,8 +29,8 @@ targets.}
 If NULL (default), includes all available horizons.}
 
 \item{output_types}{character vector of output types
-to include. If NULL (default), includes all available
-output types.}
+to include. Default: NULL (include all available
+output types).}
 }
 \value{
 A tibble with columns \code{reference_date},
