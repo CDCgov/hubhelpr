@@ -31,6 +31,10 @@ inputs:
     description: "JSON array or object of US state/territory abbreviations to exclude. Array (e.g., '[\"VI\", \"GU\"]') excludes from all targets. Object (e.g., '{\"all\": [\"VI\"], \"wk inc covid hosp\": [\"GU\"]}') supports target-specific exclusions. Defaults to no exclusions."
     required: false
     default: "[]"
+  n_models_for_ens_reporting:
+    description: "Minimum number of designated model submissions required to include an ensemble forecast in the report."
+    required: false
+    default: "2"
 
 runs:
   using: "composite"
@@ -62,12 +66,17 @@ runs:
           '${{ inputs.excluded_locations }}'
         )
 
+        n_models_for_ens_reporting <- as.integer(
+          "${{ inputs.n_models_for_ens_reporting }}"
+        )
+
         hubhelpr::write_ref_date_summary_ens(
           reference_date = ref_date,
           base_hub_path = base_hub_path,
           hub_reports_path = hub_reports_path,
           disease = disease,
-          excluded_locations = excluded_locations
+          excluded_locations = excluded_locations,
+          n_models_for_ens_reporting = n_models_for_ens_reporting
         )
 
         hubhelpr::write_ref_date_summary_all(
@@ -75,7 +84,8 @@ runs:
           base_hub_path = base_hub_path,
           hub_reports_path = hub_reports_path,
           disease = disease,
-          excluded_locations = excluded_locations
+          excluded_locations = excluded_locations,
+          n_models_for_ens_reporting = n_models_for_ens_reporting
         )
 
         hubhelpr::write_viz_target_data(
