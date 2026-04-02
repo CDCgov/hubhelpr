@@ -87,7 +87,9 @@ get_target_exclusions <- function(exclusions, target) {
 #' can be anti-joined to data on location and target.
 #' @noRd
 build_exclusion_df <- function(exclusions, targets) {
-  df <- purrr::map(targets, \(tgt) get_target_exclusions(exclusions, tgt)) |>
+  df <- purrr::map(purrr::set_names(targets), \(tgt) {
+    get_target_exclusions(exclusions, tgt)
+  }) |>
     tibble::enframe(name = "target", value = "location") |>
     tidyr::unnest_longer("location") |>
     dplyr::mutate(
