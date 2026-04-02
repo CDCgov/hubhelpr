@@ -65,17 +65,41 @@ assert_valid_location_abbrs <- function(abbrs) {
 #' combining global ("all") exclusions with any
 #' target-specific ones.
 #'
-#' @param normalized Named list as returned by
-#' `normalize_excluded_locations()`.
+#' @param exclusions Named list as returned by
+#' [normalize_excluded_locations()].
 #' @param target Character, the target name.
 #'
 #' @return Character vector of unique abbreviations to
 #' exclude for this target.
 #' @noRd
-get_target_exclusions <- function(normalized, target) {
-  unique(c(normalized[["all"]], normalized[[target]]))
+get_target_exclusions <- function(exclusions, target) {
+  unique(c(exclusions[["all"]], exclusions[[target]]))
 }
 
+
+#' Build a tibble of excluded location-target pairs
+#'
+#' @param exclusions Named list as returned by
+#' [normalize_excluded_locations()].
+#' @param targets Vector of targets for which to build the
+#' exclusion tibble.
+#' @return [`tibble`][tibble::tibble()] of exclusions that
+#' can be anti-joined to data on location and target.
+#' @noRd
+build_exclusion_df <- function(exclusions, targets) {
+  df <- purrr::map(targets, \(tgt) get_target_exclusions(exclusions, tgt)) |>
+    tibble::enframe(name = "target", value = "location") |>
+    tidyr::unnest_longer("location") |>
+    dplyr::mutate(
+      location = forecasttools::us_location_recode(
+        .data$location,
+        "abbr",
+        "hub"
+      )
+    )
+
+  return(df)
+}
 
 #' Apply target-specific location exclusions to a data
 #' frame.
@@ -109,13 +133,13 @@ apply_target_location_exclusions <- function(
   excluded_locations,
   base_hub_path
 ) {
-  normalized <- normalize_excluded_locations(excluded_locations)
-  if (is.null(normalized)) {
+  exclusions <- normalize_excluded_locations(excluded_locations)
+  if (is.null(exclusions)) {
     return(data)
   }
 
   hub_supported_targets <- get_hub_supported_targets(base_hub_path)
-  named_targets <- setdiff(names(normalized), "all")
+  named_targets <- setdiff(names(exclusions), "all")
   unmatched <- setdiff(named_targets, hub_supported_targets)
   if (length(unmatched) > 0) {
     cli::cli_warn(
@@ -123,26 +147,13 @@ apply_target_location_exclusions <- function(
     )
   }
 
-  exclusion_df <- dplyr::tibble(target = hub_supported_targets) |>
-    dplyr::mutate(
-      location = purrr::map(
-        .data$target,
-        \(tgt) {
-          forecasttools::us_location_recode(
-            get_target_exclusions(normalized, tgt),
-            "abbr",
-            "hub"
-          )
-        }
-      )
-    ) |>
-    tidyr::unnest_longer("location")
+  exclusion_df <- build_exclusion_df(exclusions, hub_supported_targets)
 
-  dplyr::anti_join(
+  return(dplyr::anti_join(
     data,
     exclusion_df,
     by = c("target", "location")
-  )
+  ))
 }
 
 
@@ -181,20 +192,7 @@ filter_to_expected_locations <- function(
   )
 
   if (!is.null(normalized)) {
-    exclusion_df <- dplyr::tibble(target = hub_supported_targets) |>
-      dplyr::mutate(
-        location = purrr::map(
-          .data$target,
-          \(tgt) {
-            forecasttools::us_location_recode(
-              get_target_exclusions(normalized, tgt),
-              "abbr",
-              "hub"
-            )
-          }
-        )
-      ) |>
-      tidyr::unnest_longer("location")
+    exclusion_df <- build_exclusion_df(normalized, hub_supported_targets)
 
     expected_df <- dplyr::anti_join(
       expected_df,
@@ -203,9 +201,9 @@ filter_to_expected_locations <- function(
     )
   }
 
-  dplyr::inner_join(
+  return(dplyr::inner_join(
     data,
     expected_df,
     by = c("target", "location")
-  )
+  ))
 }

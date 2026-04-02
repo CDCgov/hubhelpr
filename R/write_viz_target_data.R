@@ -59,12 +59,11 @@ write_viz_target_data <- function(
   if (use_hub_data) {
     target_data <- hubData::connect_target_timeseries(base_hub_path) |>
       forecasttools::hub_target_data_as_of(as_of = as_of) |>
-      dplyr::collect()
-    target_data <- apply_target_location_exclusions(
-      target_data,
-      excluded_locations,
-      base_hub_path
-    )
+      dplyr::collect() |>
+      apply_target_location_exclusions(
+        excluded_locations,
+        base_hub_path
+      )
   } else {
     nhsn_data <- get_hubverse_format_nhsn_data(
       disease,
@@ -86,12 +85,11 @@ write_viz_target_data <- function(
       end_date = end_date,
       nssp_update_local = TRUE
     )
-    target_data <- dplyr::bind_rows(nhsn_data, nssp_data)
-    target_data <- filter_to_expected_locations(
-      target_data,
-      excluded_locations,
-      base_hub_path
-    )
+    target_data <- dplyr::bind_rows(nhsn_data, nssp_data) |>
+      filter_to_expected_locations(
+        excluded_locations,
+        base_hub_path
+      )
   }
 
   target_data <- target_data |>
