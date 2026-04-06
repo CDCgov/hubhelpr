@@ -44,7 +44,13 @@ runs:
           "${{ inputs.base_hub_path }}", ref_date,
           "${{ inputs.disease }}", targets = targets
         )
-        writeLines(sprintf("date=%s", today), Sys.getenv("GITHUB_OUTPUT"))
+        writeLines(
+          c(
+            sprintf("date=%s", today),
+            sprintf("reference_date=%s", as.character(ref_date))
+          ),
+          Sys.getenv("GITHUB_OUTPUT")
+        )
 
     - name: "Commit Changes"
       shell: bash
