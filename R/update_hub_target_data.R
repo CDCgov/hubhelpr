@@ -1,5 +1,5 @@
 hubverse_ts_req_cols <- c(
-  "date",
+  "target_end_date",
   "observation",
   "location",
   "as_of",
@@ -9,7 +9,7 @@ hubverse_ts_req_cols <- c(
 #' Merge new target time-series data with existing data.
 #'
 #' Combines new data with existing data, handling conflicts.
-#' Key columns are date, location, as_of, and target.
+#' Key columns are target_end_date, location, as_of, and target.
 #'
 #' @param existing_data Data frame of existing time-series
 #' data, or NULL if no existing data.
@@ -26,7 +26,7 @@ merge_target_data <- function(
   new_data,
   overwrite_existing = FALSE
 ) {
-  td_key_cols <- c("date", "location", "as_of", "target")
+  td_key_cols <- c("target_end_date", "location", "as_of", "target")
 
   if (!is.null(existing_data)) {
     deconflicted_existing_data <- dplyr::anti_join(
@@ -75,6 +75,8 @@ merge_target_data <- function(
 #' @param end_date Last week-ending
 #' date to include for the NHSN dataset. Default value
 #' is NULL (no filtering).
+#' @param date_col_name Character. Name for the date column
+#' in the output. Default is "target_end_date".
 #'
 #' @return Data frame with formatted NHSN data.
 #' @export
@@ -82,11 +84,15 @@ get_hubverse_format_nhsn_data <- function(
   disease,
   as_of = lubridate::today(),
   start_date = NULL,
-  end_date = NULL
+  end_date = NULL,
+  date_col_name = "target_end_date"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   nhsn_col_name <- get_nhsn_col_name(disease)
+
+  req_cols <- hubverse_ts_req_cols
+  req_cols[req_cols == "target_end_date"] <- date_col_name
 
   hubverse_format_nhsn_data <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "nhsn_hrd_prelim",
@@ -95,7 +101,7 @@ get_hubverse_format_nhsn_data <- function(
     end_date = end_date
   ) |>
     dplyr::mutate(
-      date = lubridate::as_date(.data$weekendingdate),
+      !!date_col_name := lubridate::as_date(.data$weekendingdate),
       observation = as.numeric(.data[[nhsn_col_name]]),
       location = forecasttools::us_location_recode(
         .data$jurisdiction,
@@ -105,7 +111,7 @@ get_hubverse_format_nhsn_data <- function(
       as_of = !!as_of,
       target = glue::glue("wk inc {disease} hosp")
     ) |>
-    dplyr::select(tidyselect::all_of(hubverse_ts_req_cols))
+    dplyr::select(tidyselect::all_of(req_cols))
 
   return(hubverse_format_nhsn_data)
 }
@@ -128,6 +134,8 @@ get_hubverse_format_nhsn_data <- function(
 #' @param end_date Last week-ending
 #' date to include for the NSSP dataset. Default value
 #' is NULL (no filtering).
+#' @param date_col_name Character. Name for the date column
+#' in the output. Default is "target_end_date".
 #'
 #' @return Data frame with formatted NSSP data.
 #' @export
@@ -137,11 +145,15 @@ get_hubverse_format_nssp_data <- function(
   as_of = lubridate::today(),
   nssp_update_local = FALSE,
   start_date = NULL,
-  end_date = NULL
+  end_date = NULL,
+  date_col_name = "target_end_date"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   nssp_col_name <- get_nssp_col_name(disease)
+
+  req_cols <- hubverse_ts_req_cols
+  req_cols[req_cols == "target_end_date"] <- date_col_name
 
   if (nssp_update_local) {
     nssp_file_path <- fs::path(
@@ -175,7 +187,7 @@ get_hubverse_format_nssp_data <- function(
 
   hubverse_format_nssp_data <- raw_nssp_data |>
     dplyr::mutate(
-      date = lubridate::as_date(.data$week_end),
+      !!date_col_name := lubridate::as_date(.data$week_end),
       observation = as.numeric(.data[[nssp_col_name]]) / 100,
       location = forecasttools::us_location_recode(
         .data$geography,
@@ -185,8 +197,8 @@ get_hubverse_format_nssp_data <- function(
       as_of = !!as_of,
       target = glue::glue("wk inc {disease} prop ed visits")
     ) |>
-    dplyr::select(tidyselect::all_of(hubverse_ts_req_cols)) |>
-    dplyr::arrange(.data$date, .data$location)
+    dplyr::select(tidyselect::all_of(req_cols)) |>
+    dplyr::arrange(.data[[date_col_name]], .data$location)
 
   return(hubverse_format_nssp_data)
 }
@@ -218,7 +230,7 @@ get_hubverse_format_nssp_data <- function(
 #' data from local hub file `auxiliary-data/latest.parquet`
 #' (default: FALSE).
 #' @param overwrite_existing Logical. If TRUE, overwrite
-#' existing rows that share key columns (date, location,
+#' existing rows that share key columns (target_end_date, location,
 #' as_of, target) with the new data. If FALSE (default),
 #' error if any conflicts are found.
 #'
@@ -247,7 +259,7 @@ update_hub_target_data <- function(
   assert_data_up_to_date(
     nhsn_data,
     location_col_name = "location",
-    date_col_name = "date",
+    date_col_name = "target_end_date",
     expected_max_time_value = forecasttools::floor_mmwr_epiweek(as_of) -
       lubridate::days(1)
   )
@@ -262,7 +274,7 @@ update_hub_target_data <- function(
   assert_data_up_to_date(
     nssp_data,
     location_col_name = "location",
-    date_col_name = "date",
+    date_col_name = "target_end_date",
     expected_max_time_value = forecasttools::floor_mmwr_epiweek(as_of) -
       lubridate::days(1)
   )
@@ -298,7 +310,7 @@ update_hub_target_data <- function(
         value = "observation"
       ) |>
       dplyr::arrange(.data$state) |>
-      dplyr::select("state", "date", "value", "location") |>
+      dplyr::select("state", "target_end_date", "value", "location") |>
       forecasttools::write_tabular(
         fs::path(output_dirpath, legacy_file_name)
       )

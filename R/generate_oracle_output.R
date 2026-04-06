@@ -1,12 +1,17 @@
-#' Create an oracle output table from a Hub
+#' Create an oracle output table from a Hub.
 #'
 #' @param hub_path Path to the hub root.
 #' @param ts_date_col Name of the date column in
-#' the `time-series` format target data. Will be converted
-#' to `target_end_date` for the oracle output. Default `date`.
-#' @return the oracle output table, as a [`tibble`][tibble::tibble()].
+#' the `time-series` format target data. Will be
+#' converted to `target_end_date` for the oracle output.
+#' Default `target_end_date`.
+#' @return the oracle output table, as a
+#' [`tibble`][tibble::tibble()].
 #' @export
-generate_oracle_output_table <- function(hub_path, ts_date_col = "date") {
+generate_oracle_output_table <- function(
+  hub_path,
+  ts_date_col = "target_end_date"
+) {
   target_ts <- hubData::connect_target_timeseries(hub_path)
 
   ## need one row for each unique combination of target_end_date
@@ -48,7 +53,7 @@ generate_oracle_output_table <- function(hub_path, ts_date_col = "date") {
   return(oracle_output)
 }
 
-#' Generate and save oracle output for the Hub
+#' Generate and save oracle output for the Hub.
 #'
 #' @param hub_path Path to the hub root.
 #' @param output_dirpath Directory in which to
@@ -57,14 +62,15 @@ generate_oracle_output_table <- function(hub_path, ts_date_col = "date") {
 #' in `hub_path`.
 #' @param ts_date_col Name of the date column in
 #' the `time-series` format target data. Will be converted
-#' to `target_end_date` for the oracle output. Default `date`.
+#' to `target_end_date` for the oracle output. Default
+#' `target_end_date`.
 #'
 #' @return nothing, invisibly, on success.
 #' @export
 write_oracle_output <- function(
   hub_path,
   output_dirpath = fs::path(hub_path, "target-data"),
-  ts_date_col = "date"
+  ts_date_col = "target_end_date"
 ) {
   fs::dir_create(output_dirpath)
 

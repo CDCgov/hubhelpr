@@ -49,7 +49,7 @@ purrr::walk(c("covid", "rsv"), function(disease) {
         )
         expect_equal(
           names(target_ts),
-          c("date", "observation", "location", "as_of", "target")
+          c("target_end_date", "observation", "location", "as_of", "target")
         )
         expect_setequal(
           unique(target_ts$target),
@@ -152,7 +152,7 @@ httptest2::with_mock_dir(mockdir_tests, {
 real_td <- nhsn_mock |>
   dplyr::filter(
     .data$location %in% c("01", "02"),
-    .data$date == max(.data$date)
+    .data$target_end_date == max(.data$target_end_date)
   )
 
 second_as_of <- lubridate::as_date("2025-08-25")
@@ -271,7 +271,13 @@ test_that("merge_target_data preserves all columns after overwrite", {
   result <- merge_target_data(existing, new_data, overwrite_existing = TRUE)
   checkmate::expect_names(
     names(result),
-    identical.to = c("date", "observation", "location", "as_of", "target")
+    identical.to = c(
+      "target_end_date",
+      "observation",
+      "location",
+      "as_of",
+      "target"
+    )
   )
   expect_equal(result$observation, new_data$observation)
 })
