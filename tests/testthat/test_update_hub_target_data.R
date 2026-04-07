@@ -148,6 +148,27 @@ httptest2::with_mock_dir(mockdir_tests, {
   )
 })
 
+test_that("get_hubverse_format_nhsn_data respects configurable date_col_name", {
+  httptest2::with_mock_dir(mockdir_tests, {
+    nhsn_custom <- hubhelpr::get_hubverse_format_nhsn_data(
+      disease = "covid",
+      as_of = lubridate::as_date("2025-08-18"),
+      start_date = lubridate::as_date("2024-11-09"),
+      date_col_name = "date"
+    )
+  })
+  expect_equal(
+    names(nhsn_custom),
+    c("date", "observation", "location", "as_of", "target")
+  )
+  # contained values should be same as default version,
+  # only date col name should be different
+  expect_equal(
+    nhsn_custom |> dplyr::rename(target_end_date = "date"),
+    nhsn_mock
+  )
+})
+
 # 2 locs, most recent date in data
 real_td <- nhsn_mock |>
   dplyr::filter(

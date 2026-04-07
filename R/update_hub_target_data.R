@@ -91,9 +91,6 @@ get_hubverse_format_nhsn_data <- function(
 
   nhsn_col_name <- get_nhsn_col_name(disease)
 
-  req_cols <- hubverse_ts_req_cols
-  req_cols[req_cols == "target_end_date"] <- date_col_name
-
   hubverse_format_nhsn_data <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "nhsn_hrd_prelim",
     columns = nhsn_col_name,
@@ -101,7 +98,7 @@ get_hubverse_format_nhsn_data <- function(
     end_date = end_date
   ) |>
     dplyr::mutate(
-      !!date_col_name := lubridate::as_date(.data$weekendingdate),
+      target_end_date = lubridate::as_date(.data$weekendingdate),
       observation = as.numeric(.data[[nhsn_col_name]]),
       location = forecasttools::us_location_recode(
         .data$jurisdiction,
@@ -111,7 +108,8 @@ get_hubverse_format_nhsn_data <- function(
       as_of = !!as_of,
       target = glue::glue("wk inc {disease} hosp")
     ) |>
-    dplyr::select(tidyselect::all_of(req_cols))
+    dplyr::select(tidyselect::all_of(hubverse_ts_req_cols)) |>
+    dplyr::rename(!!date_col_name := "target_end_date")
 
   return(hubverse_format_nhsn_data)
 }
@@ -152,9 +150,6 @@ get_hubverse_format_nssp_data <- function(
 
   nssp_col_name <- get_nssp_col_name(disease)
 
-  req_cols <- hubverse_ts_req_cols
-  req_cols[req_cols == "target_end_date"] <- date_col_name
-
   if (nssp_update_local) {
     nssp_file_path <- fs::path(
       base_hub_path,
@@ -187,7 +182,7 @@ get_hubverse_format_nssp_data <- function(
 
   hubverse_format_nssp_data <- raw_nssp_data |>
     dplyr::mutate(
-      !!date_col_name := lubridate::as_date(.data$week_end),
+      target_end_date = lubridate::as_date(.data$week_end),
       observation = as.numeric(.data[[nssp_col_name]]) / 100,
       location = forecasttools::us_location_recode(
         .data$geography,
@@ -197,7 +192,8 @@ get_hubverse_format_nssp_data <- function(
       as_of = !!as_of,
       target = glue::glue("wk inc {disease} prop ed visits")
     ) |>
-    dplyr::select(tidyselect::all_of(req_cols)) |>
+    dplyr::select(tidyselect::all_of(hubverse_ts_req_cols)) |>
+    dplyr::rename(!!date_col_name := "target_end_date") |>
     dplyr::arrange(.data[[date_col_name]], .data$location)
 
   return(hubverse_format_nssp_data)

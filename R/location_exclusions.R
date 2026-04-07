@@ -10,7 +10,7 @@
 #'
 #' @return Named list of character vectors, or NULL if
 #' input is NULL or zero-length.
-#' @noRd
+#' @keywords internal
 normalize_excluded_locations <- function(excluded_locations) {
   if (is.null(excluded_locations) || length(excluded_locations) == 0) {
     return(NULL)
@@ -66,7 +66,7 @@ assert_valid_location_abbrs <- function(abbrs) {
 #' target-specific ones.
 #'
 #' @param exclusions Named list as returned by
-#' `normalize_excluded_locations()`.
+#' [normalize_excluded_locations()].
 #' @param target Character, the target name.
 #'
 #' @return Character vector of unique abbreviations to
@@ -80,7 +80,7 @@ get_target_exclusions <- function(exclusions, target) {
 #' Build a tibble of excluded location-target pairs
 #'
 #' @param exclusions Named list as returned by
-#' `normalize_excluded_locations()`.
+#' [normalize_excluded_locations()].
 #' @param targets Vector of targets for which to build the
 #' exclusion tibble.
 #' @return [`tibble`][tibble::tibble()] of exclusions that
