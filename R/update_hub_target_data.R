@@ -285,7 +285,7 @@ update_hub_target_data <- function(
       "{disease}-hospital-admissions.csv"
     )
     filtered_hosp_data <- filtered_target_data |>
-      dplyr::filter(grepl("hosp$", .data$target))
+      dplyr::filter(is_hosp_target(.data$target))
     filtered_hosp_data |>
       dplyr::mutate(
         state = forecasttools::us_location_recode(

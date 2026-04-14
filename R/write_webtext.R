@@ -33,11 +33,8 @@ check_hospital_reporting_rate <- function(
     )
   )
 
-  disease_abbr <- dplyr::case_match(
-    disease,
-    "covid" ~ "c19",
-    "rsv" ~ "rsv"
-  )
+  disease_abbrs <- c(covid = "c19", rsv = "rsv")
+  disease_abbr <- disease_abbrs[[disease]]
 
   reporting_column <- glue::glue(
     "totalconf{disease_abbr}newadmperchosprepabove80pct"
@@ -206,13 +203,12 @@ compute_target_webtext_values <- function(
   target_type <- get_target_data_type(target)
 
   format_forecast <- function(x) {
-    if (target_type == "hosp") {
-      round_to_place(x)
-    } else if (target_type == "prop_ed") {
-      janitor::signif_half_up(x * 100, 2)
-    } else {
+    switch(
+      target_type,
+      hosp = round_to_place(x),
+      prop_ed = janitor::signif_half_up(x * 100, 2),
       cli::cli_abort("Unknown target type: {target_type}")
-    }
+    )
   }
 
   target_ensemble <- ensemble_data |>
@@ -227,8 +223,8 @@ compute_target_webtext_values <- function(
       .data$target == !!target,
       .data$model != glue::glue("{hub_name}-ensemble")
     ) |>
-    dplyr::pull(.data$model) |>
-    unique()
+    dplyr::distinct(.data$model) |>
+    dplyr::pull(.data$model)
 
   # split contributing teams by designated_model status
   contributing_metadata <- all_model_metadata |>
@@ -265,9 +261,8 @@ compute_target_webtext_values <- function(
 
   n_teams <- contributing_metadata |>
     dplyr::filter(.data$designated_model) |>
-    dplyr::pull(.data$team_name) |>
-    unique() |>
-    length()
+    dplyr::distinct(.data$team_name) |>
+    nrow()
   n_forecasts <- length(teams_in_ensemble)
 
   models_included <- paste0("* ", teams_in_ensemble, collapse = "\n")
