@@ -42,7 +42,7 @@ disease_display_names <- c(
 #' @return Character string with the NHSN column name
 #' @export
 get_nhsn_col_name <- function(disease) {
-  rlang::arg_match(disease, names(nhsn_col_names))
+  checkmate::assert_choice(disease, names(nhsn_col_names))
   nhsn_col_names[[disease]]
 }
 
@@ -52,7 +52,7 @@ get_nhsn_col_name <- function(disease) {
 #' @return Character string with the NSSP column name
 #' @export
 get_nssp_col_name <- function(disease) {
-  rlang::arg_match(disease, names(nssp_col_names))
+  checkmate::assert_choice(disease, names(nssp_col_names))
   nssp_col_names[[disease]]
 }
 
@@ -67,7 +67,7 @@ get_nssp_col_name <- function(disease) {
 #' @return Character. Hub name (e.g., "CovidHub", "RSVHub", "FluSight").
 #' @export
 get_hub_name <- function(disease) {
-  rlang::arg_match(disease, names(hub_names))
+  checkmate::assert_choice(disease, names(hub_names))
   hub_names[[disease]]
 }
 
@@ -82,7 +82,7 @@ get_hub_name <- function(disease) {
 #' @return Character. GitHub repository name.
 #' @export
 get_hub_repo_name <- function(disease) {
-  rlang::arg_match(disease, names(hub_repo_names))
+  checkmate::assert_choice(disease, names(hub_repo_names))
   hub_repo_names[[disease]]
 }
 
@@ -94,7 +94,7 @@ get_hub_repo_name <- function(disease) {
 #' @return Character. GitHub organization name.
 #' @noRd
 get_hub_repo_owner <- function(disease) {
-  rlang::arg_match(disease, names(hub_repo_owners))
+  checkmate::assert_choice(disease, names(hub_repo_owners))
   hub_repo_owners[[disease]]
 }
 
@@ -126,7 +126,7 @@ get_hub_repo_url <- function(disease) {
 #' "Influenza").
 #' @export
 get_disease_name <- function(disease) {
-  rlang::arg_match(disease, names(disease_display_names))
+  checkmate::assert_choice(disease, names(disease_display_names))
   disease_display_names[[disease]]
 }
 

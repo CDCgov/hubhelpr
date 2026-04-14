@@ -352,8 +352,8 @@ generate_webtext_block <- function(
   excluded_locations = NULL,
   input_format = "csv"
 ) {
-  rlang::arg_match(disease, c("covid", "rsv"))
-  rlang::arg_match(input_format, c("csv", "tsv", "parquet"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+  checkmate::assert_choice(input_format, choices = c("csv", "tsv", "parquet"))
 
   reference_date <- lubridate::as_date(reference_date)
 

@@ -84,7 +84,7 @@ get_hubverse_format_nhsn_data <- function(
   start_date = NULL,
   end_date = NULL
 ) {
-  rlang::arg_match(disease, c("covid", "rsv", "flu"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   nhsn_col_name <- get_nhsn_col_name(disease)
 
@@ -139,7 +139,7 @@ get_hubverse_format_nssp_data <- function(
   start_date = NULL,
   end_date = NULL
 ) {
-  rlang::arg_match(disease, c("covid", "rsv", "flu"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
   nssp_col_name <- get_nssp_col_name(disease)
 
@@ -236,7 +236,7 @@ update_hub_target_data <- function(
   nssp_update_local = FALSE,
   overwrite_existing = FALSE
 ) {
-  rlang::arg_match(disease, c("covid", "rsv"))
+  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
 
   nhsn_data <- get_hubverse_format_nhsn_data(
     disease,
