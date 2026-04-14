@@ -43,7 +43,7 @@ disease_display_names <- c(
 #' @export
 get_nhsn_col_name <- function(disease) {
   rlang::arg_match(disease, names(nhsn_col_names))
-  unname(nhsn_col_names[disease])
+  nhsn_col_names[[disease]]
 }
 
 #' Get NSSP column name for a given disease
@@ -53,7 +53,7 @@ get_nhsn_col_name <- function(disease) {
 #' @export
 get_nssp_col_name <- function(disease) {
   rlang::arg_match(disease, names(nssp_col_names))
-  unname(nssp_col_names[disease])
+  nssp_col_names[[disease]]
 }
 
 
@@ -68,7 +68,7 @@ get_nssp_col_name <- function(disease) {
 #' @export
 get_hub_name <- function(disease) {
   rlang::arg_match(disease, names(hub_names))
-  unname(hub_names[disease])
+  hub_names[[disease]]
 }
 
 
@@ -83,7 +83,7 @@ get_hub_name <- function(disease) {
 #' @export
 get_hub_repo_name <- function(disease) {
   rlang::arg_match(disease, names(hub_repo_names))
-  unname(hub_repo_names[disease])
+  hub_repo_names[[disease]]
 }
 
 
@@ -95,7 +95,7 @@ get_hub_repo_name <- function(disease) {
 #' @noRd
 get_hub_repo_owner <- function(disease) {
   rlang::arg_match(disease, names(hub_repo_owners))
-  unname(hub_repo_owners[disease])
+  hub_repo_owners[[disease]]
 }
 
 
@@ -127,7 +127,7 @@ get_hub_repo_url <- function(disease) {
 #' @export
 get_disease_name <- function(disease) {
   rlang::arg_match(disease, names(disease_display_names))
-  unname(disease_display_names[disease])
+  disease_display_names[[disease]]
 }
 
 

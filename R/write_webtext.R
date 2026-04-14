@@ -34,7 +34,7 @@ check_hospital_reporting_rate <- function(
   )
 
   disease_abbrs <- c(covid = "c19", rsv = "rsv")
-  disease_abbr <- unname(disease_abbrs[disease])
+  disease_abbr <- disease_abbrs[[disease]]
 
   reporting_column <- glue::glue(
     "totalconf{disease_abbr}newadmperchosprepabove80pct"
