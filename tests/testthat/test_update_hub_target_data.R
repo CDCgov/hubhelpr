@@ -81,7 +81,7 @@ test_that("update_hub_target_data errors for unsupported disease", {
       base_hub_path = tempdir(),
       disease = "measles"
     ),
-    "Must be element of set \\{'covid','rsv'\\}"
+    "must be one of"
   )
 })
 

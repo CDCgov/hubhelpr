@@ -1,16 +1,49 @@
+# named vectors for disease-to-value mappings
+nhsn_col_names <- c(
+  covid = "totalconfc19newadm",
+  rsv = "totalconfrsvnewadm",
+  flu = "totalconfflunewadm"
+)
+
+nssp_col_names <- c(
+  covid = "percent_visits_covid",
+  rsv = "percent_visits_rsv",
+  flu = "percent_visits_flu"
+)
+
+hub_names <- c(
+  covid = "CovidHub",
+  rsv = "RSVHub",
+  flu = "FluSight"
+)
+
+hub_repo_names <- c(
+  covid = "covid19-forecast-hub",
+  rsv = "rsv-forecast-hub",
+  flu = "FluSight-forecast-hub"
+)
+
+hub_repo_owners <- c(
+  covid = "CDCgov",
+  rsv = "CDCgov",
+  flu = "cdcepi"
+)
+
+disease_display_names <- c(
+  covid = "COVID-19",
+  rsv = "RSV",
+  flu = "Influenza"
+)
+
+
 #' Get NHSN column name for a given disease
 #'
 #' @param disease Disease name ("covid", "rsv", or "flu")
 #' @return Character string with the NHSN column name
 #' @export
 get_nhsn_col_name <- function(disease) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
-
-  dplyr::case_when(
-    disease == "covid" ~ "totalconfc19newadm",
-    disease == "rsv" ~ "totalconfrsvnewadm",
-    disease == "flu" ~ "totalconfflunewadm"
-  )
+  rlang::arg_match(disease, names(nhsn_col_names))
+  unname(nhsn_col_names[disease])
 }
 
 #' Get NSSP column name for a given disease
@@ -19,13 +52,8 @@ get_nhsn_col_name <- function(disease) {
 #' @return Character string with the NSSP column name
 #' @export
 get_nssp_col_name <- function(disease) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
-
-  dplyr::case_when(
-    disease == "covid" ~ "percent_visits_covid",
-    disease == "rsv" ~ "percent_visits_rsv",
-    disease == "flu" ~ "percent_visits_flu"
-  )
+  rlang::arg_match(disease, names(nssp_col_names))
+  unname(nssp_col_names[disease])
 }
 
 
@@ -39,12 +67,8 @@ get_nssp_col_name <- function(disease) {
 #' @return Character. Hub name (e.g., "CovidHub", "RSVHub", "FluSight").
 #' @export
 get_hub_name <- function(disease) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
-  dplyr::case_when(
-    disease == "covid" ~ "CovidHub",
-    disease == "rsv" ~ "RSVHub",
-    disease == "flu" ~ "FluSight"
-  )
+  rlang::arg_match(disease, names(hub_names))
+  unname(hub_names[disease])
 }
 
 
@@ -58,13 +82,8 @@ get_hub_name <- function(disease) {
 #' @return Character. GitHub repository name.
 #' @export
 get_hub_repo_name <- function(disease) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
-
-  dplyr::case_when(
-    disease == "covid" ~ "covid19-forecast-hub",
-    disease == "rsv" ~ "rsv-forecast-hub",
-    disease == "flu" ~ "FluSight-forecast-hub"
-  )
+  rlang::arg_match(disease, names(hub_repo_names))
+  unname(hub_repo_names[disease])
 }
 
 
@@ -75,13 +94,8 @@ get_hub_repo_name <- function(disease) {
 #' @return Character. GitHub organization name.
 #' @noRd
 get_hub_repo_owner <- function(disease) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
-
-  dplyr::case_when(
-    disease == "covid" ~ "CDCgov",
-    disease == "rsv" ~ "CDCgov",
-    disease == "flu" ~ "cdcepi"
-  )
+  rlang::arg_match(disease, names(hub_repo_owners))
+  unname(hub_repo_owners[disease])
 }
 
 
@@ -112,13 +126,8 @@ get_hub_repo_url <- function(disease) {
 #' "Influenza").
 #' @export
 get_disease_name <- function(disease) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
-
-  dplyr::case_when(
-    disease == "covid" ~ "COVID-19",
-    disease == "rsv" ~ "RSV",
-    disease == "flu" ~ "Influenza"
-  )
+  rlang::arg_match(disease, names(disease_display_names))
+  unname(disease_display_names[disease])
 }
 
 

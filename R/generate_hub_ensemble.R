@@ -92,7 +92,7 @@ generate_hub_ensemble <- function(
   targets = NULL,
   output_format = "csv"
 ) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
+  rlang::arg_match(disease, c("covid", "rsv"))
   reference_date <- lubridate::as_date(reference_date)
 
   dow_supplied <- lubridate::wday(reference_date, week_start = 7, label = FALSE)

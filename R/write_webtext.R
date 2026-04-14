@@ -33,11 +33,8 @@ check_hospital_reporting_rate <- function(
     )
   )
 
-  disease_abbr <- dplyr::case_match(
-    disease,
-    "covid" ~ "c19",
-    "rsv" ~ "rsv"
-  )
+  disease_abbrs <- c(covid = "c19", rsv = "rsv")
+  disease_abbr <- unname(disease_abbrs[disease])
 
   reporting_column <- glue::glue(
     "totalconf{disease_abbr}newadmperchosprepabove80pct"
@@ -206,13 +203,12 @@ compute_target_webtext_values <- function(
   target_type <- get_target_data_type(target)
 
   format_forecast <- function(x) {
-    if (target_type == "hosp") {
-      round_to_place(x)
-    } else if (target_type == "prop_ed") {
-      janitor::signif_half_up(x * 100, 2)
-    } else {
+    switch(
+      target_type,
+      hosp = round_to_place(x),
+      prop_ed = janitor::signif_half_up(x * 100, 2),
       cli::cli_abort("Unknown target type: {target_type}")
-    }
+    )
   }
 
   target_ensemble <- ensemble_data |>
@@ -357,8 +353,8 @@ generate_webtext_block <- function(
   excluded_locations = NULL,
   input_format = "csv"
 ) {
-  checkmate::assert_choice(disease, choices = c("covid", "rsv"))
-  checkmate::assert_choice(input_format, choices = c("csv", "tsv", "parquet"))
+  rlang::arg_match(disease, c("covid", "rsv"))
+  rlang::arg_match(input_format, c("csv", "tsv", "parquet"))
 
   reference_date <- lubridate::as_date(reference_date)
 
