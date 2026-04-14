@@ -41,7 +41,9 @@ ensemble_by_target <- function(
   )
 
   if (ensemble_output_type != "quantile") {
-    stop("Only 'quantile' ensemble_output_type is currently supported")
+    cli::cli_abort(
+      "Only {.val quantile} {.arg ensemble_output_type} is currently supported."
+    )
   }
 
   eligible_models <- weekly_models |>
@@ -98,12 +100,10 @@ generate_hub_ensemble <- function(
   dow_supplied <- lubridate::wday(reference_date, week_start = 7, label = FALSE)
   if (dow_supplied != 7) {
     cli::cli_abort(
-      message = paste0(
-        "Expected `reference_date` to be a Saturday, day number 7 ",
-        "of the week, given the `week_start` value of Sunday. ",
-        "Got {reference_date}, which is day number ",
-        "{dow_supplied} of the week."
-      )
+      "Expected {.arg reference_date} to be a Saturday, day number 7
+      of the week, given the {.arg week_start} value of Sunday.
+      Got {reference_date}, which is day number
+      {dow_supplied} of the week."
     )
   }
 

@@ -148,12 +148,10 @@ generate_hub_baseline <- function(
   rng_seed <- as.integer((59460707 + as.numeric(reference_date)) %% 2e9)
   if (dow_supplied != 7) {
     cli::cli_abort(
-      message = paste0(
-        "Expected `reference_date` to be a Saturday, day number 7 ",
-        "of the week, given the `week_start` value of Sunday. ",
-        "Got {reference_date}, which is day number ",
-        "{dow_supplied} of the week."
-      )
+      "Expected {.arg reference_date} to be a Saturday, day number 7
+      of the week, given the {.arg week_start} value of Sunday.
+      Got {reference_date}, which is day number
+      {dow_supplied} of the week."
     )
   }
 

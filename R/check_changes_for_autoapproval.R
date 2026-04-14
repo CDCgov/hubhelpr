@@ -59,8 +59,8 @@ check_changes_for_autoapproval <- function(
   }
   changed_model_ids <- changed_files_tbl |>
     dplyr::filter(.data$in_model_output) |>
-    dplyr::pull(.data$model_id) |>
-    unique()
+    dplyr::distinct(.data$model_id) |>
+    dplyr::pull(.data$model_id)
 
   if (length(changed_model_ids) > 0) {
     cli::cli_inform(

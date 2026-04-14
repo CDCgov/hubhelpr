@@ -223,8 +223,8 @@ compute_target_webtext_values <- function(
       .data$target == !!target,
       .data$model != glue::glue("{hub_name}-ensemble")
     ) |>
-    dplyr::pull(.data$model) |>
-    unique()
+    dplyr::distinct(.data$model) |>
+    dplyr::pull(.data$model)
 
   # split contributing teams by designated_model status
   contributing_metadata <- all_model_metadata |>
@@ -261,9 +261,8 @@ compute_target_webtext_values <- function(
 
   n_teams <- contributing_metadata |>
     dplyr::filter(.data$designated_model) |>
-    dplyr::pull(.data$team_name) |>
-    unique() |>
-    length()
+    dplyr::distinct(.data$team_name) |>
+    nrow()
   n_forecasts <- length(teams_in_ensemble)
 
   models_included <- paste0("* ", teams_in_ensemble, collapse = "\n")
