@@ -31,8 +31,8 @@ the time-series data.}
 coercible by as.Date(), or "latest" to filter to the
 most recent available vintage. Default "latest".}
 
-\item{output_format}{Character, output file format. One
-of "csv", "tsv", or "parquet". Default: "csv".}
+\item{output_format}{Character, output file format.
+One of "csv", "tsv", or "parquet". Default: "csv".}
 }
 \value{
 NULL. Writes baseline forecast file to hub's

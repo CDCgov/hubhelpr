@@ -10,7 +10,8 @@ get_hubverse_format_nssp_data(
   as_of = lubridate::today(),
   nssp_update_local = FALSE,
   start_date = NULL,
-  end_date = NULL
+  end_date = NULL,
+  date_col_name = "target_end_date"
 )
 }
 \arguments{
@@ -32,6 +33,9 @@ is NULL (no filtering).}
 \item{end_date}{Last week-ending
 date to include for the NSSP dataset. Default value
 is NULL (no filtering).}
+
+\item{date_col_name}{Character. Name for the date column
+in the output. Default is "target_end_date".}
 }
 \value{
 Data frame with formatted NSSP data.

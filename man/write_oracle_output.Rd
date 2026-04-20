@@ -3,18 +3,18 @@
 \name{write_oracle_output}
 \alias{write_oracle_output}
 \alias{generate_oracle_output}
-\title{Generate and save oracle output for the Hub}
+\title{Generate and save oracle output for the Hub.}
 \usage{
 write_oracle_output(
   hub_path,
   output_dirpath = fs::path(hub_path, "target-data"),
-  ts_date_col = "date"
+  ts_date_col = "target_end_date"
 )
 
 generate_oracle_output(
   hub_path,
   output_dirpath = fs::path(hub_path, "target-data"),
-  ts_date_col = "date"
+  ts_date_col = "target_end_date"
 )
 }
 \arguments{
@@ -27,11 +27,12 @@ in \code{hub_path}.}
 
 \item{ts_date_col}{Name of the date column in
 the \code{time-series} format target data. Will be converted
-to \code{target_end_date} for the oracle output. Default \code{date}.}
+to \code{target_end_date} for the oracle output. Default
+\code{target_end_date}.}
 }
 \value{
 nothing, invisibly, on success.
 }
 \description{
-Generate and save oracle output for the Hub
+Generate and save oracle output for the Hub.
 }
