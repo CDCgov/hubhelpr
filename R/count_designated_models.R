@@ -49,20 +49,16 @@ count_designated_models <- function(
     )
   }
 
-  hub_submitting_models <- hubData::load_model_metadata(
+  designated_pairs <- get_model_designation(
     base_hub_path,
-    model_ids = unique(hub_forecasts$model_id)
+    hub_forecasts |> dplyr::distinct(.data$model_id, .data$target)
   ) |>
-    dplyr::select("model_id", "designated_model") |>
-    dplyr::distinct()
-
-  designated_ids <- hub_submitting_models |>
     dplyr::filter(.data$designated_model) |>
-    dplyr::pull("model_id")
+    dplyr::select("model_id", "target")
 
   designated_forecasts <- hub_forecasts |>
+    dplyr::inner_join(designated_pairs, by = c("model_id", "target")) |>
     dplyr::filter(
-      .data$model_id %in% designated_ids,
       forecasttools::nullable_comparison(.data$target, "%in%", !!targets),
       forecasttools::nullable_comparison(.data$horizon, "%in%", !!horizons),
       forecasttools::nullable_comparison(

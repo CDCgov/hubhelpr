@@ -140,18 +140,14 @@ generate_hub_ensemble <- function(
     ) |>
     hubData::collect_hub()
 
-  weekly_models <- hubData::load_model_metadata(
+  weekly_models <- get_model_designation(
     base_hub_path,
-    model_ids = unique(weekly_forecasts$model_id)
+    weekly_forecasts |>
+      dplyr::distinct(.data$model_id, .data$target)
   ) |>
-    dplyr::select("model_id", "designated_model") |>
-    dplyr::distinct() |>
-    dplyr::right_join(
-      weekly_forecasts |>
-        dplyr::select("model_id", "target") |>
-        dplyr::distinct(),
-      by = "model_id"
-    ) |>
+    # preserve historical column order of the
+    # weekly-submissions CSV: model_id, designated_model, target
+    dplyr::select("model_id", "designated_model", "target") |>
     dplyr::arrange(.data$target)
 
   weekly_model_submissions_path <- fs::path(
