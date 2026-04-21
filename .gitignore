@@ -11,6 +11,9 @@
 *.xlsx
 # allow extdata
 !inst/extdata/*.csv
+!inst/testhubs/covidhub/auxiliary-data/locations.csv
+!inst/testhubs/covidhub/model-output/**/*.csv
+!inst/testhubs/covidhub/target-data/*.parquet
 
 # Documents
 *.doc
