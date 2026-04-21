@@ -231,12 +231,10 @@ compute_target_webtext_values <- function(
     dplyr::distinct(.data$model) |>
     dplyr::pull(.data$model)
 
-  # per-target designation for contributing models
   target_designation <- designation |>
     dplyr::filter(.data$target == !!target) |>
     dplyr::select("model_id", "designated_model")
 
-  # split teams by per-target designated_model status
   contributing_metadata <- all_model_metadata |>
     dplyr::filter(.data$model_id %in% target_contributing_models) |>
     dplyr::left_join(target_designation, by = "model_id") |>
@@ -405,14 +403,15 @@ generate_webtext_block <- function(
     )
   )
 
-  # resolve per-(model_id, target) designation from
-  # submissions; not in all_model_metadata because
-  # designation now target-specific
-  submission_pairs <- all_forecasts_data |>
+  contributing_model_ids <- all_forecasts_data |>
     dplyr::filter(.data$model != glue::glue("{hub_name}-ensemble")) |>
-    dplyr::distinct(model_id = .data$model, .data$target)
+    dplyr::distinct(.data$model) |>
+    dplyr::pull(.data$model)
 
-  designation <- get_model_designation(base_hub_path, submission_pairs)
+  designation <- get_model_designation(
+    base_hub_path,
+    model_ids = contributing_model_ids
+  )
 
   all_model_metadata <- hubData::load_model_metadata(base_hub_path) |>
     dplyr::distinct(.data$model_id, .keep_all = TRUE) |>

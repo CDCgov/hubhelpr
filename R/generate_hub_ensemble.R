@@ -142,11 +142,8 @@ generate_hub_ensemble <- function(
 
   weekly_models <- get_model_designation(
     base_hub_path,
-    weekly_forecasts |>
-      dplyr::distinct(.data$model_id, .data$target)
+    model_ids = unique(weekly_forecasts$model_id)
   ) |>
-    # preserve historical column order of the
-    # weekly-submissions CSV: model_id, designated_model, target
     dplyr::select("model_id", "designated_model", "target") |>
     dplyr::arrange(.data$target)
 

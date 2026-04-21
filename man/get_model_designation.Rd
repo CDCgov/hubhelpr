@@ -4,29 +4,34 @@
 \alias{get_model_designation}
 \title{Resolve per-target model designation.}
 \usage{
-get_model_designation(base_hub_path, model_target_pairs)
+get_model_designation(base_hub_path, model_ids = NULL, targets = NULL)
 }
 \arguments{
 \item{base_hub_path}{character, path to the base hub
 directory.}
 
-\item{model_target_pairs}{data frame with columns
-\code{model_id} and \code{target} giving the (model, target)
-pairs to resolve designation for. Typically the
-distinct combinations present in forecast data.}
+\item{model_ids}{character vector of model IDs to
+include, or NULL (default) to include all models
+with metadata in the hub.}
+
+\item{targets}{character vector of target names to
+include, or NULL (default) to include all targets
+supported by the hub.}
 }
 \value{
 A tibble with columns \code{model_id}, \code{target},
-and \code{designated_model} (logical).
+and \code{designated_model} (logical), with one row per
+(model, target) combination.
 }
 \description{
-Annotates each (model_id, target) pair with whether
-the model is designated for that target, per the
-model's metadata fields \code{designated_model} and the
-optional \code{designated_targets} list. If
-\code{designated_model} absent or FALSE: never designated.
-If \code{designated_model} TRUE and \code{designated_targets}
-absent or empty: designated for every target supplied.
-If \code{designated_model} TRUE and \code{designated_targets}
+Returns full grid of (model_id, target,
+designated_model) for the requested models and
+targets. Resolution uses the model's metadata
+fields \code{designated_model} and the optional
+\code{designated_targets} list. If \code{designated_model}
+absent or FALSE: never designated. If
+\code{designated_model} TRUE and \code{designated_targets}
+absent or empty: designated for every target. If
+\code{designated_model} TRUE and \code{designated_targets}
 present: designated only for targets in that list.
 }
