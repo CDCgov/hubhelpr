@@ -42,8 +42,7 @@ Imports:
     hubUtils,
     janitor,
     hubValidations,
-    tibble,
-    yaml
+    tibble
 Remotes:
     forecasttools=github::cdcgov/forecasttools,
     hubAdmin=github::hubverse-org/hubAdmin,

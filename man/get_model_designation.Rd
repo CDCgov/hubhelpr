@@ -25,8 +25,8 @@ the model is designated for that target, per the
 model's metadata fields \code{designated_model} and the
 optional \code{designated_targets} list. If
 \code{designated_model} absent or FALSE: never designated.
-If\code{designated_model} TRUE and \code{designated_targets}
+If \code{designated_model} TRUE and \code{designated_targets}
 absent or empty: designated for every target supplied.
-If \code{designated_model} TRUE  and \code{designated_targets}
+If \code{designated_model} TRUE and \code{designated_targets}
 present: designated only for targets in that list.
 }
