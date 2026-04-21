@@ -1,5 +1,5 @@
 # COVID-19 Forecast Hub
-> **Note:** This directory is a lightweight, downsampled test snapshot bundled with the `hubhelpr` package for automated testing. For full, up-to-date operational hub data, see the live repository at <https://github.com/CDCgov/covid19-forecast-hub>.
+> **Note:** This directory is a lightweight, downsampled test snapshot bundled with the `hubhelpr` package for automated testing. For full, up-to-date operational hub data, see the live repository at <https://github.com/CDCgov/covid19-forecast-hub>. All real model data included in this downsampled snapshot are licensed under CC-BY-4.0 and attributed to the original model submitters listed in each corresponding `model-metadata` file (license: <https://creativecommons.org/licenses/by/4.0/>).
 
 This repository is designed to collect forecast data for the COVID-19 Forecast Hub run by the US CDC. The project collects forecast for two datasets:
 

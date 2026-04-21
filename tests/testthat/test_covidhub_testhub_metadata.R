@@ -25,8 +25,8 @@ test_that("bundled covidhub test hub includes required custom metadata cases", {
     readLines(fs::path(meta_path, "CFA_Pyrenew-Pyrenew_HE_COVID.yaml")),
     collapse = "\n"
   )
-  umass_gbqr <- paste(
-    readLines(fs::path(meta_path, "UMass-gbqr.yml")),
+  ceph_rtrend <- paste(
+    readLines(fs::path(meta_path, "CEPH-Rtrend_covid.yml")),
     collapse = "\n"
   )
 
@@ -62,8 +62,8 @@ test_that("bundled covidhub test hub includes required custom metadata cases", {
   )
 
   # designated_targets for designated_model: true
-  expect_true(grepl("designated_model: true", umass_gbqr, fixed = TRUE))
-  expect_false(grepl("designated_targets", umass_gbqr, fixed = TRUE))
+  expect_true(grepl("designated_model: true", ceph_rtrend, fixed = TRUE))
+  expect_false(grepl("designated_targets", ceph_rtrend, fixed = TRUE))
   expect_true(
     grepl(
       "designated_targets: \\[\"wk inc covid hosp\"\\]",
