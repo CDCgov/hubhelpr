@@ -1,6 +1,7 @@
 test_that("bundled covidhub test hub includes required custom metadata cases", {
-  hub_path <- fs::path("inst", "testhubs", "covidhub")
+  hub_path <- system.file("testhubs", "covidhub", package = "hubhelpr")
 
+  expect_true(nzchar(hub_path))
   expect_true(fs::dir_exists(hub_path))
   all_metadata <- hubData::load_model_metadata(hub_path)
 
