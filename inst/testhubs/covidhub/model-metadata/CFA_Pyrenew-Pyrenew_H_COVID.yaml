@@ -37,7 +37,8 @@ model_contributors: [
 ]
 
 license: "CC-BY-4.0"
-designated_model: false
+designated_model: true
+designated_targets: ["wk inc covid hosp"]
 methods: "Basic renewal model using the Pyrenew-HEW framework."
 data_inputs: "Epiweekly incident COVID-19 hospital admissions from NHSN HRD via data.cdc.gov."
 methods_long: "Simple renewal model fit only to the target signal. Used to benchmark related multi-signal models the same framework with additional observables."

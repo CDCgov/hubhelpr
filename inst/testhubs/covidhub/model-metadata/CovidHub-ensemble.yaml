@@ -14,6 +14,7 @@ model_contributors:
 website_url: "https://github.com/CDCgov/covid19-forecast-hub"
 license: "CC-BY-4.0"
 designated_model: false
+designated_targets: ["wk inc covid hosp", "wk inc covid prop ed visits"]
 methods: "Median-based ensemble of quantile forecasts submissions."
 data_inputs: "Epiweekly incident COVID-19 hospital admissions from the NHSN Weekly Hospital Respiratory Data dataset,
 https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data

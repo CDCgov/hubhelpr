@@ -33,6 +33,7 @@ model_contributors: [
 
 license: "CC-BY-4.0"
 designated_model: true
+designated_targets: ["wk inc covid hosp"]
 methods: "Ensemble of Gaussian processes."
 data_inputs: "Weekly NHSN COVID-19 hospitalisation visits."
 methods_long: "Ensemble of Gaussian processes, with most recent week nowcasting, implemented using NowcastAutoGP.jl. Before reference date, 2025-11-29, model was based directly on AutoGP.jl, and has been updated to NowcastAutoGP.jl."
