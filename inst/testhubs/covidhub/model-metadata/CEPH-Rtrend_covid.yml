@@ -6,28 +6,28 @@ model_contributors: [
   {
     "name": "Marco Ajelli",
     "affiliation": "Indiana University Bloomington",
-    "email": "majelli@iu.edu",
+    "email": "majelli@iu.edu"
   },
   {
     "name": "Paulo C. Ventura",
     "affiliation": "Indiana University Bloomington",
-    "email": "pventura@iu.edu",
+    "email": "pventura@iu.edu"
   },
   {
     "name": "Maria Litvinova",
     "affiliation": "Indiana University Bloomington",
-    "email": "malitv@iu.edu",
+    "email": "malitv@iu.edu"
   },
   {
     "name": "Allisandra G. Kummer",
     "affiliation": "Indiana University Bloomington",
-    "email": "alkummer@iu.edu",
+    "email": "alkummer@iu.edu"
   },
   {
     "name": "Alessandro Vespignani",
     "affiliation": "Northeastern University",
-    "email": "a.vespignani@northeastern.edu",
-  }, 
+    "email": "a.vespignani@northeastern.edu"
+  }
 ]
 license: "CC-BY-4.0"
 designated_model: true
