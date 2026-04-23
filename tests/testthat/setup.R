@@ -13,3 +13,8 @@ example_hub_paths <- purrr::pmap_vec(
     )
   }
 )
+
+example_cfa_hub <- system.file(
+  fs::path("testhubs", "covidhub"),
+  package = "hubhelpr"
+)

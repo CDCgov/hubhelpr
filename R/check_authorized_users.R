@@ -27,6 +27,7 @@ check_authorized_users <- function(
   checkmate::assert_string(base_hub_path)
 
   model_metadata <- hubData::load_model_metadata(base_hub_path) |>
+    dplyr::select("model_id", "designated_github_users") |>
     dplyr::mutate(is_model_dir = TRUE) |>
     dplyr::rename(dir = "model_id")
 
@@ -34,17 +35,20 @@ check_authorized_users <- function(
 
   authorization_check <- changed_dirs_tbl |>
     dplyr::left_join(model_metadata, by = "dir", na_matches = "never") |>
-    tidyr::unnest(cols = "designated_github_users") |>
-    dplyr::group_by(.data$dir) |>
-    dplyr::summarize(
-      modifiable = all(tidyr::replace_na(.data$is_model_dir, FALSE)),
-      actor_authorized = !!gh_actor %in% .data$designated_github_users,
-      authorized_users = paste(
-        na.omit(.data$designated_github_users),
-        collapse = ", "
+    dplyr::mutate(
+      modifiable = tidyr::replace_na(.data$is_model_dir, FALSE),
+      actor_authorized = purrr::map_lgl(
+        .data$designated_github_users,
+        ~ gh_actor %in% unlist(.x)
       ),
-      has_authorized_users = length(na.omit(.data$designated_github_users)) > 0,
-      .groups = "drop"
+      authorized_users = purrr::map_chr(
+        .data$designated_github_users,
+        ~ paste(na.omit(unlist(.x)), collapse = ", ")
+      ),
+      has_authorized_users = purrr::map_lgl(
+        .data$designated_github_users,
+        ~ length(na.omit(unlist(.x))) > 0
+      )
     )
 
   problem_dirs <- authorization_check |>
@@ -56,7 +60,7 @@ check_authorized_users <- function(
         error_msg = dplyr::case_when(
           !.data$modifiable ~
             glue::glue(
-              "'{.data$dir}' cannot be modified in auto-approved PRs.",
+              "'{.data$dir}' cannot be modified in auto-approved PRs. ",
               "If this is your team's model output subdirectory, check ",
               "that the Hub already has a model metadata file for this model."
             ),
