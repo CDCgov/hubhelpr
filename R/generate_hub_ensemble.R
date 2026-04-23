@@ -142,7 +142,8 @@ generate_hub_ensemble <- function(
 
   weekly_models <- get_model_designation(
     base_hub_path,
-    model_ids = unique(weekly_forecasts$model_id)
+    model_ids = dplyr::distinct(weekly_forecasts, .data$model_id) |>
+      dplyr::pull(.data$model_id)
   ) |>
     dplyr::select("model_id", "designated_model", "target") |>
     dplyr::arrange(.data$target)

@@ -42,44 +42,41 @@ get_model_designation <- function(
 
   if (!"designated_targets" %in% colnames(metadata)) {
     metadata <- metadata |>
-      dplyr::mutate(designated_targets = NA_character_)
+      dplyr::mutate(
+        designated_targets = rep(list(character(0)), dplyr::n())
+      )
   } else {
     metadata <- metadata |>
       dplyr::mutate(
-        designated_targets = as.character(.data$designated_targets)
+        designated_targets = purrr::map(
+          .data$designated_targets,
+          ~ if (is.null(.x) || anyNA(.x)) character(0) else as.character(.x)
+        )
       )
   }
+
+  metadata <- metadata |>
+    dplyr::mutate(
+      designated_model = dplyr::coalesce(.data$designated_model, FALSE)
+    )
 
   if (is.null(targets)) {
     targets <- get_hub_supported_targets(base_hub_path)
   }
 
-  model_target_grid <- tidyr::crossing(
-    model_id = unique(metadata$model_id),
-    target = targets
-  )
-
-  designated_all_targets <- metadata |>
-    dplyr::filter(.data$designated_model, is.na(.data$designated_targets)) |>
-    dplyr::distinct(.data$model_id)
-
-  designated_specific_targets <- metadata |>
-    dplyr::filter(.data$designated_model, !is.na(.data$designated_targets)) |>
-    dplyr::distinct(.data$model_id, .data$designated_targets) |>
-    dplyr::rename(target = "designated_targets")
-
-  designated_pairs <- dplyr::bind_rows(
-    designated_all_targets |>
-      tidyr::crossing(target = targets),
-    designated_specific_targets
-  ) |>
-    dplyr::mutate(designated_model = TRUE)
-
-  model_target_grid |>
-    dplyr::left_join(designated_pairs, by = c("model_id", "target")) |>
+  metadata |>
+    dplyr::distinct(.data$model_id, .keep_all = TRUE) |>
+    tidyr::crossing(target = targets) |>
     dplyr::mutate(
-      designated_model = dplyr::coalesce(.data$designated_model, FALSE)
-    )
+      designated_model = dplyr::case_when(
+        !.data$designated_model ~ FALSE,
+        lengths(.data$designated_targets) == 0L ~ TRUE,
+        .default = purrr::map2_lgl(
+          .data$target, .data$designated_targets, `%in%`
+        )
+      )
+    ) |>
+    dplyr::select("model_id", "target", "designated_model")
 }
 
 
@@ -136,7 +133,8 @@ count_designated_models <- function(
 
   designated_pairs <- get_model_designation(
     base_hub_path,
-    model_ids = unique(hub_forecasts$model_id)
+    model_ids = dplyr::distinct(hub_forecasts, .data$model_id) |>
+      dplyr::pull(.data$model_id)
   ) |>
     dplyr::filter(.data$designated_model) |>
     dplyr::select("model_id", "target")
