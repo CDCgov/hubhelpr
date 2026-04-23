@@ -1,16 +1,22 @@
-#' Create a hub formatted baseline forecast for a single target
+#' Create a hub formatted baseline forecast for a single
+#' target.
 #'
-#' @param target_data Data frame of target time series. Must include `date`,
-#' `location`, `target`, and `observation` columns.
-#' @param target_name Character. Name of the target to forecast,
-#' e.g., "wk inc covid hosp".
-#' @param target_label Character. Label for the target, e.g., "Hospital Admissions"
-#' or "Proportion ED Visits".
-#' @param reference_date Date. Reference date for the forecast.
-#' @param desired_max_time_value Date. Most recent date for which observations are expected.
-#'  Function will error if there is excess latency; see [assert_data_up_to_date()].
+#' @param target_data Data frame of target time series.
+#' Must include `target_end_date`, `location`, `target`,
+#' and `observation` columns.
+#' @param target_name Character. Name of the target to
+#' forecast, e.g., "wk inc covid hosp".
+#' @param target_label Character. Label for the target,
+#' e.g., "Hospital Admissions" or "Proportion ED Visits".
+#' @param reference_date Date. Reference date for the
+#' forecast.
+#' @param desired_max_time_value Date. Most recent date
+#' for which observations are expected.  Function will
+#' error if there is excess latency; see
+#' [assert_data_up_to_date()].
 #' @param rng_seed Integer. Random seed for reproducibility.
-#' @return A data frame of baseline forecasts for the specified target.
+#' @return A data frame of baseline forecasts for the
+#' specified target.
 make_baseline_forecast <- function(
   target_data,
   target_name,
@@ -20,7 +26,7 @@ make_baseline_forecast <- function(
   rng_seed
 ) {
   checkmate::assertSubset(
-    c("date", "location", "target", "observation"),
+    c("target_end_date", "location", "target", "observation"),
     colnames(target_data),
     .var.name = "target_data columns"
   )
@@ -35,7 +41,7 @@ make_baseline_forecast <- function(
       )
     ) |>
     dplyr::rename(
-      time_value = "date"
+      time_value = "target_end_date"
     ) |>
     dplyr::select(-c("location", "target")) |>
     epiprocess::as_epi_df()
@@ -128,8 +134,8 @@ make_baseline_forecast <- function(
 #' @param as_of As of date to filter to, as an object
 #' coercible by as.Date(), or "latest" to filter to the
 #' most recent available vintage. Default "latest".
-#' @param output_format Character, output file format. One
-#' of "csv", "tsv", or "parquet". Default: "csv".
+#' @param output_format Character, output file format.
+#' One of "csv", "tsv", or "parquet". Default: "csv".
 #' @return NULL. Writes baseline forecast file to hub's
 #' model-output directory.
 #' @export

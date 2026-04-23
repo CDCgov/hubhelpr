@@ -2,20 +2,22 @@
 % Please edit documentation in R/generate_oracle_output.R
 \name{generate_oracle_output_table}
 \alias{generate_oracle_output_table}
-\title{Create an oracle output table from a Hub}
+\title{Create an oracle output table from a Hub.}
 \usage{
-generate_oracle_output_table(hub_path, ts_date_col = "date")
+generate_oracle_output_table(hub_path, ts_date_col = "target_end_date")
 }
 \arguments{
 \item{hub_path}{Path to the hub root.}
 
 \item{ts_date_col}{Name of the date column in
-the \code{time-series} format target data. Will be converted
-to \code{target_end_date} for the oracle output. Default \code{date}.}
+the \code{time-series} format target data. Will be
+converted to \code{target_end_date} for the oracle output.
+Default \code{target_end_date}.}
 }
 \value{
-the oracle output table, as a \code{\link[tibble:tibble]{tibble}}.
+the oracle output table, as a
+\code{\link[tibble:tibble]{tibble}}.
 }
 \description{
-Create an oracle output table from a Hub
+Create an oracle output table from a Hub.
 }

@@ -10,7 +10,7 @@
 #'
 #' @return Named list of character vectors, or NULL if
 #' input is NULL or zero-length.
-#' @noRd
+#' @keywords internal
 normalize_excluded_locations <- function(excluded_locations) {
   if (is.null(excluded_locations) || length(excluded_locations) == 0) {
     return(NULL)

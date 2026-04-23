@@ -75,8 +75,8 @@ write_viz_target_data <- function(
       # rates during this period were much lower,
       # and data not comparable to other time periods.
       dplyr::filter(
-        !(.data$date >= lubridate::as_date("2024-05-01") &
-          .data$date <= lubridate::as_date("2024-10-31"))
+        !(.data$target_end_date >= lubridate::as_date("2024-05-01") &
+          .data$target_end_date <= lubridate::as_date("2024-10-31"))
       )
     nssp_data <- get_hubverse_format_nssp_data(
       disease,
@@ -109,7 +109,7 @@ write_viz_target_data <- function(
       )
     ) |>
     dplyr::select(
-      week_ending_date = "date",
+      week_ending_date = "target_end_date",
       "location",
       "location_name",
       "target",

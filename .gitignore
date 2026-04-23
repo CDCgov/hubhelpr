@@ -12,6 +12,10 @@
 # allow extdata
 !inst/extdata/*.csv
 
+# allow test hub
+!inst/testhubs/**/*.csv
+!inst/testhubs/**/*.parquet
+
 # Documents
 *.doc
 *.docx

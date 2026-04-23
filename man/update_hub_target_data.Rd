@@ -43,7 +43,7 @@ data from local hub file \code{auxiliary-data/latest.parquet}
 (default: FALSE).}
 
 \item{overwrite_existing}{Logical. If TRUE, overwrite
-existing rows that share key columns (date, location,
+existing rows that share key columns (target_end_date, location,
 as_of, target) with the new data. If FALSE (default),
 error if any conflicts are found.}
 }
