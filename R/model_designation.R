@@ -72,7 +72,9 @@ get_model_designation <- function(
         !.data$designated_model ~ FALSE,
         lengths(.data$designated_targets) == 0L ~ TRUE,
         .default = purrr::map2_lgl(
-          .data$target, .data$designated_targets, `%in%`
+          .data$target,
+          .data$designated_targets,
+          `%in%`
         )
       )
     ) |>
