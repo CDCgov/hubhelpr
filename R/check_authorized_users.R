@@ -34,6 +34,7 @@ check_authorized_users <- function(
 
   authorization_check <- changed_dirs_tbl |>
     dplyr::left_join(model_metadata, by = "dir", na_matches = "never") |>
+    tidyr::unnest(cols = "designated_github_users") |>
     dplyr::group_by(.data$dir) |>
     dplyr::summarize(
       modifiable = all(tidyr::replace_na(.data$is_model_dir, FALSE)),
