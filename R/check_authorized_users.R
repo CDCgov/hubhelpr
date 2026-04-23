@@ -29,7 +29,8 @@ check_authorized_users <- function(
   model_metadata <- hubData::load_model_metadata(base_hub_path) |>
     dplyr::select("model_id", "designated_github_users") |>
     dplyr::mutate(is_model_dir = TRUE) |>
-    dplyr::rename(dir = "model_id")
+    dplyr::rename(dir = "model_id") |> 
+    dplyr::distinct()
 
   changed_dirs_tbl <- tibble::tibble(dir = changed_model_ids)
 
