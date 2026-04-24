@@ -69,6 +69,16 @@ test_that("get_model_designation loads all hub models when model_ids is NULL", {
   expect_equal(nrow(designation), n_models * n_targets)
 })
 
+test_that("get_model_designation works with a single target input", {
+  designation <- get_model_designation(
+    example_cfa_hub,
+    model_ids = "CFA-EpiAutoGP",
+    targets = "wk inc covid hosp"
+  )
+  expect_equal(nrow(designation), 1)
+  expect_true(designation$designated)
+})
+
 test_that("get_model_designation uses all hub-supported targets when targets is NULL", {
   designation <- get_model_designation(
     example_cfa_hub,
