@@ -51,7 +51,7 @@ get_model_designation <- function(
       dplyr::mutate(
         designated_targets = purrr::map(
           .data$designated_targets,
-          ~ if (length(.x) == 0L || anyNA(.x)) targets else as.character(.x)
+          ~ if (length(.x) == 0L) targets else as.character(.x)
         )
       )
   }
