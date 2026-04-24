@@ -237,10 +237,7 @@ compute_target_webtext_values <- function(
 
   contributing_metadata <- all_model_metadata |>
     dplyr::filter(.data$model_id %in% target_contributing_models) |>
-    dplyr::left_join(target_designation, by = "model_id") |>
-    dplyr::mutate(
-      designated = dplyr::coalesce(.data$designated, FALSE)
-    )
+    dplyr::left_join(target_designation, by = "model_id")
 
   teams_in_ensemble <- contributing_metadata |>
     dplyr::filter(.data$designated) |>
