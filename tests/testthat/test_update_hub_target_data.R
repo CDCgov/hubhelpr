@@ -112,6 +112,7 @@ purrr::walk(c("covid", "rsv"), function(disease) {
           as_of = lubridate::as_date("2025-08-18"),
           excluded_locations = test_excluded_locations
         )
+        gc()
 
         # second run with same data errors by default
         expect_error(
@@ -123,6 +124,7 @@ purrr::walk(c("covid", "rsv"), function(disease) {
           ),
           "overwrite"
         )
+        gc()
 
         # second run with overwrite_existing = TRUE
         # (should succeed)
