@@ -15,7 +15,7 @@ ensemble_by_target(
 }
 \arguments{
 \item{weekly_models}{Data frame of model metadata for the week.
-Must include \code{model_id}, \code{designated_model} and \code{target} columns.}
+Must include \code{model_id}, \code{designated} and \code{target} columns.}
 
 \item{weekly_forecasts}{Data frame of forecasts for the week.}
 

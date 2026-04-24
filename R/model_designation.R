@@ -1,15 +1,15 @@
 #' Resolve per-target model designation.
 #'
 #' Returns full grid of (model_id, target,
-#' designated_model) for the requested models and
-#' targets. Resolution uses the model's metadata
-#' fields `designated_model` and the optional
+#' designated) for the requested models and targets.
+#' Resolution uses the model's metadata fields
+#' `designated_model` and the optional
 #' `designated_targets` list. If `designated_model`
-#' absent or FALSE: never designated. If
-#' `designated_model` TRUE and `designated_targets`
-#' absent or empty: designated for every target. If
-#' `designated_model` TRUE and `designated_targets`
-#' present: designated only for targets in that list.
+#' is FALSE: never designated. If `designated_model`
+#' is TRUE and `designated_targets` is absent or
+#' empty: designated for every target. If
+#' `designated_model` is TRUE and `designated_targets`
+#' is present: designated only for listed targets.
 #'
 #' @param base_hub_path character, path to the base hub
 #' directory.
@@ -21,7 +21,7 @@
 #' supported by the hub.
 #'
 #' @return A tibble with columns `model_id`, `target`,
-#' and `designated_model` (logical), with one row per
+#' and `designated` (logical), with one row per
 #' (model, target) combination.
 #' @export
 get_model_designation <- function(
@@ -29,6 +29,10 @@ get_model_designation <- function(
   model_ids = NULL,
   targets = NULL
 ) {
+  if (is.null(targets)) {
+    targets <- get_hub_supported_targets(base_hub_path)
+  }
+
   metadata <- hubData::load_model_metadata(
     base_hub_path,
     model_ids = model_ids
@@ -37,48 +41,32 @@ get_model_designation <- function(
       "model_id",
       "designated_model",
       dplyr::any_of("designated_targets")
-    ) |>
-    dplyr::distinct()
+    )
 
   if (!"designated_targets" %in% colnames(metadata)) {
     metadata <- metadata |>
-      dplyr::mutate(
-        designated_targets = rep(list(character(0)), dplyr::n())
-      )
+      dplyr::mutate(designated_targets = list(targets))
   } else {
     metadata <- metadata |>
       dplyr::mutate(
         designated_targets = purrr::map(
           .data$designated_targets,
-          ~ if (is.null(.x) || anyNA(.x)) character(0) else as.character(.x)
+          ~ if (length(.x) == 0L || anyNA(.x)) targets else as.character(.x)
         )
       )
   }
 
-  metadata <- metadata |>
-    dplyr::mutate(
-      designated_model = dplyr::coalesce(.data$designated_model, FALSE)
-    )
-
-  if (is.null(targets)) {
-    targets <- get_hub_supported_targets(base_hub_path)
-  }
-
   metadata |>
-    dplyr::distinct(.data$model_id, .keep_all = TRUE) |>
     tidyr::crossing(target = targets) |>
     dplyr::mutate(
-      designated_model = dplyr::case_when(
-        !.data$designated_model ~ FALSE,
-        lengths(.data$designated_targets) == 0L ~ TRUE,
-        .default = purrr::map2_lgl(
+      designated = .data$designated_model &
+        purrr::map2_lgl(
           .data$target,
           .data$designated_targets,
           `%in%`
         )
-      )
     ) |>
-    dplyr::select("model_id", "target", "designated_model")
+    dplyr::select("model_id", "target", "designated")
 }
 
 
@@ -138,7 +126,7 @@ count_designated_models <- function(
     model_ids = dplyr::distinct(hub_forecasts, .data$model_id) |>
       dplyr::pull(.data$model_id)
   ) |>
-    dplyr::filter(.data$designated_model) |>
+    dplyr::filter(.data$designated) |>
     dplyr::select("model_id", "target")
 
   designated_forecasts <- hub_forecasts |>

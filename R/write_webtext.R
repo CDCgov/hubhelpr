@@ -181,7 +181,7 @@ compute_change_direction <- function(
 #' @param all_model_metadata Data frame of model metadata.
 #' @param designation Data frame of per-target model
 #' designation with columns `model_id`, `target`, and
-#' `designated_model` (logical), typically produced by
+#' `designated` (logical), typically produced by
 #' [get_model_designation()].
 #' @param hub_name Character, hub name.
 #' @param reference_date Date, the reference date.
@@ -233,21 +233,21 @@ compute_target_webtext_values <- function(
 
   target_designation <- designation |>
     dplyr::filter(.data$target == !!target) |>
-    dplyr::select("model_id", "designated_model")
+    dplyr::select("model_id", "designated")
 
   contributing_metadata <- all_model_metadata |>
     dplyr::filter(.data$model_id %in% target_contributing_models) |>
     dplyr::left_join(target_designation, by = "model_id") |>
     dplyr::mutate(
-      designated_model = dplyr::coalesce(.data$designated_model, FALSE)
+      designated = dplyr::coalesce(.data$designated, FALSE)
     )
 
   teams_in_ensemble <- contributing_metadata |>
-    dplyr::filter(.data$designated_model) |>
+    dplyr::filter(.data$designated) |>
     dplyr::pull(.data$team_model_text)
 
   teams_not_in_ensemble <- contributing_metadata |>
-    dplyr::filter(!.data$designated_model) |>
+    dplyr::filter(!.data$designated) |>
     dplyr::pull(.data$team_model_text)
 
   median_value <- format_forecast(target_ensemble$quantile_0.5)
@@ -272,7 +272,7 @@ compute_target_webtext_values <- function(
   )
 
   n_teams <- contributing_metadata |>
-    dplyr::filter(.data$designated_model) |>
+    dplyr::filter(.data$designated) |>
     dplyr::distinct(.data$team_name) |>
     nrow()
   n_forecasts <- length(teams_in_ensemble)
@@ -414,9 +414,8 @@ generate_webtext_block <- function(
   )
 
   all_model_metadata <- hubData::load_model_metadata(base_hub_path) |>
-    dplyr::distinct(.data$model_id, .keep_all = TRUE) |>
     dplyr::select(
-      -"designated_model",
+      -dplyr::any_of("designated_model"),
       -dplyr::any_of("designated_targets")
     ) |>
     dplyr::mutate(

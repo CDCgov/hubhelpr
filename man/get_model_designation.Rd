@@ -20,18 +20,18 @@ supported by the hub.}
 }
 \value{
 A tibble with columns \code{model_id}, \code{target},
-and \code{designated_model} (logical), with one row per
+and \code{designated} (logical), with one row per
 (model, target) combination.
 }
 \description{
 Returns full grid of (model_id, target,
-designated_model) for the requested models and
-targets. Resolution uses the model's metadata
-fields \code{designated_model} and the optional
+designated) for the requested models and targets.
+Resolution uses the model's metadata fields
+\code{designated_model} and the optional
 \code{designated_targets} list. If \code{designated_model}
-absent or FALSE: never designated. If
-\code{designated_model} TRUE and \code{designated_targets}
-absent or empty: designated for every target. If
-\code{designated_model} TRUE and \code{designated_targets}
-present: designated only for targets in that list.
+is FALSE: never designated. If \code{designated_model}
+is TRUE and \code{designated_targets} is absent or
+empty: designated for every target. If
+\code{designated_model} is TRUE and \code{designated_targets}
+is present: designated only for listed targets.
 }

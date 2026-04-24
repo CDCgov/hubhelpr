@@ -10,7 +10,7 @@ task_id_cols <- c(
 #' Create an ensemble forecast for a single target
 #'
 #' @param weekly_models Data frame of model metadata for the week.
-#' Must include `model_id`, `designated_model` and `target` columns.
+#' Must include `model_id`, `designated` and `target` columns.
 #' @param weekly_forecasts Data frame of forecasts for the week.
 #' @param target_name Character. Name of the target to ensemble,
 #' e.g., "wk inc covid hosp".
@@ -29,7 +29,7 @@ ensemble_by_target <- function(
 ) {
   checkmate::assert_names(
     colnames(weekly_models),
-    must.include = c("model_id", "designated_model", "target"),
+    must.include = c("model_id", "designated", "target"),
     .var.name = "weekly_models columns"
   )
 
@@ -47,7 +47,7 @@ ensemble_by_target <- function(
   }
 
   eligible_models <- weekly_models |>
-    dplyr::filter(.data$designated_model, .data$target == !!target_name)
+    dplyr::filter(.data$designated, .data$target == !!target_name)
 
   forecasts_to_ensemble <- weekly_forecasts |>
     dplyr::filter(
@@ -145,7 +145,7 @@ generate_hub_ensemble <- function(
     model_ids = dplyr::distinct(weekly_forecasts, .data$model_id) |>
       dplyr::pull(.data$model_id)
   ) |>
-    dplyr::select("model_id", "designated_model", "target") |>
+    dplyr::select("model_id", "designated", "target") |>
     dplyr::arrange(.data$target)
 
   weekly_model_submissions_path <- fs::path(
