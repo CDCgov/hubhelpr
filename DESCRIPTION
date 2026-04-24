@@ -41,7 +41,8 @@ Imports:
     tidyselect,
     hubUtils,
     janitor,
-    hubValidations
+    hubValidations,
+    tibble
 Remotes:
     forecasttools=github::cdcgov/forecasttools,
     hubAdmin=github::hubverse-org/hubAdmin,
@@ -54,7 +55,6 @@ Remotes:
 Suggests:
     httptest2,
     testthat (>= 3.0.0),
-    tibble,
     withr
 Depends:
     R (>= 3.5)

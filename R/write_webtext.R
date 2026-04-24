@@ -179,6 +179,10 @@ compute_change_direction <- function(
 #' data.
 #' @param all_forecasts_data Data frame of all forecasts data.
 #' @param all_model_metadata Data frame of model metadata.
+#' @param designation Data frame of per-target model
+#' designation with columns `model_id`, `target`, and
+#' `designated` (logical), typically produced by
+#' [get_model_designation()].
 #' @param hub_name Character, hub name.
 #' @param reference_date Date, the reference date.
 #' @param excluded_locations NULL, character vector, or
@@ -196,6 +200,7 @@ compute_target_webtext_values <- function(
   all_target_data,
   all_forecasts_data,
   all_model_metadata,
+  designation,
   hub_name,
   reference_date,
   excluded_locations
@@ -226,16 +231,20 @@ compute_target_webtext_values <- function(
     dplyr::distinct(.data$model) |>
     dplyr::pull(.data$model)
 
-  # split contributing teams by designated_model status
+  target_designation <- designation |>
+    dplyr::filter(.data$target == !!target) |>
+    dplyr::select("model_id", "designated")
+
   contributing_metadata <- all_model_metadata |>
-    dplyr::filter(.data$model_id %in% target_contributing_models)
+    dplyr::filter(.data$model_id %in% target_contributing_models) |>
+    dplyr::left_join(target_designation, by = "model_id")
 
   teams_in_ensemble <- contributing_metadata |>
-    dplyr::filter(.data$designated_model) |>
+    dplyr::filter(.data$designated) |>
     dplyr::pull(.data$team_model_text)
 
   teams_not_in_ensemble <- contributing_metadata |>
-    dplyr::filter(!.data$designated_model) |>
+    dplyr::filter(!.data$designated) |>
     dplyr::pull(.data$team_model_text)
 
   median_value <- format_forecast(target_ensemble$quantile_0.5)
@@ -260,7 +269,7 @@ compute_target_webtext_values <- function(
   )
 
   n_teams <- contributing_metadata |>
-    dplyr::filter(.data$designated_model) |>
+    dplyr::filter(.data$designated) |>
     dplyr::distinct(.data$team_name) |>
     nrow()
   n_forecasts <- length(teams_in_ensemble)
@@ -391,9 +400,17 @@ generate_webtext_block <- function(
     )
   )
 
-  # load all model metadata (including non-designated models)
+  contributing_model_ids <- all_forecasts_data |>
+    dplyr::filter(.data$model != glue::glue("{hub_name}-ensemble")) |>
+    dplyr::distinct(.data$model) |>
+    dplyr::pull(.data$model)
+
+  designation <- get_model_designation(
+    base_hub_path,
+    model_ids = contributing_model_ids
+  )
+
   all_model_metadata <- hubData::load_model_metadata(base_hub_path) |>
-    dplyr::distinct(.data$model_id, .keep_all = TRUE) |>
     dplyr::mutate(
       team_model_text = glue::glue(
         "[{team_name} (Model: {model_abbr})]({website_url})"
@@ -409,6 +426,7 @@ generate_webtext_block <- function(
     all_target_data = all_target_data,
     all_forecasts_data = all_forecasts_data,
     all_model_metadata = all_model_metadata,
+    designation = designation,
     hub_name = hub_name,
     reference_date = reference_date,
     excluded_locations = excluded_locations
