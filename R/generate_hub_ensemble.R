@@ -139,7 +139,9 @@ generate_hub_ensemble <- function(
     hubData::collect_hub()
 
   model_target_pairs <- dplyr::distinct(
-    weekly_forecasts, .data$model_id, .data$target
+    weekly_forecasts,
+    .data$model_id,
+    .data$target
   )
 
   weekly_models <- get_model_designation(
