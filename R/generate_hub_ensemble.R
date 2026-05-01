@@ -51,23 +51,21 @@ ensemble_by_target <- function(
 
   forecasts_to_ensemble <- weekly_forecasts |>
     dplyr::filter(
-      model_id %in% eligible_models$model_id,
-      output_type == !!ensemble_output_type,
-      target == !!target_name
+      .data$model_id %in% eligible_models$model_id,
+      .data$output_type == !!ensemble_output_type,
+      .data$target == !!target_name
     ) |>
     # ensure quantiles are handled accurately even with leading/trailing zeros
-    dplyr::mutate(output_type_id = as.factor(as.numeric(output_type_id)))
+    dplyr::mutate(output_type_id = as.factor(as.numeric(.data$output_type_id)))
 
-  median_ensemble_outputs <- forecasts_to_ensemble |>
+  forecasts_to_ensemble |>
     hubEnsembles::simple_ensemble(
       agg_fun = ensemble_agg_fun,
       model_id = ensemble_model_id,
       task_id_cols = task_id_cols
     ) |>
-    dplyr::mutate(value = pmax(value, 0)) |>
+    dplyr::mutate(value = pmax(.data$value, 0)) |>
     dplyr::select(-"model_id")
-
-  return(median_ensemble_outputs)
 }
 
 
@@ -140,12 +138,15 @@ generate_hub_ensemble <- function(
     ) |>
     hubData::collect_hub()
 
+  model_target_pairs <- dplyr::distinct(
+    weekly_forecasts, .data$model_id, .data$target
+  )
+
   weekly_models <- get_model_designation(
     base_hub_path,
-    model_ids = dplyr::distinct(weekly_forecasts, .data$model_id) |>
-      dplyr::pull(.data$model_id)
+    model_ids = dplyr::pull(model_target_pairs, .data$model_id)
   ) |>
-    dplyr::select("model_id", "designated", "target") |>
+    dplyr::semi_join(model_target_pairs, by = c("model_id", "target")) |>
     dplyr::arrange(.data$target)
 
   weekly_model_submissions_path <- fs::path(
