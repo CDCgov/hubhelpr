@@ -28,7 +28,7 @@ Imports:
     fs,
     glue,
     hardhat,
-    hubData,
+    hubData (>= 2.2.0),
     hubEnsembles,
     jsonlite,
     lubridate,
@@ -45,13 +45,9 @@ Imports:
     tibble
 Remotes:
     forecasttools=github::cdcgov/forecasttools,
-    hubAdmin=github::hubverse-org/hubAdmin,
-    hubUtils=github::hubverse-org/hubUtils,
-    hubData=github::hubverse-org/hubData@1d3f7eb4180e367041e8fee6480dab8f79b031bc,
-    hubEnsembles=github::hubverse-org/hubEnsembles,
-    hubValidations=github::hubverse-org/hubValidations,
     epipredict=github::cmu-delphi/epipredict,
     epiprocess=github::cmu-delphi/epiprocess
+Additional_repositories: https://hubverse-org.r-universe.dev
 Suggests:
     httptest2,
     testthat (>= 3.0.0),
