@@ -1,4 +1,5 @@
 # hubhelpr
+
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/CDCgov/hubhelpr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CDCgov/hubhelpr/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/CDCgov/hubhelpr/graph/badge.svg?token=1O8OW6N0TT)](https://codecov.io/gh/CDCgov/hubhelpr)
@@ -6,9 +7,47 @@
 
 ## Overview
 
-In-progress R package providing functions for CFA Hubs maintenance.
+`hubhelpr` is an in-progress R package for maintaining respiratory virus forecast hubs maintained by the CDC/CFA: [covid19-forecast-hub](https://github.com/CDCgov/covid19-forecast-hub) and [rsv-forecast-hub](https://github.com/CDCgov/rsv-forecast-hub).
 
-## Getting started
+It provides functions for:
+
+- **Target Data**: pulling NHSN hospital admissions and NSSP emergency department visit data and writing hubverse-format time-series and oracle-output target data (see: `update_hub_target_data()`, `generate_oracle_output()`).
+- **Forecast Generation**: producing the hubs' baseline and ensemble models (see: `generate_hub_baseline()`, `generate_hub_ensemble()`).
+- **Visualization Data**: generating the weekly summary files and web text for the public visualizations at [CDC.gov](https://www.cdc.gov/cfa-modeling-and-forecasting/) (`write_ref_date_summary_*()`, `write_webtext()`).
+- **Submission Management**: checking that pull requests concern only authorized model-output directories so they can be auto-approved (see: `check_changes_for_autoapproval()`).
+- **Hub Utilities**: disease/hub name mappings and hub-config task helpers (see: `get_hub_name()`, `get_hub_tasks()`).
+
+The full function reference can be found oat <https://cdcgov.github.io/hubhelpr/>.
+
+## GitHub Actions
+
+Most hub maintenance runs through the composite actions in [`actions/`](actions/).
+
+| Action | Purpose |
+|---|---|
+| `setup-hubhelpr` | set up R with `hubhelpr` installed (required to run first) |
+| `update-target-data` | pull NHSN/NSSP data and open a PR with updated target data |
+| `generate-baseline` | generate baseline forecasts and open a PR |
+| `generate-ensemble` | generate ensemble forecasts and open a PR |
+| `check-authorized-users` | validate PR changes for auto-approval |
+| `generate-viz-data` | generate weekly visualization data files and open a PR |
+
+```yaml
+- uses: cdcgov/hubhelpr/actions/setup-hubhelpr@main
+- uses: cdcgov/hubhelpr/actions/generate-baseline@main
+  with:
+    disease: "covid" # 'covid' or 'rsv'
+    reference_date: ${{ inputs.reference_date }}
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+## Used By
+
+- [covid19-forecast-hub](https://github.com/CDCgov/covid19-forecast-hub) and [rsv-forecast-hub](https://github.com/CDCgov/rsv-forecast-hub): target-data, baseline, ensemble, and PR auto-approval workflows.
+- [covidhub-reports](https://github.com/CDCgov/covidhub-reports): weekly visualization data for the public CDC.gov forecast pages.
+- cfa-forecast-hub-internal-reports (internal): hub/model naming helpers in evaluation reports.
+
+## Getting Started
 
 You can install `hubhelpr` via [`pak`](https://pak.r-lib.org/). If you do not yet have `pak`, you should be able to install it with `install.packages('pak')`.
 
@@ -25,7 +64,7 @@ remotes::install_github('cdcgov/hubhelpr')
 
 ```
 
-## Project admins
+## Project Admins
 
 - Subekshya Bidari, zib2@cdc.gov (CDC/IOD/ORR/CFA)
 
