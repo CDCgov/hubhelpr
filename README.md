@@ -7,7 +7,7 @@
 
 ## Overview
 
-`hubhelpr` is an in-progress R package for maintaining respiratory virus forecast hubs maintained by the CDC/CFA: [covid19-forecast-hub](https://github.com/CDCgov/covid19-forecast-hub) and [rsv-forecast-hub](https://github.com/CDCgov/rsv-forecast-hub).
+`hubhelpr` is an in-progress R package for maintaining the CDC/CFA respiratory virus forecast hubs: [covid19-forecast-hub](https://github.com/CDCgov/covid19-forecast-hub) and [rsv-forecast-hub](https://github.com/CDCgov/rsv-forecast-hub).
 
 It provides functions for:
 
