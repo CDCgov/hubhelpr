@@ -17,7 +17,7 @@ It provides functions for:
 - **Submission Management**: checking that pull requests concern only authorized model-output directories so they can be auto-approved (see: `check_changes_for_autoapproval()`).
 - **Hub Utilities**: disease/hub name mappings and hub-config task helpers (see: `get_hub_name()`, `get_hub_tasks()`).
 
-The full function reference can be found oat <https://cdcgov.github.io/hubhelpr/>.
+The full function reference can be found at <https://cdcgov.github.io/hubhelpr/>.
 
 ## GitHub Actions
 
@@ -41,10 +41,10 @@ Most hub maintenance runs through the composite actions in [`actions/`](actions/
     github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-## Used By
+Used By
 
 - [covid19-forecast-hub](https://github.com/CDCgov/covid19-forecast-hub) and [rsv-forecast-hub](https://github.com/CDCgov/rsv-forecast-hub): target-data, baseline, ensemble, and PR auto-approval workflows.
-- [covidhub-reports](https://github.com/CDCgov/covidhub-reports): weekly visualization data for the public CDC.gov forecast pages.
+- [cfa-forecast-hub-reports](https://github.com/CDCgov/cfa-forecast-hub-report): weekly visualization data for the public CDC.gov forecast pages.
 - cfa-forecast-hub-internal-reports (internal): hub/model naming helpers in evaluation reports.
 
 ## Getting Started
