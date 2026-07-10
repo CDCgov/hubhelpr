@@ -1,0 +1,71 @@
+name: "Upload hub contents to an AWS bucket"
+description: "Upload contents of a Hub GitHub repository to a Hubverse-format Amazon Web Services (AWS) Simple Storage Service (S3) bucket."
+
+inputs:
+  aws_account:
+    description: "AWS account ID."
+    required: true
+  base_hub_path:
+    description: "Path to the hub repository root directory."
+    required: false
+    default: "."
+  directories:
+    description: "Array of hub directories to sync with the upstream bucket. Defaults yield a fairly comprehensive snapshot compatible with `hubData` functions."
+    required: false
+    default: "['auxiliary-data', 'hub-config', 'model-abstracts', 'model-metadata', 'target-data', 'model-output']"
+
+
+runs:
+  using: "composite"
+    steps:
+      - name: "Get Hub Cloud Config"
+        # save cloud-related fields from admin config as environment variables
+        # (jq json parser is installed on Github-hosted runners)
+        run: |
+          cloud_enabled=$(jq -r '.cloud.enabled' ${{ inputs.base_hub_path }}/hub-config/admin.json) \
+            && echo "CLOUD_ENABLED=$cloud_enabled"
+          cloud_storage_location=$(jq -r '.cloud.host.storage_location' ${{ inputs.base_hub_path }}/hub-config/admin.json) \
+            && echo "CLOUD_STORAGE_LOCATION=$cloud_storage_location"
+          echo "CLOUD_ENABLED=$cloud_enabled" >> $GITHUB_ENV
+          echo "CLOUD_STORAGE_LOCATION=$cloud_storage_location" >> $GITHUB_ENV
+
+      - name: "Configure AWS Credentials"
+        # request credentials to assume the hub's AWS role via OpenID Connect
+        if: env.CLOUD_ENABLED == 'true'
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::${{ inputs.aws_account }}:role/${{ env.CLOUD_STORAGE_LOCATION }}
+          aws-region: us-east-1
+
+      - name: "Install rclone"
+        if: env.CLOUD_ENABLED == 'true'
+        run: |
+          # debian version of rclone is outdated and will result in config name errors
+          # https://github.com/rclone/rclone/issues/6060
+          curl https://rclone.org/install.sh | sudo bash
+          rclone version
+
+      - name: "Sync Files To Cloud Storage"
+        # sync specified hub directories to S3
+        # (to exclude a directory, remove it from the hub_directories list below)
+        if: env.CLOUD_ENABLED == 'true'
+        run: |
+          for DIRECTORY in "${{ inputs.directories }}"
+          do
+            dir_cloud_prefix="${{ env.CLOUD_STORAGE_LOCATION }}"
+
+            if [ "$DIRECTORY" = "model-output" ]
+            then
+              dir_cloud_prefix=$dir_cloud_prefix/raw
+            fi
+            
+            if [ -d "${{ inputs.base_hub_path }}/$DIRECTORY" ]
+            then
+              echo "Syncing local $DIRECTORY to remote $dir_cloud_prefix/$DIRECTORY"
+              rclone sync \
+                "{{ inputs.base_hub_path }}/$DIRECTORY/" \
+                ":s3,provider=AWS,env_auth:$dir_cloud_prefix/$DIRECTORY" \
+                --checksum --verbose --stats-one-line --config=/dev/null
+            fi
+          done
+        shell: bash
