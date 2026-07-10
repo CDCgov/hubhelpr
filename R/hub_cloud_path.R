@@ -23,7 +23,7 @@ hub_s3_buckets <- c(
 #'   or `"flu"`.
 #' @param anonymous Logical. Use anonymous (unauthenticated) access to the
 #'   hub's S3 bucket? Passed through to [hubData::s3_bucket()]. The hubverse
-#'   buckets are public and interaction from this repository is read-only, so
+#'   buckets are public and `hubData` interactions are read-only, so
 #'   this defaults to `TRUE`.
 #' @param ... Additional keyword arguments passed through to
 #'   [hubData::s3_bucket()].

@@ -12,7 +12,7 @@ or \code{"flu"}.}
 
 \item{anonymous}{Logical. Use anonymous (unauthenticated) access to the
 hub's S3 bucket? Passed through to \code{\link[hubData:s3_bucket]{hubData::s3_bucket()}}. The hubverse
-buckets are public and interaction from this repository is read-only, so
+buckets are public and \code{hubData} interactions are read-only, so
 this defaults to \code{TRUE}.}
 
 \item{...}{Additional keyword arguments passed through to
