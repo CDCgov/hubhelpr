@@ -315,7 +315,6 @@ update_hub_target_data <- function(
   if (fs::file_exists(output_file)) {
     existing_target_data <- forecasttools::read_tabular(output_file) |>
       dplyr::as_tibble()
-    gc()
   } else {
     existing_target_data <- NULL
   }
