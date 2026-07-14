@@ -85,9 +85,11 @@ summarize_ref_date_forecasts <- function(
     hubverse_table = current_forecasts,
     pivot_quantiles = c(
       "quantile_0.025" = 0.025,
+      "quantile_0.10" = 0.10,
       "quantile_0.25" = 0.25,
       "quantile_0.5" = 0.5,
       "quantile_0.75" = 0.75,
+      "quantile_0.90" = 0.90,
       "quantile_0.975" = 0.975
     )
   ) |>
