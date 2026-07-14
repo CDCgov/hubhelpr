@@ -350,31 +350,17 @@ write_ref_date_summary_all <- function(
   non_ensemble <- summary_data |>
     dplyr::filter(.data$model_id != !!ensemble_model_name) |>
     dplyr::mutate(ensemble_of_hub_models = FALSE)
+  non_ensemble_designation <- get_model_designation(
+    base_hub_path = base_hub_path,
+    model_ids = unique(non_ensemble$model_id),
+    targets = unique(non_ensemble$target)
+  )
 
-  if (nrow(non_ensemble) > 0) {
-    non_ensemble_designation <- get_model_designation(
-      base_hub_path = base_hub_path,
-      model_ids = unique(non_ensemble$model_id),
-      targets = unique(non_ensemble$target)
+  non_ensemble <- non_ensemble |>
+    dplyr::left_join(
+      non_ensemble_designation,
+      by = c("model_id", "target")
     )
-
-    non_ensemble <- non_ensemble |>
-      dplyr::select(-dplyr::any_of("designated")) |>
-      dplyr::left_join(
-        non_ensemble_designation,
-        by = c("model_id", "target")
-      ) |>
-      dplyr::mutate(
-        designated = dplyr::if_else(
-          is.na(.data$designated),
-          FALSE,
-          .data$designated
-        )
-      )
-  } else {
-    non_ensemble <- non_ensemble |>
-      dplyr::mutate(designated = FALSE)
-  }
 
   ensemble_summary_data <- ensemble_summary_data |>
     dplyr::mutate(
