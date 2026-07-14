@@ -52,8 +52,15 @@ test_that("write_ref_date_summary_all includes designation and ensemble columns"
     dplyr::filter(.data$model == "CFA-EpiAutoGP") |>
     dplyr::distinct(.data$target, .data$designated_model) |>
     dplyr::arrange(.data$target)
+  expected_designation <- get_model_designation(
+    base_hub_path = example_cfa_hub,
+    model_ids = "CFA-EpiAutoGP",
+    targets = epi_autogp_flags$target
+  ) |>
+    dplyr::arrange(.data$target)
+
   expect_identical(
     epi_autogp_flags$designated_model,
-    c(TRUE, FALSE)
+    expected_designation$designated
   )
 })
