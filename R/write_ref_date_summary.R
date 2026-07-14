@@ -345,6 +345,10 @@ write_ref_date_summary_all <- function(
       targets = targets,
       horizons_to_include = horizons_to_include,
       n_models_for_ens_reporting = n_models_for_ens_reporting
+    ) |>
+    dplyr::mutate(
+      designated = FALSE,
+      ensemble_of_hub_models = TRUE
     )
 
   non_ensemble <- summary_data |>
@@ -360,12 +364,6 @@ write_ref_date_summary_all <- function(
     dplyr::left_join(
       non_ensemble_designation,
       by = c("model_id", "target")
-    )
-
-  ensemble_summary_data <- ensemble_summary_data |>
-    dplyr::mutate(
-      designated = FALSE,
-      ensemble_of_hub_models = TRUE
     )
 
   dplyr::bind_rows(non_ensemble, ensemble_summary_data) |>
