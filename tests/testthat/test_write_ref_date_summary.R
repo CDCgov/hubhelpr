@@ -6,12 +6,15 @@ test_that("summarize_ref_date_forecasts includes 0.10 and 0.90 quantiles", {
     population_data = hubhelpr::population_data
   )
 
-  expect_true(all(c(
-    "quantile_0.10",
-    "quantile_0.90",
-    "quantile_0.10_rounded",
-    "quantile_0.90_rounded"
-  ) %in% names(summary_data)))
+  expect_true(all(
+    c(
+      "quantile_0.10",
+      "quantile_0.90",
+      "quantile_0.10_rounded",
+      "quantile_0.90_rounded"
+    ) %in%
+      names(summary_data)
+  ))
 })
 
 test_that("write_ref_date_summary_all includes designation and ensemble columns", {
@@ -26,14 +29,17 @@ test_that("write_ref_date_summary_all includes designation and ensemble columns"
 
   summary_data <- forecasttools::read_tabular(output_path)
 
-  expect_true(all(c(
-    "quantile_0.10",
-    "quantile_0.90",
-    "quantile_0.10_rounded",
-    "quantile_0.90_rounded",
-    "designated_model",
-    "ensemble_of_hub_models"
-  ) %in% names(summary_data)))
+  expect_true(all(
+    c(
+      "quantile_0.10",
+      "quantile_0.90",
+      "quantile_0.10_rounded",
+      "quantile_0.90_rounded",
+      "designated_model",
+      "ensemble_of_hub_models"
+    ) %in%
+      names(summary_data)
+  ))
 
   ensemble_flags <- summary_data |>
     dplyr::filter(.data$model == "CovidHub-ensemble") |>
