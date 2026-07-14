@@ -363,6 +363,13 @@ write_ref_date_summary_all <- function(
       dplyr::left_join(
         non_ensemble_designation,
         by = c("model_id", "target")
+      ) |>
+      dplyr::mutate(
+        designated = dplyr::if_else(
+          is.na(.data$designated),
+          FALSE,
+          .data$designated
+        )
       )
   } else {
     non_ensemble <- non_ensemble |>
