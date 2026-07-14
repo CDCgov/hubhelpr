@@ -381,7 +381,6 @@ write_ref_date_summary_all <- function(
 
   dplyr::bind_rows(non_ensemble, ensemble_summary_data) |>
     dplyr::mutate(
-      designated_model = dplyr::coalesce(.data$designated_model, FALSE),
       ensemble_of_hub_models = dplyr::coalesce(
         .data$ensemble_of_hub_models,
         FALSE
