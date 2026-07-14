@@ -319,7 +319,7 @@ write_ref_date_summary_all <- function(
     "quantile_0.75_rounded",
     "quantile_0.90_rounded",
     "quantile_0.975_rounded",
-    "designated_model",
+    designated_model = "designated",
     "ensemble_of_hub_models",
     forecast_team = "team_name",
     "forecast_due_date",
@@ -348,44 +348,34 @@ write_ref_date_summary_all <- function(
     )
 
   non_ensemble <- summary_data |>
-    dplyr::filter(.data$model_id != !!ensemble_model_name)
+    dplyr::filter(.data$model_id != !!ensemble_model_name) |>
+    dplyr::mutate(ensemble_of_hub_models = FALSE)
 
   if (nrow(non_ensemble) > 0) {
     non_ensemble_designation <- get_model_designation(
       base_hub_path = base_hub_path,
       model_ids = unique(non_ensemble$model_id),
       targets = unique(non_ensemble$target)
-    ) |>
-      dplyr::transmute(
-        model_id = .data$model_id,
-        target = .data$target,
-        designated_model = .data$designated
-      )
+    )
 
     non_ensemble <- non_ensemble |>
-      dplyr::select(-dplyr::any_of("designated_model")) |>
+      dplyr::select(-dplyr::any_of("designated")) |>
       dplyr::left_join(
         non_ensemble_designation,
         by = c("model_id", "target")
-      ) |>
-      dplyr::mutate(
-        designated_model = dplyr::coalesce(.data$designated_model, FALSE)
       )
   } else {
     non_ensemble <- non_ensemble |>
-      dplyr::mutate(designated_model = FALSE)
+      dplyr::mutate(designated = FALSE)
   }
 
   ensemble_summary_data <- ensemble_summary_data |>
-    dplyr::mutate(designated_model = FALSE)
+    dplyr::mutate(
+      designated = FALSE,
+      ensemble_of_hub_models = TRUE
+    )
 
   dplyr::bind_rows(non_ensemble, ensemble_summary_data) |>
-    dplyr::mutate(
-      ensemble_of_hub_models = dplyr::coalesce(
-        .data$ensemble_of_hub_models,
-        FALSE
-      )
-    ) |>
     dplyr::arrange(.data$location_sort_order, .data$location_name) |>
     dplyr::select({{ all_models_columns }}) |>
     write_ref_date_summary(
