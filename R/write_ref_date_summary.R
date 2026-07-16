@@ -306,15 +306,21 @@ write_ref_date_summary_all <- function(
     "target_end_date",
     model = "model_id",
     "quantile_0.025",
+    "quantile_0.10",
     "quantile_0.25",
     "quantile_0.5",
     "quantile_0.75",
+    "quantile_0.90",
     "quantile_0.975",
     "quantile_0.025_rounded",
+    "quantile_0.10_rounded",
     "quantile_0.25_rounded",
     "quantile_0.5_rounded",
     "quantile_0.75_rounded",
+    "quantile_0.90_rounded",
     "quantile_0.975_rounded",
+    designated_model = "designated",
+    "ensemble_of_hub_models",
     forecast_team = "team_name",
     "forecast_due_date",
     model_full_name = "model_name"
@@ -339,10 +345,26 @@ write_ref_date_summary_all <- function(
       targets = targets,
       horizons_to_include = horizons_to_include,
       n_models_for_ens_reporting = n_models_for_ens_reporting
+    ) |>
+    dplyr::mutate(
+      designated = FALSE,
+      ensemble_of_hub_models = TRUE
     )
 
   non_ensemble <- summary_data |>
-    dplyr::filter(.data$model_id != !!ensemble_model_name)
+    dplyr::filter(.data$model_id != !!ensemble_model_name) |>
+    dplyr::mutate(ensemble_of_hub_models = FALSE)
+  non_ensemble_designation <- get_model_designation(
+    base_hub_path = base_hub_path,
+    model_ids = unique(non_ensemble$model_id),
+    targets = unique(non_ensemble$target)
+  )
+
+  non_ensemble <- non_ensemble |>
+    dplyr::left_join(
+      non_ensemble_designation,
+      by = c("model_id", "target")
+    )
 
   dplyr::bind_rows(non_ensemble, ensemble_summary_data) |>
     dplyr::arrange(.data$location_sort_order, .data$location_name) |>
