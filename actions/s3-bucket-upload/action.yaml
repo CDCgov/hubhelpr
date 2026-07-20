@@ -85,6 +85,8 @@ runs:
             if [[ !($DIRECTORY = *[![:space:]]*) ]]; then continue; fi; # skip any all-whitespace entries
             dir_cloud_prefix="${{ env.CLOUD_STORAGE_LOCATION }}"
 
+           # unlike other data, model-outputs are synced to a "raw" location
+           # so we can transform it before presenting to users
             if [ "$DIRECTORY" = "model-output" ]
             then
               dir_cloud_prefix=$dir_cloud_prefix/raw
