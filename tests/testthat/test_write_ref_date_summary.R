@@ -6,15 +6,15 @@ test_that("summarize_ref_date_forecasts includes 0.10 and 0.90 quantiles", {
     population_data = hubhelpr::population_data
   )
 
-  expect_true(all(
-    c(
+  checkmate::expect_names(
+    names(summary_data),
+    must.include = c(
       "quantile_0.10",
       "quantile_0.90",
       "quantile_0.10_rounded",
       "quantile_0.90_rounded"
-    ) %in%
-      names(summary_data)
-  ))
+    )
+  )
 })
 
 test_that("write_ref_date_summary_all includes designation and ensemble columns", {
@@ -29,8 +29,9 @@ test_that("write_ref_date_summary_all includes designation and ensemble columns"
 
   summary_data <- forecasttools::read_tabular(output_path)
 
-  expect_true(all(
-    c(
+  checkmate::expect_names(
+    names(summary_data),
+    must.include = c(
       "count_quantile_0.10",
       "count_quantile_0.90",
       "count_quantile_0.10_rounded",
@@ -41,9 +42,8 @@ test_that("write_ref_date_summary_all includes designation and ensemble columns"
       "rate_quantile_0.90_rounded",
       "designated_model",
       "ensemble_of_hub_models"
-    ) %in%
-      names(summary_data)
-  ))
+    )
+  )
 
   expect_false(any(
     stringr::str_detect(names(summary_data), "^quantile_|_per100k")
@@ -120,8 +120,9 @@ test_that("write_ref_date_summary_ens uses count_/rate_ prefixed columns", {
 
   map_data <- forecasttools::read_tabular(output_path)
 
-  expect_true(all(
-    c(
+  checkmate::expect_names(
+    names(map_data),
+    must.include = c(
       "count_quantile_0.025",
       "count_quantile_0.5",
       "count_quantile_0.975",
@@ -134,9 +135,8 @@ test_that("write_ref_date_summary_ens uses count_/rate_ prefixed columns", {
       "rate_quantile_0.025_rounded",
       "rate_quantile_0.5_rounded",
       "rate_quantile_0.975_rounded"
-    ) %in%
-      names(map_data)
-  ))
+    )
+  )
 
   expect_false(any(
     stringr::str_detect(names(map_data), "^quantile_|_per100k")
