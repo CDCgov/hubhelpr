@@ -247,9 +247,9 @@ compute_target_webtext_values <- function(
     dplyr::filter(!.data$designated) |>
     dplyr::pull(.data$team_model_text)
 
-  median_value <- format_forecast(target_ensemble$quantile_0.5)
-  lower_value <- format_forecast(target_ensemble$quantile_0.025)
-  upper_value <- format_forecast(target_ensemble$quantile_0.975)
+  median_value <- format_forecast(target_ensemble$count_quantile_0.5)
+  lower_value <- format_forecast(target_ensemble$count_quantile_0.025)
+  upper_value <- format_forecast(target_ensemble$count_quantile_0.975)
 
   last_reported_target_data <- target_data |>
     dplyr::filter(
@@ -260,7 +260,7 @@ compute_target_webtext_values <- function(
   last_reported_raw <- last_reported_target_data$value
   last_reported <- format_forecast(last_reported_raw)
 
-  forecast_raw <- target_ensemble$quantile_0.5
+  forecast_raw <- target_ensemble$count_quantile_0.5
   change_direction <- compute_change_direction(forecast_raw, last_reported_raw)
 
   target_start_date <- format(
