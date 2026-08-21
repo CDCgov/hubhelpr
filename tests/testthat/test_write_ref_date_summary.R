@@ -2,8 +2,7 @@ test_that("summarize_ref_date_forecasts includes 0.10 and 0.90 quantiles", {
   summary_data <- summarize_ref_date_forecasts(
     reference_date = "2026-04-11",
     base_hub_path = example_cfa_hub,
-    disease = "covid",
-    population_data = hubhelpr::population_data
+    disease = "covid"
   )
 
   checkmate::expect_names(
@@ -85,13 +84,11 @@ test_that("write_ref_date_summary_all rate columns rescale counts by population"
 
   summary_data <- forecasttools::read_tabular(output_path) |>
     dplyr::mutate(
-      location = forecasttools::us_location_recode(
+      population = forecasttools::get_prism_reference_population(
         .data$abbreviation,
-        "abbr",
-        "hub"
+        as_of = as.Date("2026-04-11")
       )
-    ) |>
-    dplyr::left_join(hubhelpr::population_data, by = "location")
+    )
 
   hosp_data <- dplyr::filter(summary_data, .data$target_data_type == "hosp")
   expect_gt(nrow(hosp_data), 0)

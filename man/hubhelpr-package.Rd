@@ -21,6 +21,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Subekshya Bidari \email{zib2@cdc.gov}
   \item Dylan Morris \email{dzl1@cdc.gov}
   \item Trevor Martin \email{upx3@cdc.gov}
 }

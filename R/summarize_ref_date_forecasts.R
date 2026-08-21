@@ -1,3 +1,39 @@
+#' Look up PRISM reference populations for hub
+#' locations.
+#'
+#' Rate transforms use the denominator PRISM used to
+#' derive rate-scale activity cutpoints, so a reported
+#' rate reconciles with the activity level it is
+#' categorized into; locations PRISM publishes no
+#' denominator for yield NA (instead of erroring).
+#'
+#' @param location Character vector of hub location
+#' codes.
+#' @param as_of Date. Reference population vintage to
+#' look up.
+#' @return Tibble with "location" and "population"
+#' columns, one row per distinct input location.
+#' @noRd
+prism_reference_populations <- function(location, as_of) {
+  safe_lookup <- purrr::possibly(
+    forecasttools::get_prism_reference_population,
+    otherwise = NA_real_
+  )
+
+  tibble::tibble(location = unique(location)) |>
+    dplyr::mutate(
+      population = purrr::map_dbl(
+        forecasttools::us_location_recode(
+          .data$location,
+          "hub",
+          "abbr"
+        ),
+        \(abbr) safe_lookup(abbr, as_of = as_of)
+      )
+    )
+}
+
+
 #' Summarize forecast hub data for a specific reference date.
 #'
 #' This function generates a tibble of forecast data
@@ -11,8 +47,6 @@
 #' directory.
 #' @param disease character, disease name ("covid" or
 #' "rsv"). Used to derive hub name and file prefix.
-#' @param population_data data frame with columns "location"
-#' and "population". Adds population-based calculations.
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
 #' @param excluded_locations NULL, character vector, or
@@ -34,7 +68,6 @@ summarize_ref_date_forecasts <- function(
   reference_date,
   base_hub_path,
   disease,
-  population_data,
   horizons_to_include = c(0, 1, 2),
   excluded_locations = NULL,
   targets = NULL,
@@ -106,11 +139,11 @@ summarize_ref_date_forecasts <- function(
       )
     ) |>
     dplyr::left_join(
-      population_data,
+      prism_reference_populations(
+        current_forecasts$location,
+        as_of = reference_date
+      ),
       by = "location"
-    ) |>
-    dplyr::mutate(
-      population = as.numeric(.data$population)
     ) |>
     dplyr::mutate(
       target_data_type = get_target_data_type(.data$target)
