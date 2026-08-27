@@ -82,8 +82,6 @@ test_that("an entry can be passed straight to apply_target_location_exclusions",
 })
 
 test_that("invalid abbreviations are caught on read, not on use", {
-  # a typo in a future week should fail now, not on the
-  # morning that week is generated
   hub_reports_path <- write_exclusions_file(c(
     "2025-01-01 = [\"AK\"]",
     "2030-01-01 = [\"ZZ\"]"
@@ -154,8 +152,6 @@ test_that("JSON output parses back to the original entry", {
 })
 
 test_that("comments are preserved as a format affordance", {
-  # TOML is the storage format precisely because a per-week
-  # exclusion needs a reason recorded next to it
   hub_reports_path <- write_exclusions_file(example_exclusions)
   expect_identical(
     get_weekly_exclusions(hub_reports_path, "covid", "2026-02-28"),
