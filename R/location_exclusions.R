@@ -8,12 +8,12 @@
 #' @param excluded_locations NULL, character vector, or
 #' named list of character vectors.
 #'
-#' @return Named list of character vectors, or NULL if
-#' input is NULL or zero-length.
+#' @return Named list of character vectors, empty when there is
+#' nothing to exclude.
 #' @keywords internal
 normalize_excluded_locations <- function(excluded_locations) {
   if (is.null(excluded_locations) || length(excluded_locations) == 0) {
-    return(NULL)
+    return(list())
   }
   if (is.character(excluded_locations)) {
     assert_valid_location_abbrs(excluded_locations)
@@ -145,7 +145,7 @@ apply_target_location_exclusions <- function(
   base_hub_path
 ) {
   exclusions <- normalize_excluded_locations(excluded_locations)
-  if (is.null(exclusions)) {
+  if (length(exclusions) == 0) {
     return(data)
   }
 
@@ -202,7 +202,7 @@ filter_to_expected_locations <- function(
     location = expected_locations
   )
 
-  if (!is.null(normalized)) {
+  if (length(normalized) > 0) {
     exclusion_df <- build_exclusion_df(normalized, hub_supported_targets)
 
     expected_df <- dplyr::anti_join(
@@ -219,8 +219,8 @@ filter_to_expected_locations <- function(
   ))
 }
 
-weekly_exclusions_filename <- "report_exclusions.toml"
-weekly_exclusions_directory <- "config"
+exclusion_filename <- "report_exclusions.toml"
+exclusion_directory <- "config"
 
 
 #' Path to a hub's weekly location exclusions file.
@@ -234,17 +234,17 @@ weekly_exclusions_directory <- "config"
 #'
 #' @return The file path, whether or not it exists.
 #' @noRd
-weekly_exclusions_path <- function(hub_reports_path, disease) {
+exclusion_file_path <- function(hub_reports_path, disease) {
   return(fs::path(
     hub_reports_path,
-    weekly_exclusions_directory,
+    exclusion_directory,
     get_hub_repo_name(disease),
-    weekly_exclusions_filename
+    exclusion_filename
   ))
 }
 
 
-#' Read a hub's weekly location exclusions file.
+#' Parse a hub's weekly location exclusions file.
 #'
 #' The file is TOML keyed by reference date, where each value
 #' takes either form the `generate-viz-data` action accepts for
@@ -263,8 +263,8 @@ weekly_exclusions_path <- function(hub_reports_path, disease) {
 #' @return Named list of exclusions keyed by reference
 #' date, each element a named list accepted by
 #' [apply_target_location_exclusions()].
-#' @noRd
-read_weekly_exclusions <- function(path) {
+#' @export
+parse_exclusion_file <- function(path) {
   if (!fs::file_exists(path)) {
     cli::cli_abort(
       c(
@@ -293,7 +293,7 @@ read_weekly_exclusions <- function(path) {
 
   return(purrr::imap(entries, \(exclusions, reference_date) {
     rlang::try_fetch(
-      normalize_excluded_locations(exclusions) %||% list(),
+      normalize_excluded_locations(exclusions),
       error = \(condition) {
         cli::cli_abort(
           "Invalid exclusions for {.val {reference_date}}.",
@@ -336,13 +336,13 @@ read_weekly_exclusions <- function(path) {
 #' by `all`), empty when the date has no entry, ready to
 #' pass as `excluded_locations`.
 #' @export
-get_weekly_exclusions_list <- function(
+get_reference_date_exclusions_list <- function(
   hub_reports_path,
   disease,
   reference_date
 ) {
-  exclusions <- read_weekly_exclusions(
-    weekly_exclusions_path(hub_reports_path, disease)
+  exclusions <- parse_exclusion_file(
+    exclusion_file_path(hub_reports_path, disease)
   )
 
   entry <- exclusions[[as.character(lubridate::as_date(reference_date))]]
@@ -363,12 +363,12 @@ get_weekly_exclusions_list <- function(
 #' workflow. TOML is the storage format because it permits
 #' comments.
 #'
-#' @inheritParams get_weekly_exclusions_list
+#' @inheritParams get_reference_date_exclusions_list
 #'
 #' @return A JSON string. An empty entry serializes to
 #' `"[]"`, matching the action's own default.
 #' @export
-get_weekly_exclusions_json <- function(
+get_reference_date_exclusions_json <- function(
   hub_reports_path,
   disease,
   reference_date
@@ -376,7 +376,11 @@ get_weekly_exclusions_json <- function(
   # N.B.: auto_unbox would turn a single abbreviation into a
   # bare string, and the action expects an array
   return(as.character(jsonlite::toJSON(
-    get_weekly_exclusions_list(hub_reports_path, disease, reference_date),
+    get_reference_date_exclusions_list(
+      hub_reports_path,
+      disease,
+      reference_date
+    ),
     auto_unbox = FALSE
   )))
 }
