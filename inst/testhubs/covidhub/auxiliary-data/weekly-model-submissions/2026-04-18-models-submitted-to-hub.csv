@@ -1,0 +1,3 @@
+model_id,target,designated
+CFA-EpiAutoGP,wk inc covid hosp,TRUE
+CFA-EpiAutoGP,wk inc covid prop ed visits,TRUE

@@ -363,7 +363,8 @@ write_ref_date_summary_all <- function(
   non_ensemble_designation <- get_model_designation(
     base_hub_path = base_hub_path,
     model_ids = unique(non_ensemble$model_id),
-    targets = unique(non_ensemble$target)
+    targets = unique(non_ensemble$target),
+    reference_date = reference_date
   )
 
   non_ensemble <- non_ensemble |>

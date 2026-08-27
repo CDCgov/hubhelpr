@@ -407,7 +407,8 @@ generate_webtext_block <- function(
 
   designation <- get_model_designation(
     base_hub_path,
-    model_ids = contributing_model_ids
+    model_ids = contributing_model_ids,
+    reference_date = reference_date
   )
 
   all_model_metadata <- hubData::load_model_metadata(base_hub_path) |>

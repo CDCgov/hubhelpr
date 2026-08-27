@@ -4,33 +4,41 @@
 #' Rate transforms use the denominator PRISM used to
 #' derive rate-scale activity cutpoints, so a reported
 #' rate reconciles with the activity level it is
-#' categorized into; locations PRISM publishes no
-#' denominator for yield NA (instead of erroring).
+#' categorized into, and forecast rates are directly
+#' comparable to the rates NHSN publishes alongside its
+#' counts.
+#'
+#' A location PRISM publishes no population for is an
+#' error rather than an NA. PRISM currently covers
+#' every location both hubs publish.
 #'
 #' @param location Character vector of hub location
 #' codes.
 #' @param as_of Date. Reference population vintage to
-#' look up.
+#' look up, clamped to PRISM's earliest published
+#' vintage.
 #' @return Tibble with "location" and "population"
 #' columns, one row per distinct input location.
 #' @noRd
 prism_reference_populations <- function(location, as_of) {
-  safe_lookup <- purrr::possibly(
-    forecasttools::get_prism_reference_population,
-    otherwise = NA_real_
+  earliest_vintage <- min(
+    forecasttools::prism_rate_reference_populations$as_of
   )
+  as_of <- max(lubridate::as_date(as_of), earliest_vintage)
 
-  tibble::tibble(location = unique(location)) |>
-    dplyr::mutate(
-      population = purrr::map_dbl(
-        forecasttools::us_location_recode(
-          .data$location,
-          "hub",
-          "abbr"
-        ),
-        \(abbr) safe_lookup(abbr, as_of = as_of)
+  return(
+    tibble::tibble(location = unique(location)) |>
+      dplyr::mutate(
+        population = forecasttools::get_prism_reference_population(
+          forecasttools::us_location_recode(
+            .data$location,
+            "hub",
+            "abbr"
+          ),
+          as_of = as_of
+        )
       )
-    )
+  )
 }
 
 

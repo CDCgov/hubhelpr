@@ -5,7 +5,12 @@
 #' from NHSN and NSSP APIs, then writes to the
 #' weekly-summaries directory for use by the visualization
 #' webpage. Output includes columns: week_ending_date,
-#' location, location_name, target, target_data_type, and value.
+#' location, location_name, target, target_data_type,
+#' count_value, and rate_value.
+#'
+#' `rate_value` carries NHSN HRD's published admissions
+#' per 100k, taken directly rather than derived, so no
+#' population denominator is involved.
 #'
 #' @param reference_date Character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
@@ -63,12 +68,15 @@ write_viz_target_data <- function(
       apply_target_location_exclusions(
         excluded_locations,
         base_hub_path
-      )
+      ) |>
+      # the hub time series carries observations only
+      dplyr::mutate(observation_rate = NA_real_)
   } else {
     nhsn_data <- get_hubverse_format_nhsn_data(
       disease,
       start_date = start_date,
-      end_date = end_date
+      end_date = end_date,
+      include_rate = TRUE
     ) |>
       # remove data for reporting dates May 1, 2024 – October 31,
       # 2024 due to the absence of a reporting mandate. Reporting
@@ -114,7 +122,8 @@ write_viz_target_data <- function(
       "location_name",
       "target",
       "target_data_type",
-      value = "observation"
+      count_value = "observation",
+      rate_value = "observation_rate"
     )
 
   output_folder_path <- fs::path(

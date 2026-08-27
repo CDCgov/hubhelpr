@@ -59,10 +59,14 @@ test_that("write_ref_date_summary_all includes designation and ensemble columns"
     dplyr::filter(.data$model == "CFA-EpiAutoGP") |>
     dplyr::distinct(.data$target, .data$designated_model) |>
     dplyr::arrange(.data$target)
+  # designation is resolved as of the reference date, from the
+  # hub's weekly-model-submissions record, not from current
+  # metadata
   expected_designation <- get_model_designation(
     base_hub_path = example_cfa_hub,
     model_ids = "CFA-EpiAutoGP",
-    targets = epi_autogp_flags$target
+    targets = epi_autogp_flags$target,
+    reference_date = "2026-04-11"
   ) |>
     dplyr::arrange(.data$target)
 
@@ -82,11 +86,14 @@ test_that("write_ref_date_summary_all rate columns rescale counts by population"
     n_models_for_ens_reporting = 0
   )
 
+  # 2026-04-11 predates PRISM's first reference population
+  # vintage, but as_of is clamped to that vintage, so rates use
+  # the PRISM denominator rather than switching to the census one
   summary_data <- forecasttools::read_tabular(output_path) |>
     dplyr::mutate(
       population = forecasttools::get_prism_reference_population(
         .data$abbreviation,
-        as_of = as.Date("2026-04-11")
+        as_of = min(forecasttools::prism_rate_reference_populations$as_of)
       )
     )
 
@@ -138,4 +145,64 @@ test_that("write_ref_date_summary_ens uses count_/rate_ prefixed columns", {
   expect_false(any(
     stringr::str_detect(names(map_data), "^quantile_|_per100k")
   ))
+})
+
+
+test_that("reference populations come from PRISM", {
+  earliest_vintage <- min(
+    forecasttools::prism_rate_reference_populations$as_of
+  )
+
+  populations <- prism_reference_populations(
+    c("01", "US"),
+    as_of = earliest_vintage
+  )
+
+  expect_equal(
+    populations$population,
+    forecasttools::get_prism_reference_population(
+      c("AL", "US"),
+      as_of = earliest_vintage
+    )
+  )
+
+  # the national total is the territories-inclusive figure NHSN
+  # HRD divides by, not the states-plus-DC census estimate, so
+  # forecast rates are comparable to the observed rates HRD
+  # publishes beside them
+  expect_equal(populations$population[[2]], 337492878)
+})
+
+test_that("reference dates before PRISM's first vintage take the earliest vintage", {
+  earliest_vintage <- min(
+    forecasttools::prism_rate_reference_populations$as_of
+  )
+
+  # the clamp is what keeps historical weeks regenerable; without
+  # it a reference date before the first vintage has no population
+  # to look up at all
+  before <- prism_reference_populations(
+    c("01", "US"),
+    as_of = earliest_vintage - 365
+  )
+  on_vintage <- prism_reference_populations(
+    c("01", "US"),
+    as_of = earliest_vintage
+  )
+
+  expect_equal(before, on_vintage)
+})
+
+test_that("a location PRISM has no population for is an error, not an NA", {
+  # a silently blank rate column for one jurisdiction is worse
+  # than a report that fails to build. "60" is American Samoa,
+  # which PRISM does not publish
+  earliest_vintage <- min(
+    forecasttools::prism_rate_reference_populations$as_of
+  )
+
+  expect_error(
+    prism_reference_populations(c("01", "60"), as_of = earliest_vintage),
+    "No PRISM reference population"
+  )
 })

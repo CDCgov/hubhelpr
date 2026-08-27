@@ -71,5 +71,11 @@ time-series file using hubData or by pulling data
 from NHSN and NSSP APIs, then writes to the
 weekly-summaries directory for use by the visualization
 webpage. Output includes columns: week_ending_date,
-location, location_name, target, target_data_type, and value.
+location, location_name, target, target_data_type,
+count_value, and rate_value.
+}
+\details{
+\code{rate_value} carries NHSN HRD's published admissions
+per 100k, taken directly rather than derived, so no
+population denominator is involved.
 }

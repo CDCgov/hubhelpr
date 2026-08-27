@@ -1,13 +1,85 @@
+#' Read the hub's record of which models submitted for
+#' a reference date.
+#'
+#' [generate_hub_ensemble()] writes
+#' `auxiliary-data/weekly-model-submissions/` each week,
+#' recording the models that submitted and how they were
+#' designated at the time. That record is the only source
+#' of designation for a past reference date:
+#' `model-metadata/` describes models as they are now,
+#' and designation changes as models come and go. N.B.:
+#' Four schema generations have accumulated. The
+#' earliest has no `target` column, because it
+#' predates the second target: for 29 of its 31 covid
+#' reference dates, hospital admissions was the only
+#' target anyone submitted, so a per-model flag was a
+#' per-target flag. Proportion of ED visits first
+#' appears 2025-06-21, and the `target` column follows
+#' two weeks later.
+#'
+#' @param base_hub_path character, path to the base hub
+#' directory.
+#' @param reference_date character or Date, the
+#' reference date whose record to read.
+#' @param targets character vector of target names.
+#'
+#' @return A tibble with columns `model_id`, `target`
+#' and `designated`, or NULL if the hub has no record
+#' for `reference_date`.
+#' @noRd
+read_weekly_model_submissions <- function(
+  base_hub_path,
+  reference_date,
+  targets
+) {
+  submissions_path <- fs::path(
+    base_hub_path,
+    "auxiliary-data",
+    "weekly-model-submissions",
+    glue::glue("{lubridate::as_date(reference_date)}-models-submitted-to-hub"),
+    ext = "csv"
+  )
+
+  if (!fs::file_exists(submissions_path)) {
+    return(NULL)
+  }
+
+  submissions <- readr::read_csv(submissions_path, show_col_types = FALSE) |>
+    dplyr::rename_with(tolower) |>
+    dplyr::rename(
+      model_id = tidyselect::any_of(c("model", "model_id")),
+      designated = tidyselect::any_of(c("designated_model", "designated"))
+    )
+
+  checkmate::assert_names(
+    names(submissions),
+    must.include = c("model_id", "designated")
+  )
+
+  if (!("target" %in% names(submissions))) {
+    submissions <- tidyr::crossing(submissions, target = targets)
+  }
+
+  submissions |>
+    dplyr::mutate(designated = as.logical(.data$designated)) |>
+    dplyr::select("model_id", "target", "designated")
+}
+
+
 #' Resolve per-target model designation.
 #'
 #' Returns full grid of (model_id, target,
 #' designated) for the requested models and targets.
-#' Resolution uses the model's metadata fields
-#' `designated_model` and the optional
-#' `designated_targets` list. If `designated_model`
-#' is FALSE: never designated. If `designated_model`
-#' is TRUE and `designated_targets` is absent or
-#' empty: designated for every target. If
+#'
+#' When `reference_date` is supplied and the hub has a
+#' `weekly-model-submissions` record for it, designation
+#' is read from that record, which is how models were
+#' designated that week. Otherwise, it is resolved from
+#' current model metadata: the fields `designated_model`
+#' and the optional `designated_targets` list. If
+#' `designated_model` is FALSE: never designated. If
+#' `designated_model` is TRUE and `designated_targets`
+#' is absent or empty: designated for every target. If
 #' `designated_model` is TRUE and `designated_targets`
 #' is present: designated only for listed targets.
 #'
@@ -19,6 +91,10 @@
 #' @param targets character vector of target names to
 #' include, or NULL (default) to include all targets
 #' supported by the hub.
+#' @param reference_date character or Date, the
+#' reference date to resolve designation as of.
+#' Default NULL, which resolves against current model
+#' metadata.
 #'
 #' @return A tibble with columns `model_id`, `target`,
 #' and `designated` (logical), with one row per
@@ -27,10 +103,34 @@
 get_model_designation <- function(
   base_hub_path,
   model_ids = NULL,
-  targets = NULL
+  targets = NULL,
+  reference_date = NULL
 ) {
   if (is.null(targets)) {
     targets <- get_hub_supported_targets(base_hub_path)
+  }
+
+  if (!is.null(reference_date)) {
+    submissions <- read_weekly_model_submissions(
+      base_hub_path,
+      reference_date,
+      targets
+    )
+
+    if (!is.null(submissions)) {
+      # models with no row that week did not submit, so
+      # they are not designated for it
+      return(
+        tidyr::crossing(
+          model_id = model_ids %||% unique(submissions$model_id),
+          target = targets
+        ) |>
+          dplyr::left_join(submissions, by = c("model_id", "target")) |>
+          dplyr::mutate(
+            designated = dplyr::coalesce(.data$designated, FALSE)
+          )
+      )
+    }
   }
 
   metadata <- hubData::load_model_metadata(
@@ -121,16 +221,26 @@ count_designated_models <- function(
     )
   }
 
-  designated_pairs <- get_model_designation(
-    base_hub_path,
-    model_ids = dplyr::distinct(hub_forecasts, .data$model_id) |>
-      dplyr::pull(.data$model_id)
-  ) |>
-    dplyr::filter(.data$designated) |>
-    dplyr::select("model_id", "target")
+  designated_pairs <- hub_forecasts |>
+    dplyr::distinct(.data$reference_date, .data$model_id) |>
+    tidyr::nest(.by = "reference_date", .key = "models") |>
+    purrr::pmap(\(reference_date, models) {
+      get_model_designation(
+        base_hub_path,
+        model_ids = models$model_id,
+        reference_date = reference_date
+      ) |>
+        dplyr::filter(.data$designated) |>
+        dplyr::mutate(reference_date = !!reference_date) |>
+        dplyr::select("reference_date", "model_id", "target")
+    }) |>
+    purrr::list_rbind()
 
   designated_forecasts <- hub_forecasts |>
-    dplyr::inner_join(designated_pairs, by = c("model_id", "target")) |>
+    dplyr::inner_join(
+      designated_pairs,
+      by = c("reference_date", "model_id", "target")
+    ) |>
     dplyr::filter(
       forecasttools::nullable_comparison(.data$target, "%in%", !!targets),
       forecasttools::nullable_comparison(.data$horizon, "%in%", !!horizons),

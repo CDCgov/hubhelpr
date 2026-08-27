@@ -1,0 +1,5 @@
+"model_id","designated_model","target"
+"CFA-EpiAutoGP",TRUE,"wk inc covid hosp"
+"CFA-EpiAutoGP",FALSE,"wk inc covid prop ed visits"
+"CovidHub-baseline",TRUE,"wk inc covid hosp"
+"CovidHub-baseline",FALSE,"wk inc covid prop ed visits"

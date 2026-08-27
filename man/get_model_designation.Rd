@@ -4,7 +4,12 @@
 \alias{get_model_designation}
 \title{Resolve per-target model designation.}
 \usage{
-get_model_designation(base_hub_path, model_ids = NULL, targets = NULL)
+get_model_designation(
+  base_hub_path,
+  model_ids = NULL,
+  targets = NULL,
+  reference_date = NULL
+)
 }
 \arguments{
 \item{base_hub_path}{character, path to the base hub
@@ -17,6 +22,11 @@ with metadata in the hub.}
 \item{targets}{character vector of target names to
 include, or NULL (default) to include all targets
 supported by the hub.}
+
+\item{reference_date}{character or Date, the
+reference date to resolve designation as of.
+Default NULL, which resolves against current model
+metadata.}
 }
 \value{
 A tibble with columns \code{model_id}, \code{target},
@@ -26,12 +36,17 @@ and \code{designated} (logical), with one row per
 \description{
 Returns full grid of (model_id, target,
 designated) for the requested models and targets.
-Resolution uses the model's metadata fields
-\code{designated_model} and the optional
-\code{designated_targets} list. If \code{designated_model}
-is FALSE: never designated. If \code{designated_model}
-is TRUE and \code{designated_targets} is absent or
-empty: designated for every target. If
+}
+\details{
+When \code{reference_date} is supplied and the hub has a
+\code{weekly-model-submissions} record for it, designation
+is read from that record, which is how models were
+designated that week. Otherwise, it is resolved from
+current model metadata: the fields \code{designated_model}
+and the optional \code{designated_targets} list. If
+\code{designated_model} is FALSE: never designated. If
+\code{designated_model} is TRUE and \code{designated_targets}
+is absent or empty: designated for every target. If
 \code{designated_model} is TRUE and \code{designated_targets}
 is present: designated only for listed targets.
 }
