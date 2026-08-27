@@ -1,10 +1,11 @@
-weekly_exclusions_filename <- "exclusions.toml"
+weekly_exclusions_filename <- "report_exclusions.toml"
+weekly_exclusions_directory <- "config"
 
 
 #' Path to a hub's weekly location exclusions file.
 #'
-#' The file lives beside that hub's weekly summaries (
-#' each hub has its own file).
+#' The file lives under `config/`, one per hub.
+#'
 #'
 #' @param hub_reports_path character, path to the
 #' forecast hub reports directory.
@@ -16,7 +17,7 @@ weekly_exclusions_filename <- "exclusions.toml"
 weekly_exclusions_path <- function(hub_reports_path, disease) {
   return(fs::path(
     hub_reports_path,
-    "weekly-summaries",
+    weekly_exclusions_directory,
     get_hub_repo_name(disease),
     weekly_exclusions_filename
   ))

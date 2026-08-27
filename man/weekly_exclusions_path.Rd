@@ -17,6 +17,5 @@ forecast hub reports directory.}
 The file path, whether or not it exists.
 }
 \description{
-The file lives beside that hub's weekly summaries (
-each hub has its own file).
+The file lives under \verb{config/}, one per hub.
 }
