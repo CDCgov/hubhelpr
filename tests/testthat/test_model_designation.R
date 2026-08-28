@@ -1,5 +1,5 @@
-test_that("get_model_designation designates all targets when designated_targets is absent", {
-  designation <- get_model_designation(
+test_that("get_current_model_designation designates all targets when designated_targets is absent", {
+  designation <- get_current_model_designation(
     example_cfa_hub,
     model_ids = "CFA_Pyrenew-PyrenewHEW_COVID"
   )
@@ -7,16 +7,16 @@ test_that("get_model_designation designates all targets when designated_targets 
   expect_true(all(designation$designated))
 })
 
-test_that("get_model_designation returns FALSE for all targets when designated is FALSE", {
-  designation <- get_model_designation(
+test_that("get_current_model_designation returns FALSE for all targets when designated is FALSE", {
+  designation <- get_current_model_designation(
     example_cfa_hub,
     model_ids = "CFA_Pyrenew-Pyrenew_E_COVID"
   )
   expect_false(any(designation$designated))
 })
 
-test_that("get_model_designation narrows to only targets listed in designated_targets", {
-  designation <- get_model_designation(
+test_that("get_current_model_designation narrows to only targets listed in designated_targets", {
+  designation <- get_current_model_designation(
     example_cfa_hub,
     model_ids = "CFA-EpiAutoGP"
   ) |>
@@ -24,8 +24,8 @@ test_that("get_model_designation narrows to only targets listed in designated_ta
   expect_identical(designation$designated, c(TRUE, FALSE))
 })
 
-test_that("get_model_designation returns a full model-target grid, including FALSE rows", {
-  designation <- get_model_designation(
+test_that("get_current_model_designation returns a full model-target grid, including FALSE rows", {
+  designation <- get_current_model_designation(
     example_cfa_hub,
     model_ids = c(
       "CFA_Pyrenew-PyrenewHEW_COVID",
@@ -43,8 +43,8 @@ test_that("get_model_designation returns a full model-target grid, including FAL
   expect_true(all(hew_rows))
 })
 
-test_that("get_model_designation resolves a mix of broadly-, narrowly-, and non-designated models", {
-  designation <- get_model_designation(
+test_that("get_current_model_designation resolves a mix of broadly-, narrowly-, and non-designated models", {
+  designation <- get_current_model_designation(
     example_cfa_hub,
     model_ids = c(
       "CFA-EpiAutoGP",
@@ -60,8 +60,8 @@ test_that("get_model_designation resolves a mix of broadly-, narrowly-, and non-
   )
 })
 
-test_that("get_model_designation loads all hub models when model_ids is NULL", {
-  designation <- get_model_designation(example_cfa_hub)
+test_that("get_current_model_designation loads all hub models when model_ids is NULL", {
+  designation <- get_current_model_designation(example_cfa_hub)
   n_models <- hubData::load_model_metadata(example_cfa_hub) |>
     dplyr::distinct(.data$model_id) |>
     nrow()
@@ -69,8 +69,8 @@ test_that("get_model_designation loads all hub models when model_ids is NULL", {
   expect_equal(nrow(designation), n_models * n_targets)
 })
 
-test_that("get_model_designation works with a single target input", {
-  designation <- get_model_designation(
+test_that("get_current_model_designation works with a single target input", {
+  designation <- get_current_model_designation(
     example_cfa_hub,
     model_ids = "CFA-EpiAutoGP",
     targets = "wk inc covid hosp"
@@ -79,8 +79,8 @@ test_that("get_model_designation works with a single target input", {
   expect_true(designation$designated)
 })
 
-test_that("get_model_designation uses all hub-supported targets when targets is NULL", {
-  designation <- get_model_designation(
+test_that("get_current_model_designation uses all hub-supported targets when targets is NULL", {
+  designation <- get_current_model_designation(
     example_cfa_hub,
     model_ids = "CFA-EpiAutoGP"
   )
@@ -103,14 +103,14 @@ designated_for <- function(designation, model_id, target) {
 }
 
 test_that("designation for a reference date comes from the submissions record, not metadata", {
-  from_metadata <- get_model_designation(
+  from_metadata <- get_current_model_designation(
     example_cfa_hub,
     model_ids = "CovidHub-baseline"
   )
-  from_record <- get_model_designation(
+  from_record <- get_model_designation_as_of(
     example_cfa_hub,
-    model_ids = "CovidHub-baseline",
-    reference_date = "2025-12-06"
+    reference_date = "2025-12-06",
+    model_ids = "CovidHub-baseline"
   )
 
   expect_false(any(from_metadata$designated))
@@ -118,7 +118,7 @@ test_that("designation for a reference date comes from the submissions record, n
 })
 
 test_that("a record with no target column designates across every target", {
-  designation <- get_model_designation(
+  designation <- get_model_designation_as_of(
     example_cfa_hub,
     reference_date = "2025-12-06"
   )
@@ -130,7 +130,7 @@ test_that("a record with no target column designates across every target", {
 })
 
 test_that("a record with a target column designates per target", {
-  designation <- get_model_designation(
+  designation <- get_model_designation_as_of(
     example_cfa_hub,
     reference_date = "2025-12-13"
   )
@@ -150,7 +150,7 @@ test_that("every schema generation of the record is read", {
   )
 
   purrr::iwalk(expectations[-1], \(expected, reference_date) {
-    designation <- get_model_designation(
+    designation <- get_model_designation_as_of(
       example_cfa_hub,
       reference_date = reference_date
     )
@@ -163,10 +163,10 @@ test_that("every schema generation of the record is read", {
 })
 
 test_that("models absent from the record are not designated for that week", {
-  designation <- get_model_designation(
+  designation <- get_model_designation_as_of(
     example_cfa_hub,
-    model_ids = c("CFA-EpiAutoGP", "CFA_Pyrenew-Pyrenew_H_COVID"),
-    reference_date = "2026-04-18"
+    reference_date = "2026-04-18",
+    model_ids = c("CFA-EpiAutoGP", "CFA_Pyrenew-Pyrenew_H_COVID")
   )
 
   expect_true(all(
@@ -181,16 +181,15 @@ test_that("models absent from the record are not designated for that week", {
   ))
 })
 
-test_that("designation falls back to metadata when the hub has no record for the date", {
-  from_metadata <- get_model_designation(
-    example_cfa_hub,
-    model_ids = "CFA-EpiAutoGP"
+test_that("a reference date with no record is an error, not a fallback", {
+  # falling back to current metadata would silently substitute
+  # today's designations for the week's
+  expect_error(
+    get_model_designation_as_of(
+      example_cfa_hub,
+      reference_date = "2020-01-01",
+      model_ids = "CFA-EpiAutoGP"
+    ),
+    "No submission record"
   )
-  no_record <- get_model_designation(
-    example_cfa_hub,
-    model_ids = "CFA-EpiAutoGP",
-    reference_date = "2020-01-01"
-  )
-
-  expect_equal(no_record, from_metadata)
 })

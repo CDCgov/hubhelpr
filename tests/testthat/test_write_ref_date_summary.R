@@ -62,11 +62,11 @@ test_that("write_ref_date_summary_all includes designation and ensemble columns"
   # designation is resolved as of the reference date, from the
   # hub's weekly-model-submissions record, not from current
   # metadata
-  expected_designation <- get_model_designation(
+  expected_designation <- get_model_designation_as_of(
     base_hub_path = example_cfa_hub,
+    reference_date = "2026-04-11",
     model_ids = "CFA-EpiAutoGP",
-    targets = epi_autogp_flags$target,
-    reference_date = "2026-04-11"
+    targets = epi_autogp_flags$target
   ) |>
     dplyr::arrange(.data$target)
 

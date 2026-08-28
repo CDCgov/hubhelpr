@@ -27,22 +27,32 @@
 #' and `designated`, or NULL if the hub has no record
 #' for `reference_date`.
 #' @noRd
-read_weekly_model_submissions <- function(
-  base_hub_path,
-  reference_date,
-  targets
-) {
-  submissions_path <- fs::path(
+model_submissions_path <- function(base_hub_path, reference_date) {
+  return(fs::path(
     base_hub_path,
     "auxiliary-data",
     "weekly-model-submissions",
     glue::glue("{lubridate::as_date(reference_date)}-models-submitted-to-hub"),
     ext = "csv"
-  )
+  ))
+}
 
-  if (!fs::file_exists(submissions_path)) {
-    return(NULL)
-  }
+
+#' Read the hub's record of which models submitted for
+#' a reference date.
+#'
+#' @inheritParams model_submissions_path
+#' @param targets character vector of target names.
+#'
+#' @return A tibble with columns `model_id`, `target`
+#' and `designated`.
+#' @noRd
+read_weekly_model_submissions <- function(
+  base_hub_path,
+  reference_date,
+  targets
+) {
+  submissions_path <- model_submissions_path(base_hub_path, reference_date)
 
   submissions <- readr::read_csv(submissions_path, show_col_types = FALSE) |>
     dplyr::rename_with(tolower) |>
@@ -66,15 +76,11 @@ read_weekly_model_submissions <- function(
 }
 
 
-#' Resolve per-target model designation.
+#' Resolve per-target model designation as it stands
+#' now.
 #'
-#' Returns full grid of (model_id, target,
-#' designated) for the requested models and targets.
-#'
-#' When `reference_date` is supplied and the hub has a
-#' `weekly-model-submissions` record for it, designation
-#' is read from that record, which is how models were
-#' designated that week. Otherwise, it is resolved from
+#' Returns full grid of (model_id, target, designated)
+#' for the requested models and targets, resolved from
 #' current model metadata: the fields `designated_model`
 #' and the optional `designated_targets` list. If
 #' `designated_model` is FALSE: never designated. If
@@ -82,6 +88,12 @@ read_weekly_model_submissions <- function(
 #' is absent or empty: designated for every target. If
 #' `designated_model` is TRUE and `designated_targets`
 #' is present: designated only for listed targets.
+#'
+#' This describes models as they are today. This is
+#' only correct for the current reference date. Use
+#' [get_model_designation_as_of()] for a past one. The
+#' exception is [generate_hub_ensemble()], which writes
+#' the record the as-of version reads.
 #'
 #' @param base_hub_path character, path to the base hub
 #' directory.
@@ -91,46 +103,18 @@ read_weekly_model_submissions <- function(
 #' @param targets character vector of target names to
 #' include, or NULL (default) to include all targets
 #' supported by the hub.
-#' @param reference_date character or Date, the
-#' reference date to resolve designation as of.
-#' Default NULL, which resolves against current model
-#' metadata.
 #'
 #' @return A tibble with columns `model_id`, `target`,
 #' and `designated` (logical), with one row per
 #' (model, target) combination.
 #' @export
-get_model_designation <- function(
+get_current_model_designation <- function(
   base_hub_path,
   model_ids = NULL,
-  targets = NULL,
-  reference_date = NULL
+  targets = NULL
 ) {
   if (is.null(targets)) {
     targets <- get_hub_supported_targets(base_hub_path)
-  }
-
-  if (!is.null(reference_date)) {
-    submissions <- read_weekly_model_submissions(
-      base_hub_path,
-      reference_date,
-      targets
-    )
-
-    if (!is.null(submissions)) {
-      # models with no row that week did not submit, so
-      # they are not designated for it
-      return(
-        tidyr::crossing(
-          model_id = model_ids %||% unique(submissions$model_id),
-          target = targets
-        ) |>
-          dplyr::left_join(submissions, by = c("model_id", "target")) |>
-          dplyr::mutate(
-            designated = dplyr::coalesce(.data$designated, FALSE)
-          )
-      )
-    }
   }
 
   metadata <- hubData::load_model_metadata(
@@ -167,6 +151,74 @@ get_model_designation <- function(
         )
     ) |>
     dplyr::select("model_id", "target", "designated")
+}
+
+
+#' Resolve per-target model designation as of a
+#' reference date.
+#'
+#' Reads the hub's record of that week, written by
+#' [generate_hub_ensemble()], rather than current
+#' metadata. Designation changes as models changes.
+#' Resolving a past reference date against
+#' `model-metadata/` reports today's answer for that
+#' week: e.g. for `2025-01-04` the covid hub's record
+#' lists ten designated models, and today's metadata
+#' designates none of the same submitters.
+#'
+#' @param base_hub_path character, path to the base hub
+#' directory.
+#' @param reference_date character or Date, the
+#' reference date to resolve designation as of.
+#' @param model_ids character vector of model IDs to
+#' include, or NULL (default) to include every model in
+#' that week's record
+#' @param targets character vector of target names to
+#' include, or NULL (default) to include all targets
+#' supported by the hub.
+#'
+#' @return A tibble with columns `model_id`, `target`,
+#' and `designated` (logical), with one row per
+#' (model, target) combination.
+#' @export
+get_model_designation_as_of <- function(
+  base_hub_path,
+  reference_date,
+  model_ids = NULL,
+  targets = NULL
+) {
+  if (is.null(targets)) {
+    targets <- get_hub_supported_targets(base_hub_path)
+  }
+
+  submissions_path <- model_submissions_path(base_hub_path, reference_date)
+
+  if (!fs::file_exists(submissions_path)) {
+    cli::cli_abort(
+      c(
+        "No submission record for {.val {as.character(reference_date)}}
+         at {.path {submissions_path}}.",
+        "i" = "{.fn generate_hub_ensemble} writes one each week. Use
+               {.fn get_current_model_designation} only where today's
+               designations are what is wanted."
+      )
+    )
+  }
+
+  submissions <- read_weekly_model_submissions(
+    base_hub_path,
+    reference_date,
+    targets
+  )
+
+  return(
+    tidyr::crossing(
+      model_id = model_ids %||% unique(submissions$model_id),
+      target = targets
+    ) |>
+      dplyr::left_join(submissions, by = c("model_id", "target")) |>
+      dplyr::mutate(designated = dplyr::coalesce(.data$designated, FALSE))
+  )
 }
 
 
@@ -225,10 +277,10 @@ count_designated_models <- function(
     dplyr::distinct(.data$reference_date, .data$model_id) |>
     tidyr::nest(.by = "reference_date", .key = "models") |>
     purrr::pmap(\(reference_date, models) {
-      get_model_designation(
+      get_model_designation_as_of(
         base_hub_path,
-        model_ids = models$model_id,
-        reference_date = reference_date
+        reference_date = reference_date,
+        model_ids = models$model_id
       ) |>
         dplyr::filter(.data$designated) |>
         dplyr::mutate(reference_date = !!reference_date) |>

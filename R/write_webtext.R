@@ -182,7 +182,7 @@ compute_change_direction <- function(
 #' @param designation Data frame of per-target model
 #' designation with columns `model_id`, `target`, and
 #' `designated` (logical), typically produced by
-#' [get_model_designation()].
+#' [get_model_designation_as_of()].
 #' @param hub_name Character, hub name.
 #' @param reference_date Date, the reference date.
 #' @param excluded_locations NULL, character vector, or
@@ -405,10 +405,10 @@ generate_webtext_block <- function(
     dplyr::distinct(.data$model) |>
     dplyr::pull(.data$model)
 
-  designation <- get_model_designation(
+  designation <- get_model_designation_as_of(
     base_hub_path,
-    model_ids = contributing_model_ids,
-    reference_date = reference_date
+    reference_date = reference_date,
+    model_ids = contributing_model_ids
   )
 
   all_model_metadata <- hubData::load_model_metadata(base_hub_path) |>
