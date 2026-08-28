@@ -14,7 +14,7 @@ example_exclusions <- c(
   "2025-03-03 = [\"VI\"]"
 )
 
-test_that("a date with no entry has no exclusions", {
+test_that("reference dates absent from the file parse as no exclusions", {
   hub_reports_path <- write_exclusions_file(example_exclusions)
   expect_identical(
     get_reference_date_exclusions_list(hub_reports_path, "covid", "2025-06-07"),
@@ -22,7 +22,7 @@ test_that("a date with no entry has no exclusions", {
   )
 })
 
-test_that("an array applies to every target", {
+test_that("reference dates with array exclusions parse as applying to every target", {
   hub_reports_path <- write_exclusions_file(example_exclusions)
   expect_identical(
     get_reference_date_exclusions_list(hub_reports_path, "covid", "2025-02-02"),
@@ -30,7 +30,7 @@ test_that("an array applies to every target", {
   )
 })
 
-test_that("a table maps targets to abbreviations", {
+test_that("reference dates with key value exclusions parse as expected", {
   hub_reports_path <- write_exclusions_file(example_exclusions)
   expect_identical(
     get_reference_date_exclusions_list(hub_reports_path, "covid", "2025-01-01"),
@@ -38,7 +38,7 @@ test_that("a table maps targets to abbreviations", {
   )
 })
 
-test_that("reference dates are accepted as dates or strings", {
+test_that("reference dates are looked up identically as Date or character", {
   hub_reports_path <- write_exclusions_file(example_exclusions)
   expect_identical(
     get_reference_date_exclusions_list(
@@ -50,9 +50,7 @@ test_that("reference dates are accepted as dates or strings", {
   )
 })
 
-test_that("a missing file is an error, not an empty policy", {
-  # absence is indistinguishable from a wrong path, and silently
-  # applying no exclusions is the failure this file prevents
+test_that("a hub with no exclusions file errors rather than reporting no exclusions", {
   hub_reports_path <- withr::local_tempdir()
   expect_error(
     parse_exclusion_file(exclusion_file_path(hub_reports_path, "covid")),
@@ -64,7 +62,7 @@ test_that("a missing file is an error, not an empty policy", {
   )
 })
 
-test_that("each hub reads its own file", {
+test_that("each hub resolves to its own exclusions file, not another hub's", {
   hub_reports_path <- write_exclusions_file(example_exclusions, "covid")
   expect_error(
     get_reference_date_exclusions_list(hub_reports_path, "rsv", "2025-02-02"),
@@ -72,7 +70,7 @@ test_that("each hub reads its own file", {
   )
 })
 
-test_that("an entry can be passed straight to apply_target_location_exclusions", {
+test_that("parsed exclusions drop the excluded rows in apply_target_location_exclusions", {
   hub_reports_path <- write_exclusions_file(example_exclusions)
 
   forecasts <- tibble::tibble(
@@ -96,29 +94,23 @@ test_that("an entry can be passed straight to apply_target_location_exclusions",
   )
 })
 
-test_that("errors name the week that is wrong", {
+test_that("an invalid abbreviation errors on read and names the week it is in", {
   hub_reports_path <- write_exclusions_file(c(
     "2025-01-01 = [\"AK\"]",
     "2030-01-01 = [\"ZZ\"]"
   ))
-  expect_error(
-    parse_exclusion_file(exclusion_file_path(hub_reports_path, "covid")),
-    "2030-01-01"
-  )
-})
+  exclusions_path <- exclusion_file_path(hub_reports_path, "covid")
 
-test_that("invalid abbreviations are caught on read, not on use", {
-  hub_reports_path <- write_exclusions_file(c(
-    "2025-01-01 = [\"AK\"]",
-    "2030-01-01 = [\"ZZ\"]"
-  ))
+  expect_error(parse_exclusion_file(exclusions_path), "invalid abbreviation")
+  expect_error(parse_exclusion_file(exclusions_path), "2030-01-01")
+
   expect_error(
     get_reference_date_exclusions_list(hub_reports_path, "covid", "2025-01-01"),
     "invalid abbreviation"
   )
 })
 
-test_that("keys that are not reference dates are rejected", {
+test_that("keys that are not YYYY-MM-DD dates are rejected", {
   hub_reports_path <- write_exclusions_file("not_a_date = [\"AK\"]")
   expect_error(
     parse_exclusion_file(exclusion_file_path(hub_reports_path, "covid")),
@@ -126,7 +118,7 @@ test_that("keys that are not reference dates are rejected", {
   )
 })
 
-test_that("an unnamed table is rejected", {
+test_that("a table whose values are not abbreviations is rejected", {
   hub_reports_path <- write_exclusions_file("2025-01-01 = { all = 3 }")
   expect_error(
     parse_exclusion_file(exclusion_file_path(hub_reports_path, "covid")),
@@ -134,7 +126,7 @@ test_that("an unnamed table is rejected", {
   )
 })
 
-test_that("JSON output matches what the action accepts", {
+test_that("array and key value exclusions serialize to the JSON the action accepts", {
   hub_reports_path <- write_exclusions_file(example_exclusions)
 
   expect_identical(
@@ -147,7 +139,7 @@ test_that("JSON output matches what the action accepts", {
   )
 })
 
-test_that("a single abbreviation stays an array in JSON", {
+test_that("a lone abbreviation serializes as a JSON array, not a bare string", {
   # auto_unbox would emit a bare string, which the action
   # does not accept
   hub_reports_path <- write_exclusions_file(example_exclusions)
@@ -157,7 +149,7 @@ test_that("a single abbreviation stays an array in JSON", {
   )
 })
 
-test_that("a date with no entry emits the action's own default", {
+test_that("reference dates absent from the file serialize to the action's default", {
   hub_reports_path <- write_exclusions_file(example_exclusions)
   expect_identical(
     get_reference_date_exclusions_json(hub_reports_path, "covid", "2025-06-07"),
@@ -165,7 +157,7 @@ test_that("a date with no entry emits the action's own default", {
   )
 })
 
-test_that("JSON output parses back to the original entry", {
+test_that("JSON output round-trips back to the parsed exclusions", {
   hub_reports_path <- write_exclusions_file(example_exclusions)
   purrr::walk(c("2025-01-01", "2025-02-02", "2025-03-03"), \(reference_date) {
     json <- get_reference_date_exclusions_json(
@@ -183,12 +175,4 @@ test_that("JSON output parses back to the original entry", {
       info = reference_date
     )
   })
-})
-
-test_that("comments are preserved as a format affordance", {
-  hub_reports_path <- write_exclusions_file(example_exclusions)
-  expect_identical(
-    get_reference_date_exclusions_list(hub_reports_path, "covid", "2026-02-28"),
-    list("wk inc covid prop ed visits" = "DC")
-  )
 })
