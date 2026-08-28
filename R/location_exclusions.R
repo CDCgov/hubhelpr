@@ -343,11 +343,7 @@ get_reference_date_exclusions_list <- function(
 
   entry <- exclusions[[as.character(lubridate::as_date(reference_date))]]
 
-  if (is.null(entry)) {
-    return(list())
-  }
-
-  return(entry)
+  return(entry %||% list())
 }
 
 
