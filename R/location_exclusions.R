@@ -145,10 +145,6 @@ apply_target_location_exclusions <- function(
   base_hub_path
 ) {
   exclusions <- normalize_excluded_locations(excluded_locations)
-  if (length(exclusions) == 0) {
-    return(data)
-  }
-
   hub_supported_targets <- get_hub_supported_targets(base_hub_path)
   named_targets <- setdiff(names(exclusions), "all")
   unmatched <- setdiff(named_targets, hub_supported_targets)
@@ -202,15 +198,11 @@ filter_to_expected_locations <- function(
     location = expected_locations
   )
 
-  if (length(normalized) > 0) {
-    exclusion_df <- build_exclusion_df(normalized, hub_supported_targets)
-
-    expected_df <- dplyr::anti_join(
-      expected_df,
-      exclusion_df,
-      by = c("target", "location")
-    )
-  }
+  expected_df <- dplyr::anti_join(
+    expected_df,
+    build_exclusion_df(normalized, hub_supported_targets),
+    by = c("target", "location")
+  )
 
   return(dplyr::inner_join(
     data,
@@ -218,10 +210,6 @@ filter_to_expected_locations <- function(
     by = c("target", "location")
   ))
 }
-
-exclusion_filename <- "report_exclusions.toml"
-exclusion_directory <- "config"
-
 
 #' Path to a hub's weekly location exclusions file.
 #'
@@ -231,15 +219,26 @@ exclusion_directory <- "config"
 #' forecast hub reports directory.
 #' @param disease character, disease name ("covid" or
 #' "rsv").
+#' @param directory character, directory under
+#' `hub_reports_path` holding per-hub configuration. Default:
+#' "config".
+#' @param filename character, name of the exclusions file
+#' within a hub's configuration directory. Default:
+#' "report_exclusions.toml".
 #'
 #' @return The file path, whether or not it exists.
 #' @noRd
-exclusion_file_path <- function(hub_reports_path, disease) {
+exclusion_file_path <- function(
+  hub_reports_path,
+  disease,
+  directory = "config",
+  filename = "report_exclusions.toml"
+) {
   return(fs::path(
     hub_reports_path,
-    exclusion_directory,
+    directory,
     get_hub_repo_name(disease),
-    exclusion_filename
+    filename
   ))
 }
 
