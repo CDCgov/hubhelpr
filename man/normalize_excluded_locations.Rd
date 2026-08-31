@@ -11,8 +11,8 @@ normalize_excluded_locations(excluded_locations)
 named list of character vectors.}
 }
 \value{
-Named list of character vectors, or NULL if
-input is NULL or zero-length.
+Named list of character vectors, empty when there is
+nothing to exclude.
 }
 \description{
 Converts a character vector or named list of excluded

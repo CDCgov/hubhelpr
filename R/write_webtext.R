@@ -307,10 +307,10 @@ compute_target_webtext_values <- function(
 
   # add hospital reporting flag if applicable
   if (is_hosp_target(target)) {
-    normalized <- normalize_excluded_locations(excluded_locations)
-    hosp_exclusions <- if (!is.null(normalized)) {
-      get_target_exclusions(normalized, target)
-    }
+    hosp_exclusions <- get_target_exclusions(
+      normalize_excluded_locations(excluded_locations),
+      target
+    )
     values[["hosp_reporting_flag_text"]] <- check_hospital_reporting_rate(
       reference_date = reference_date,
       disease = disease,
