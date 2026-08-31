@@ -4,7 +4,7 @@
 # covid19-forecast-hub's tasks.json for reference date
 # 2025-06-21, and the column follows on 2025-07-05. A record
 # missing the column after this date is malformed, not old.
-last_undesignated_target_date <- lubridate::as_date("2025-06-28")
+last_date_without_designation_by_target <- lubridate::as_date("2025-06-28")
 
 
 #' Path to the hub's record of which models submitted
@@ -38,11 +38,6 @@ model_submissions_path <- function(base_hub_path, reference_date) {
 
 #' Read the hub's record of which models submitted for
 #' a reference date.
-#'
-#' Returns the record as written, including whether it
-#' carries a `target` column. Deciding what a missing
-#' column means is designation logic, not reading, so it
-#' lives in [get_model_designation_as_of()].
 #'
 #' @inheritParams model_submissions_path
 #'
@@ -213,19 +208,21 @@ get_model_designation_as_of <- function(
   )
 
   if (!("target" %in% names(submissions))) {
-    if (lubridate::as_date(reference_date) > last_undesignated_target_date) {
+    if (lubridate::as_date(reference_date) > last_date_without_designation_by_target) {
       cli::cli_abort(
         c(
           "The submission record for
            {.val {as.character(reference_date)}} has no {.field target}
            column.",
           "i" = "Records have carried one since
-                 {.val {as.character(last_undesignated_target_date + 1)}}.
+                 {.val {as.character(last_date_without_designation_by_target + 1)}}.
                  A missing column is only meaningful for earlier dates,
                  when hospital admissions was the hub's only target."
         )
       )
     }
+    # before designation-by-target was introduced, a
+    # model's designation status applied across all targets
     submissions <- tidyr::crossing(submissions, target = targets)
   }
 
