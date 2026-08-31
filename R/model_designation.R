@@ -208,7 +208,10 @@ get_model_designation_as_of <- function(
   )
 
   if (!("target" %in% names(submissions))) {
-    if (lubridate::as_date(reference_date) > last_date_without_designation_by_target) {
+    if (
+      lubridate::as_date(reference_date) >
+        last_date_without_designation_by_target
+    ) {
       cli::cli_abort(
         c(
           "The submission record for
