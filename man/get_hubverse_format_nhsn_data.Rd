@@ -23,24 +23,21 @@ the system date as determined by \code{\link[lubridate:today]{lubridate::today()
 date to include for the NHSN dataset. Default value
 is NULL (no filtering).}
 
-\item{end_date}{Last week-ending
-date to include for the NHSN dataset. Default value
-is NULL (no filtering).}
+\item{end_date}{Last week-ending date to include for
+the NHSN dataset. Default value is NULL (no
+filtering).}
 
-\item{date_col_name}{Character. Name for the date column
-in the output. Default is "target_end_date".}
+\item{date_col_name}{Character. Name for the date
+column in the output. Default is "target_end_date".}
 
 \item{include_rate}{Logical. If TRUE, add an
 "observation_rate" column carrying NHSN's published
-admissions per 100k. Taken directly from NHSN HRD
-rather  than derived, so no population denominator
-is involved. Default: FALSE, since the hubverse time
-series schema has only a single observation column.}
+admissions per 100k. Default: FALSE.}
 }
 \value{
 Data frame with formatted NHSN data.
 }
 \description{
-This function pulls the NHSN hospital admissions data,
-formats and returns it in the hubverse format.
+This function pulls the NHSN hospital admissions
+data, formats and returns it in the hubverse format.
 }

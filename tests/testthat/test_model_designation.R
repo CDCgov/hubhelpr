@@ -109,7 +109,7 @@ test_that("designation for a reference date comes from the submissions record, n
   )
   from_record <- get_model_designation_as_of(
     example_cfa_hub,
-    reference_date = "2025-12-06",
+    reference_date = "2025-06-21",
     model_ids = "CovidHub-baseline"
   )
 
@@ -117,16 +117,23 @@ test_that("designation for a reference date comes from the submissions record, n
   expect_true(all(from_record$designated))
 })
 
-test_that("a record with no target column designates across every target", {
+test_that("a record predating the target column designates across every target", {
   designation <- get_model_designation_as_of(
     example_cfa_hub,
-    reference_date = "2025-12-06"
+    reference_date = "2025-06-21"
   )
   targets <- get_hub_supported_targets(example_cfa_hub)
 
   expect_setequal(designation$target, targets)
   expect_true(all(designated_for(designation, "CovidHub-baseline", targets)))
   expect_false(any(designated_for(designation, "CFA-EpiAutoGP", targets)))
+})
+
+test_that("a record missing the target column after it was added is an error", {
+  expect_error(
+    get_model_designation_as_of(example_cfa_hub, reference_date = "2025-12-06"),
+    "has no.*target.*column"
+  )
 })
 
 test_that("a record with a target column designates per target", {
@@ -143,7 +150,7 @@ test_that("a record with a target column designates per target", {
 
 test_that("every schema generation of the record is read", {
   expectations <- list(
-    "2025-12-06" = NULL,
+    "2025-06-21" = NULL,
     "2025-12-13" = TRUE,
     "2026-04-11" = FALSE,
     "2026-04-18" = TRUE

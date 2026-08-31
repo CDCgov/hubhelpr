@@ -122,6 +122,11 @@ summarize_ref_date_forecasts <- function(
     )
   }
 
+  reference_population_values <- prism_reference_populations(
+    unique(current_forecasts$location),
+    as_of = reference_date
+  )
+
   forecasts_data <- forecasttools::pivot_hubverse_quantiles_wider(
     hubverse_table = current_forecasts,
     pivot_quantiles = c(
@@ -146,13 +151,7 @@ summarize_ref_date_forecasts <- function(
         "abbr"
       )
     ) |>
-    dplyr::left_join(
-      prism_reference_populations(
-        current_forecasts$location,
-        as_of = reference_date
-      ),
-      by = "location"
-    ) |>
+    dplyr::left_join(reference_population_values, by = "location") |>
     dplyr::mutate(
       target_data_type = get_target_data_type(.data$target)
     ) |>

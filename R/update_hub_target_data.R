@@ -63,8 +63,8 @@ merge_target_data <- function(
 
 #' Get and format NHSN data for a given disease.
 #'
-#' This function pulls the NHSN hospital admissions data,
-#' formats and returns it in the hubverse format.
+#' This function pulls the NHSN hospital admissions
+#' data, formats and returns it in the hubverse format.
 #'
 #' @param disease Disease name ("covid" or "rsv").
 #' @param as_of As-of date of the data pull. Default is
@@ -72,17 +72,14 @@ merge_target_data <- function(
 #' @param start_date First week-ending
 #' date to include for the NHSN dataset. Default value
 #' is NULL (no filtering).
-#' @param end_date Last week-ending
-#' date to include for the NHSN dataset. Default value
-#' is NULL (no filtering).
-#' @param date_col_name Character. Name for the date column
-#' in the output. Default is "target_end_date".
+#' @param end_date Last week-ending date to include for
+#' the NHSN dataset. Default value is NULL (no
+#' filtering).
+#' @param date_col_name Character. Name for the date
+#' column in the output. Default is "target_end_date".
 #' @param include_rate Logical. If TRUE, add an
 #' "observation_rate" column carrying NHSN's published
-#' admissions per 100k. Taken directly from NHSN HRD
-#' rather  than derived, so no population denominator
-#' is involved. Default: FALSE, since the hubverse time
-#' series schema has only a single observation column.
+#' admissions per 100k. Default: FALSE.
 #'
 #' @return Data frame with formatted NHSN data.
 #' @export

@@ -2,7 +2,8 @@
 % Please edit documentation in R/model_designation.R
 \name{get_current_model_designation}
 \alias{get_current_model_designation}
-\title{Resolve per-target model designation as it stands now.}
+\title{Resolve per-target model designation as it stands
+now.}
 \usage{
 get_current_model_designation(base_hub_path, model_ids = NULL, targets = NULL)
 }
@@ -35,11 +36,9 @@ is absent or empty: designated for every target. If
 is present: designated only for listed targets.
 }
 \details{
-This describes models as they are today, which is only
-correct for the current reference date. Use
-\code{\link[=get_model_designation_as_of]{get_model_designation_as_of()}} for a past one, and
-prefer it wherever a reference date is in scope. The
+This describes models as they are today. This is
+only correct for the current reference date. Use
+\code{\link[=get_model_designation_as_of]{get_model_designation_as_of()}} for a past one. The
 exception is \code{\link[=generate_hub_ensemble]{generate_hub_ensemble()}}, which writes
-the record the as-of version reads and so cannot
-depend on it.
+the record the as-of version reads.
 }

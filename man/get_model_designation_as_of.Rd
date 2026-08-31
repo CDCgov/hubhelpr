@@ -16,12 +16,12 @@ get_model_designation_as_of(
 \item{base_hub_path}{character, path to the base hub
 directory.}
 
-\item{reference_date}{character or Date, the reference
-date to resolve designation as of. Required.}
+\item{reference_date}{character or Date, the
+reference date to resolve designation as of.}
 
 \item{model_ids}{character vector of model IDs to
 include, or NULL (default) to include every model in
-that week's record.}
+that week's record}
 
 \item{targets}{character vector of target names to
 include, or NULL (default) to include all targets
@@ -33,18 +33,12 @@ and \code{designated} (logical), with one row per
 (model, target) combination.
 }
 \description{
-Reads the hub's own record of that week, written by
+Reads the hub's record of that week, written by
 \code{\link[=generate_hub_ensemble]{generate_hub_ensemble()}}, rather than current
-metadata. Designation changes as models come and go,
-so resolving a past reference date against
+metadata. Designation changes as models changes.
+Resolving a past reference date against
 \verb{model-metadata/} reports today's answer for that
-week: for \code{2025-01-04} the covid hub's record lists
-ten designated models, and today's metadata designates
-none of the same submitters.
-}
-\details{
-A missing record is an error. Falling back to current
-metadata would silently substitute today's
-designations for the week's, which is the failure this
-function exists to prevent.
+week: e.g. for \code{2025-01-04} the covid hub's record
+lists ten designated models, and today's metadata
+designates none of the same submitters.
 }

@@ -1,5 +1,14 @@
-#' Read the hub's record of which models submitted for
-#' a reference date.
+# Submission records written before this date have no
+# `target` column, because hospital admissions was the only
+# target the hub carried: proportion of ED visits enters
+# covid19-forecast-hub's tasks.json for reference date
+# 2025-06-21, and the column follows on 2025-07-05. A record
+# missing the column after this date is malformed, not old.
+last_undesignated_target_date <- lubridate::as_date("2025-06-28")
+
+
+#' Path to the hub's record of which models submitted
+#' for a reference date.
 #'
 #' [generate_hub_ensemble()] writes
 #' `auxiliary-data/weekly-model-submissions/` each week,
@@ -7,25 +16,14 @@
 #' designated at the time. That record is the only source
 #' of designation for a past reference date:
 #' `model-metadata/` describes models as they are now,
-#' and designation changes as models come and go. N.B.:
-#' Four schema generations have accumulated. The
-#' earliest has no `target` column, because it
-#' predates the second target: for 29 of its 31 covid
-#' reference dates, hospital admissions was the only
-#' target anyone submitted, so a per-model flag was a
-#' per-target flag. Proportion of ED visits first
-#' appears 2025-06-21, and the `target` column follows
-#' two weeks later.
+#' and designation changes as models come and go.
 #'
 #' @param base_hub_path character, path to the base hub
 #' directory.
 #' @param reference_date character or Date, the
-#' reference date whose record to read.
-#' @param targets character vector of target names.
+#' reference date whose record to locate.
 #'
-#' @return A tibble with columns `model_id`, `target`
-#' and `designated`, or NULL if the hub has no record
-#' for `reference_date`.
+#' @return The file path, whether or not it exists.
 #' @noRd
 model_submissions_path <- function(base_hub_path, reference_date) {
   return(fs::path(
@@ -41,16 +39,19 @@ model_submissions_path <- function(base_hub_path, reference_date) {
 #' Read the hub's record of which models submitted for
 #' a reference date.
 #'
-#' @inheritParams model_submissions_path
-#' @param targets character vector of target names.
+#' Returns the record as written, including whether it
+#' carries a `target` column. Deciding what a missing
+#' column means is designation logic, not reading, so it
+#' lives in [get_model_designation_as_of()].
 #'
-#' @return A tibble with columns `model_id`, `target`
-#' and `designated`.
+#' @inheritParams model_submissions_path
+#'
+#' @return A tibble with columns `model_id` and
+#' `designated`, plus `target` when the record has one.
 #' @noRd
 read_weekly_model_submissions <- function(
   base_hub_path,
-  reference_date,
-  targets
+  reference_date
 ) {
   submissions_path <- model_submissions_path(base_hub_path, reference_date)
 
@@ -66,13 +67,15 @@ read_weekly_model_submissions <- function(
     must.include = c("model_id", "designated")
   )
 
-  if (!("target" %in% names(submissions))) {
-    submissions <- tidyr::crossing(submissions, target = targets)
-  }
-
-  submissions |>
-    dplyr::mutate(designated = as.logical(.data$designated)) |>
-    dplyr::select("model_id", "target", "designated")
+  return(
+    submissions |>
+      dplyr::mutate(designated = as.logical(.data$designated)) |>
+      dplyr::select(
+        "model_id",
+        tidyselect::any_of("target"),
+        "designated"
+      )
+  )
 }
 
 
@@ -198,18 +201,33 @@ get_model_designation_as_of <- function(
       c(
         "No submission record for {.val {as.character(reference_date)}}
          at {.path {submissions_path}}.",
-        "i" = "{.fn generate_hub_ensemble} writes one each week. Use
-               {.fn get_current_model_designation} only where today's
-               designations are what is wanted."
+        "i" = "Model designation statuses are recorded when the ensemble
+               is built for a given reference date."
       )
     )
   }
 
   submissions <- read_weekly_model_submissions(
     base_hub_path,
-    reference_date,
-    targets
+    reference_date
   )
+
+  if (!("target" %in% names(submissions))) {
+    if (lubridate::as_date(reference_date) > last_undesignated_target_date) {
+      cli::cli_abort(
+        c(
+          "The submission record for
+           {.val {as.character(reference_date)}} has no {.field target}
+           column.",
+          "i" = "Records have carried one since
+                 {.val {as.character(last_undesignated_target_date + 1)}}.
+                 A missing column is only meaningful for earlier dates,
+                 when hospital admissions was the hub's only target."
+        )
+      )
+    }
+    submissions <- tidyr::crossing(submissions, target = targets)
+  }
 
   return(
     tidyr::crossing(

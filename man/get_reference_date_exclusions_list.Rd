@@ -35,8 +35,5 @@ to every target, or a table mapping target names (or
 }\if{html}{\out{</div>}}
 
 A date with no entry has no exclusions, so the file
-lists only the weeks that need one. The whole file is
-validated on read, so a typo in a future week's
-abbreviations surfaces now rather than on the morning
-that week is generated.
+lists only the weeks that need one.
 }
