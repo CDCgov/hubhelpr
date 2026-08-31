@@ -8,18 +8,27 @@
 #' @param excluded_locations NULL, character vector, or
 #' named list of character vectors.
 #'
-#' @return Named list of character vectors, or NULL if
-#' input is NULL or zero-length.
+#' @return Named list of character vectors, empty when there is
+#' nothing to exclude.
 #' @keywords internal
 normalize_excluded_locations <- function(excluded_locations) {
   if (is.null(excluded_locations) || length(excluded_locations) == 0) {
-    return(NULL)
+    return(list())
   }
   if (is.character(excluded_locations)) {
     assert_valid_location_abbrs(excluded_locations)
     return(list("all" = excluded_locations))
   }
   if (is.list(excluded_locations)) {
+    entry_names <- names(excluded_locations)
+    if (is.null(entry_names) || any(entry_names == "")) {
+      cli::cli_abort(
+        c(
+          "Every element of {.arg excluded_locations} must be named.",
+          "i" = "Use {.val all} for exclusions that apply to every target."
+        )
+      )
+    }
     purrr::walk(excluded_locations, function(x) {
       checkmate::assert_character(
         x,
@@ -136,10 +145,6 @@ apply_target_location_exclusions <- function(
   base_hub_path
 ) {
   exclusions <- normalize_excluded_locations(excluded_locations)
-  if (is.null(exclusions)) {
-    return(data)
-  }
-
   hub_supported_targets <- get_hub_supported_targets(base_hub_path)
   named_targets <- setdiff(names(exclusions), "all")
   unmatched <- setdiff(named_targets, hub_supported_targets)
@@ -193,19 +198,181 @@ filter_to_expected_locations <- function(
     location = expected_locations
   )
 
-  if (!is.null(normalized)) {
-    exclusion_df <- build_exclusion_df(normalized, hub_supported_targets)
-
-    expected_df <- dplyr::anti_join(
-      expected_df,
-      exclusion_df,
-      by = c("target", "location")
-    )
-  }
+  expected_df <- dplyr::anti_join(
+    expected_df,
+    build_exclusion_df(normalized, hub_supported_targets),
+    by = c("target", "location")
+  )
 
   return(dplyr::inner_join(
     data,
     expected_df,
     by = c("target", "location")
   ))
+}
+
+#' Path to a hub's weekly location exclusions file.
+#'
+#' The file lives under `config/`, one per hub.
+#'
+#' @param hub_reports_path character, path to the
+#' forecast hub reports directory.
+#' @param disease character, disease name ("covid" or
+#' "rsv").
+#' @param directory character, directory under
+#' `hub_reports_path` holding per-hub configuration. Default:
+#' "config".
+#' @param filename character, name of the exclusions file
+#' within a hub's configuration directory. Default:
+#' "report_exclusions.toml".
+#'
+#' @return The file path, whether or not it exists.
+#' @noRd
+exclusion_file_path <- function(
+  hub_reports_path,
+  disease,
+  directory = "config",
+  filename = "report_exclusions.toml"
+) {
+  return(fs::path(
+    hub_reports_path,
+    directory,
+    get_hub_repo_name(disease),
+    filename
+  ))
+}
+
+
+#' Parse a hub's weekly location exclusions file.
+#'
+#' The file is TOML keyed by reference date, where each value
+#' takes either form the `generate-viz-data` action accepts for
+#' `excluded_locations`: an array of abbreviations applying to
+#' every target, or a table mapping target names (or `all`) to
+#' arrays.
+#'
+#' ```toml
+#' 2025-01-01 = { all = ["VI"], "wk inc covid hosp" = ["GU"] }
+#' 2025-02-02 = ["AK", "AR"]
+#' ```
+#'
+#' @param path character, path to the exclusions file. A hub with
+#' nothing to exclude keeps a file with no entries.
+#'
+#' @return Named list of exclusions keyed by reference
+#' date, each element a named list accepted by
+#' [apply_target_location_exclusions()].
+#' @export
+parse_exclusion_file <- function(path) {
+  if (!fs::file_exists(path)) {
+    cli::cli_abort(
+      c(
+        "No exclusions file at {.path {path}}.",
+        "i" = "A hub with nothing to exclude still keeps a file with no
+               entries, so that a missing file means a broken path rather
+               than an empty policy."
+      )
+    )
+  }
+
+  entries <- RcppTOML::parseTOML(path)
+
+  malformed_dates <- names(entries)[
+    is.na(lubridate::ymd(names(entries), quiet = TRUE))
+  ]
+  if (length(malformed_dates) > 0) {
+    cli::cli_abort(
+      c(
+        "Every key in {.path {path}} must be a reference date in
+         YYYY-MM-DD format.",
+        "x" = "Found: {.val {malformed_dates}}."
+      )
+    )
+  }
+
+  return(purrr::imap(entries, \(exclusions, reference_date) {
+    rlang::try_fetch(
+      normalize_excluded_locations(exclusions),
+      error = \(condition) {
+        cli::cli_abort(
+          "Invalid exclusions for {.val {reference_date}}.",
+          parent = condition
+        )
+      }
+    )
+  }))
+}
+
+
+#' Get a hub's location exclusions for one reference date.
+#'
+#' Exclusions are recorded per hub in a TOML file keyed by
+#' reference date, where each value takes either form the
+#' `generate-viz-data` action accepts for
+#' `excluded_locations`: an array of abbreviations applying
+#' to every target, or a table mapping target names (or
+#' `all`) to arrays.
+#'
+#' ```toml
+#' 2025-01-01 = { all = ["VI"], "wk inc covid hosp" = ["GU"] }
+#' 2025-02-02 = ["AK", "AR"]
+#' ```
+#'
+#' A date with no entry has no exclusions, so the file
+#' lists only the weeks that need one.
+#'
+#' @param hub_reports_path character, path to the
+#' forecast hub reports directory.
+#' @param disease character, disease name ("covid" or
+#' "rsv").
+#' @param reference_date character or Date, the reference
+#' date to look up.
+#'
+#' @return Named list of abbreviations keyed by target (or
+#' by `all`), empty when the date has no entry, ready to
+#' pass as `excluded_locations`.
+#' @export
+get_reference_date_exclusions_list <- function(
+  hub_reports_path,
+  disease,
+  reference_date
+) {
+  exclusions <- parse_exclusion_file(
+    exclusion_file_path(hub_reports_path, disease)
+  )
+
+  entry <- exclusions[[as.character(lubridate::as_date(reference_date))]]
+
+  return(entry %||% list())
+}
+
+
+#' Get a hub's location exclusions as JSON for the
+#' `generate-viz-data` action.
+#'
+#' The action takes `excluded_locations` as a JSON string,
+#' so this is the bridge from the TOML file to the
+#' workflow. TOML is the storage format because it permits
+#' comments.
+#'
+#' @inheritParams get_reference_date_exclusions_list
+#'
+#' @return A JSON string. An empty entry serializes to
+#' `"[]"`, matching the action's own default.
+#' @export
+get_reference_date_exclusions_json <- function(
+  hub_reports_path,
+  disease,
+  reference_date
+) {
+  # N.B.: auto_unbox would turn a single abbreviation into a
+  # bare string, and the action expects an array
+  return(as.character(jsonlite::toJSON(
+    get_reference_date_exclusions_list(
+      hub_reports_path,
+      disease,
+      reference_date
+    ),
+    auto_unbox = FALSE
+  )))
 }
