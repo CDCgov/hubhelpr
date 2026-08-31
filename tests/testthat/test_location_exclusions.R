@@ -94,20 +94,17 @@ test_that("parsed exclusions drop the excluded rows in apply_target_location_exc
   )
 })
 
-test_that("an invalid abbreviation errors on read and names the week it is in", {
+test_that("get_reference_date_exclusions_list errors on invalid exclusions files, even if the target reference date has valid entries", {
   hub_reports_path <- write_exclusions_file(c(
     "2025-01-01 = [\"AK\"]",
     "2030-01-01 = [\"ZZ\"]"
   ))
-  exclusions_path <- exclusion_file_path(hub_reports_path, "covid")
 
-  expect_error(parse_exclusion_file(exclusions_path), "invalid abbreviation")
-  expect_error(parse_exclusion_file(exclusions_path), "2030-01-01")
-
-  expect_error(
-    get_reference_date_exclusions_list(hub_reports_path, "covid", "2025-01-01"),
-    "invalid abbreviation"
+  error <- expect_error(
+    get_reference_date_exclusions_list(hub_reports_path, "covid", "2025-01-01")
   )
+  expect_match(conditionMessage(error), "invalid abbreviation")
+  expect_match(conditionMessage(error), "2030-01-01")
 })
 
 test_that("keys that are not YYYY-MM-DD dates are rejected", {
