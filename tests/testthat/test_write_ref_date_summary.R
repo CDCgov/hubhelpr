@@ -165,11 +165,6 @@ test_that("reference populations come from PRISM", {
       as_of = earliest_vintage
     )
   )
-
-  # the national total is the territories-inclusive figure NHSN
-  # HRD divides by, not the states-plus-DC census estimate, so
-  # forecast rates are comparable to the observed rates HRD
-  # publishes beside them
   expect_equal(populations$population[[2]], 337492878)
 })
 
@@ -178,9 +173,6 @@ test_that("reference dates before PRISM's first vintage take the earliest vintag
     forecasttools::prism_rate_reference_populations$as_of
   )
 
-  # the clamp is what keeps historical weeks regenerable; without
-  # it a reference date before the first vintage has no population
-  # to look up at all
   before <- prism_reference_populations(
     c("01", "US"),
     as_of = earliest_vintage - 365
