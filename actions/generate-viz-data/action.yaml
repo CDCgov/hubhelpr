@@ -32,9 +32,9 @@ inputs:
     required: false
     default: "[]"
   n_models_for_ens_reporting:
-    description: "Minimum number of designated model submissions required to include an ensemble forecast in the report."
+    description: "Minimum number of designated model submissions required to include an ensemble forecast in the report. Defaults to the minimum in force for the reference date, so regenerating an older report applies the rule it was published under."
     required: false
-    default: "2"
+    default: ""
 
 runs:
   using: "composite"
@@ -66,9 +66,12 @@ runs:
           '${{ inputs.excluded_locations }}'
         )
 
-        n_models_for_ens_reporting <- as.integer(
-          "${{ inputs.n_models_for_ens_reporting }}"
-        )
+        input_n_models <- "${{ inputs.n_models_for_ens_reporting }}"
+        if (nchar(input_n_models) == 0) {
+          n_models_for_ens_reporting <- NULL
+        } else {
+          n_models_for_ens_reporting <- as.integer(input_n_models)
+        }
 
         hubhelpr::write_ref_date_summary_ens(
           reference_date = ref_date,

@@ -160,7 +160,11 @@ filter_reportable_ensemble <- function(
 #' by target.
 #' @param n_models_for_ens_reporting integer, minimum
 #' number of designated model submissions required to
-#' include an ensemble forecast in the report. Default: 2.
+#' include an ensemble forecast in the report. Default:
+#' NULL, which uses the minimum in force for
+#' `reference_date`, so that regenerating an older report
+#' applies the rule it was published under rather than
+#' today's. See [n_models_for_ens_reporting_as_of()].
 #' @param overwrite_existing logical. If TRUE, overwrite
 #' existing files. Default: FALSE.
 #'
@@ -178,11 +182,17 @@ write_ref_date_summary_ens <- function(
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
-  n_models_for_ens_reporting = 2,
+  n_models_for_ens_reporting = NULL,
   overwrite_existing = FALSE
 ) {
   hub_name <- get_hub_name(disease)
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
+
+  if (is.null(n_models_for_ens_reporting)) {
+    n_models_for_ens_reporting <- n_models_for_ens_reporting_as_of(
+      reference_date
+    )
+  }
 
   ensemble_columns <- c(
     "location_name",
@@ -272,7 +282,11 @@ write_ref_date_summary_ens <- function(
 #' by target.
 #' @param n_models_for_ens_reporting integer, minimum
 #' number of designated model submissions required to
-#' include an ensemble forecast in the report. Default: 2.
+#' include an ensemble forecast in the report. Default:
+#' NULL, which uses the minimum in force for
+#' `reference_date`, so that regenerating an older report
+#' applies the rule it was published under rather than
+#' today's. See [n_models_for_ens_reporting_as_of()].
 #' @param overwrite_existing logical. If TRUE, overwrite
 #' existing files. Default: FALSE.
 #'
@@ -290,11 +304,17 @@ write_ref_date_summary_all <- function(
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
-  n_models_for_ens_reporting = 2,
+  n_models_for_ens_reporting = NULL,
   overwrite_existing = FALSE
 ) {
   hub_name <- get_hub_name(disease)
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
+
+  if (is.null(n_models_for_ens_reporting)) {
+    n_models_for_ens_reporting <- n_models_for_ens_reporting_as_of(
+      reference_date
+    )
+  }
 
   all_models_columns <- c(
     "location_name",

@@ -14,7 +14,7 @@ write_ref_date_summary_ens(
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
-  n_models_for_ens_reporting = 2,
+  n_models_for_ens_reporting = NULL,
   overwrite_existing = FALSE
 )
 }
@@ -53,7 +53,11 @@ by target.}
 
 \item{n_models_for_ens_reporting}{integer, minimum
 number of designated model submissions required to
-include an ensemble forecast in the report. Default: 2.}
+include an ensemble forecast in the report. Default:
+NULL, which uses the minimum in force for
+\code{reference_date}, so that regenerating an older report
+applies the rule it was published under rather than
+today's. See \code{\link[=n_models_for_ens_reporting_as_of]{n_models_for_ens_reporting_as_of()}}.}
 
 \item{overwrite_existing}{logical. If TRUE, overwrite
 existing files. Default: FALSE.}
