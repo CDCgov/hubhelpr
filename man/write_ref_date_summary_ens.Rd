@@ -28,7 +28,8 @@ hub directory.}
 \item{hub_reports_path}{character, path to forecast
 hub reports directory.}
 
-\item{disease}{character, disease name ("covid" or "rsv").}
+\item{disease}{character, disease name ("covid" or
+"rsv").}
 
 \item{horizons_to_include}{integer vector, horizons
 to include in the output. Default: c(0, 1, 2).}
@@ -38,11 +39,11 @@ to include in the output. Default: c(0, 1, 2).}
 
 \item{excluded_locations}{NULL, character vector, or
 named list of US state/territory abbreviations to
-exclude. If a character vector, locations are excluded
-across all targets. If a named list, names should be
-target names (or "all" for global exclusions) mapping
-to character vectors of abbreviations. Default: NULL
-(no exclusions).}
+exclude. If a character vector, locations are
+excluded across all targets. If a named list, names
+should be target names (or "all" for global
+exclusions) mapping to character vectors of
+abbreviations. Default: NULL (no exclusions).}
 
 \item{output_format}{character, output file format.
 One of "csv", "tsv", or "parquet". Default: "csv".}
@@ -63,8 +64,8 @@ today's. See \code{\link[=n_models_for_ens_reporting_as_of]{n_models_for_ens_rep
 existing files. Default: FALSE.}
 }
 \value{
-invisibly returns the file path where data was
-written.
+invisibly returns the file path where data
+was written.
 }
 \description{
 This function generates and writes ensemble-only
