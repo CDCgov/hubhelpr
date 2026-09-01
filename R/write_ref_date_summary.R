@@ -162,7 +162,7 @@ filter_reportable_ensemble <- function(
 #' @param n_models_for_ens_reporting integer, minimum
 #' number of designated model submissions required to
 #' include an ensemble forecast in the report. Default:
-#' NULL, which uses the minimum in force for
+#' NULL, which uses the minimum designated for
 #' `reference_date`, so that regenerating an older report
 #' applies the rule it was published under rather than
 #' today's. See [n_models_for_ens_reporting_as_of()].
