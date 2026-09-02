@@ -167,7 +167,7 @@ apply_target_location_exclusions <- function(
 #' Filter data to expected locations only.
 #'
 #' Only keeps rows where location is in the set of
-#' expected US locations minus any excluded locations
+#' expected US locations, minus any excluded locations
 #' for that target.
 #'
 #' @param data Data frame with "target" and "location"
@@ -178,8 +178,8 @@ apply_target_location_exclusions <- function(
 #' @param base_hub_path Character, path to the forecast
 #' hub directory. Used to determine hub-supported
 #' targets.
-#' @param expected_locations Character vector of location
-#' codes to consider valid. Default:
+#' @param expected_locations Character vector of
+#' location codes to consider valid. Default:
 #' `forecasttools::us_location_table$code`.
 #'
 #' @return Data frame filtered to expected locations.
@@ -190,19 +190,11 @@ filter_to_expected_locations <- function(
   base_hub_path,
   expected_locations = forecasttools::us_location_table$code
 ) {
-  normalized <- normalize_excluded_locations(excluded_locations)
-  hub_supported_targets <- get_hub_supported_targets(base_hub_path)
-
   expected_df <- tidyr::crossing(
-    target = hub_supported_targets,
+    target = get_hub_supported_targets(base_hub_path),
     location = expected_locations
-  )
-
-  expected_df <- dplyr::anti_join(
-    expected_df,
-    build_exclusion_df(normalized, hub_supported_targets),
-    by = c("target", "location")
-  )
+  ) |>
+    apply_target_location_exclusions(excluded_locations, base_hub_path)
 
   return(dplyr::inner_join(
     data,
