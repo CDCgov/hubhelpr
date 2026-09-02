@@ -14,7 +14,7 @@ write_ref_date_summary_all(
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
-  n_models_for_ens_reporting = 2,
+  n_models_for_ens_reporting = NULL,
   overwrite_existing = FALSE
 )
 }
@@ -28,7 +28,8 @@ hub directory.}
 \item{hub_reports_path}{character, path to forecast
 hub reports directory.}
 
-\item{disease}{character, disease name ("covid" or "rsv").}
+\item{disease}{character, disease name ("covid" or
+"rsv").}
 
 \item{horizons_to_include}{integer vector, horizons to
 include in the output. Default: c(0, 1, 2).}
@@ -38,11 +39,11 @@ include in the output. Default: c(0, 1, 2).}
 
 \item{excluded_locations}{NULL, character vector, or
 named list of US state/territory abbreviations to
-exclude. If a character vector, locations are excluded
-across all targets. If a named list, names should be
-target names (or "all" for global exclusions) mapping
-to character vectors of abbreviations. Default: NULL
-(no exclusions).}
+exclude. If a character vector, locations are
+excluded across all targets. If a named list, names
+should be target names (or "all" for global
+exclusions) mapping to character vectors of
+abbreviations. Default: NULL (no exclusions).}
 
 \item{output_format}{character, output file format.
 One of "csv", "tsv", or "parquet". Default: "csv".}
@@ -53,10 +54,15 @@ by target.}
 
 \item{n_models_for_ens_reporting}{integer, minimum
 number of designated model submissions required to
-include an ensemble forecast in the report. Default: 2.}
+include an ensemble forecast in the report. Default:
+NULL, which uses the minimum reporting rule for the
+\code{reference_date}, so that regenerating an older
+report applies the rule it was published under
+rather than today's rule. See
+\code{\link[=get_reference_date_ens_minimum]{get_reference_date_ens_minimum()}}.}
 
-\item{overwrite_existing}{logical. If TRUE, overwrite
-existing files. Default: FALSE.}
+\item{overwrite_existing}{logical. If TRUE,
+overwrite existing files. Default: FALSE.}
 }
 \value{
 invisibly returns the file path where data
