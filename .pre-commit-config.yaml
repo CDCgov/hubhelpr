@@ -1,34 +1,44 @@
 ci:
-    autofix_commit_msg: |
-        [pre-commit.ci] auto fixes from pre-commit.com hooks
-        for more information, see https://pre-commit.ci
-    autofix_prs: true
-    autoupdate_branch: ""
-    autoupdate_commit_msg: "[pre-commit.ci] pre-commit autoupdate"
-    autoupdate_schedule: weekly
-    skip: []
-    submodules: false
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit.com hooks
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ""
+  autoupdate_commit_msg: "[pre-commit.ci] pre-commit autoupdate"
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-    -   id: check-added-large-files
-    -   id: check-yaml
+      - id: check-added-large-files
+      - id: check-yaml
         args: ["--allow-multiple-documents"]
-    -   id: check-toml
-    -   id: end-of-file-fixer
-    -   id: mixed-line-ending
-    -   id: trailing-whitespace
-    -   id: pretty-format-json
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+      - id: pretty-format-json
         args: ["--autofix", "--no-sort-keys"]
--   repo: https://github.com/Yelp/detect-secrets
+  - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
     hooks:
-    -   id: detect-secrets
+      - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
         exclude: package.lock.json
--   repo: https://github.com/crate-ci/typos
+  - repo: https://github.com/crate-ci/typos
     rev: v1
     hooks:
-    -   id: typos
+      - id: typos
         args: ["--force-exclude"]
+  - repo: https://github.com/ComPWA/taplo-pre-commit
+    rev: v0.9.3
+    hooks:
+      - id: taplo-format
+      - id: taplo-lint
+        args: ["--no-schema"]
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.19.0
+    hooks:
+      - id: yamlfmt

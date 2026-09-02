@@ -1,4 +1,5 @@
 name: "Generate Visualization Data"
+
 description: "Generate weekly visualization data files for a forecast hub, commit to a new branch, and create a pull request. Requires R and hubhelpr to be installed beforehand."
 
 inputs:

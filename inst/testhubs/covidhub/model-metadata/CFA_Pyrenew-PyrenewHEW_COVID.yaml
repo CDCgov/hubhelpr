@@ -3,38 +3,7 @@ team_abbr: "CFA_Pyrenew"
 model_name: "Pyrenew_Hospital_Admissions_ED_Visits_Wastewater_COVID"
 model_abbr: "PyrenewHEW_COVID"
 model_version: "0.1.0"
-model_contributors: [
-  {
-    "name": "Subekshya Bidari",
-    "affiliation": "CFA/CDC",
-    "email": "zib2@cdc.gov"
-  },
-  {
-    "name": "Damon M. Bayer",
-    "affiliation": "CFA/CDC",
-    "email": "xum8@cdc.gov"
-  },
-  {
-    "name": "George Vega Yon",
-    "affiliation": "CFA/CDC",
-    "email": "xrd4@cdc.gov"
-  },
-  {
-    "name": "Samuel Brand",
-    "affiliation": "CFA/CDC",
-    "email": "usi1@cdc.gov"
-  },
-  {
-    "name": "Trevor Martin",
-    "affiliation": "CFA/CDC",
-    "email": "upx3@cdc.gov"
-  },
-  {
-    "name": "Dylan H. Morris",
-    "affiliation": "CFA/CDC",
-    "email": "dzl1@cdc.gov"
-  }
-]
+model_contributors: [{"name": "Subekshya Bidari", "affiliation": "CFA/CDC", "email": "zib2@cdc.gov"}, {"name": "Damon M. Bayer", "affiliation": "CFA/CDC", "email": "xum8@cdc.gov"}, {"name": "George Vega Yon", "affiliation": "CFA/CDC", "email": "xrd4@cdc.gov"}, {"name": "Samuel Brand", "affiliation": "CFA/CDC", "email": "usi1@cdc.gov"}, {"name": "Trevor Martin", "affiliation": "CFA/CDC", "email": "upx3@cdc.gov"}, {"name": "Dylan H. Morris", "affiliation": "CFA/CDC", "email": "dzl1@cdc.gov"}]
 
 license: "CC-BY-4.0"
 designated_model: true
