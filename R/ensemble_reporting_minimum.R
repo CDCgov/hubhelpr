@@ -56,11 +56,17 @@ parse_ens_min_designated_models_file <- function(path) {
     )
   }
 
-  entries <- RcppTOML::parseTOML(path)
+  minimums <- RcppTOML::parseTOML(path) |>
+    tibble::enframe(name = "reference_date_raw", value = "n_models") |>
+    tidyr::unnest("n_models") |>
+    dplyr::mutate(
+      reference_date = lubridate::ymd(.data$reference_date_raw, quiet = TRUE)
+    )
 
-  malformed_dates <- names(entries)[
-    is.na(lubridate::ymd(names(entries), quiet = TRUE))
-  ]
+  malformed_dates <- minimums |>
+    dplyr::filter(is.na(.data$reference_date)) |>
+    dplyr::pull("reference_date_raw")
+
   if (length(malformed_dates) > 0) {
     cli::cli_abort(
       c(
@@ -70,11 +76,6 @@ parse_ens_min_designated_models_file <- function(path) {
       )
     )
   }
-
-  minimums <- tibble::tibble(
-    reference_date = lubridate::as_date(names(entries)),
-    n_models = unlist(entries, use.names = FALSE)
-  )
 
   checkmate::assert_integerish(
     minimums$n_models,
@@ -86,7 +87,8 @@ parse_ens_min_designated_models_file <- function(path) {
   return(
     minimums |>
       dplyr::mutate(n_models = as.integer(.data$n_models)) |>
-      dplyr::arrange(.data$reference_date)
+      dplyr::arrange(.data$reference_date) |>
+      dplyr::select("reference_date", "n_models")
   )
 }
 

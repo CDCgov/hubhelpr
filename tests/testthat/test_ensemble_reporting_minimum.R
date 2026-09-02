@@ -13,11 +13,6 @@ example_minimums <- c(
 )
 
 test_that("reference dates take the minimum from the latest entry at or before them", {
-  # the hub reported its ensemble without a minimum
-  # designated model count until 2026-04-04, so
-  # regenerating those weeks under  today's minimum
-  # designated model count would drop rows that were
-  # originally published
   hub_reports_path <- write_minimums_file(example_minimums)
 
   expect_identical(
@@ -135,13 +130,22 @@ test_that("keys that are not YYYY-MM-DD dates are rejected", {
 })
 
 test_that("minimums that are not counts are rejected", {
-  hub_reports_path <- write_minimums_file("2026-04-04 = -1")
-
-  expect_error(
-    parse_ens_min_designated_models_file(ens_min_designated_models_file_path(
-      hub_reports_path,
-      "covid"
-    )),
-    "minimums in"
+  not_counts <- c(
+    negative = "2026-04-04 = -1",
+    fractional = "2026-04-04 = 2.5",
+    string = "2026-04-04 = \"two\"",
+    boolean = "2026-04-04 = true"
   )
+
+  purrr::iwalk(not_counts, \(entry, label) {
+    hub_reports_path <- write_minimums_file(entry)
+    expect_error(
+      parse_ens_min_designated_models_file(ens_min_designated_models_file_path(
+        hub_reports_path,
+        "covid"
+      )),
+      "minimums in",
+      info = label
+    )
+  })
 })
