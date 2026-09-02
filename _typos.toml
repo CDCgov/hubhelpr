@@ -2,14 +2,7 @@
 [default.extend-words]
 # words that should not be corrected
 Damon = "Damon"
-ND = "ND"
+ND    = "ND"
 
 [files]
-extend-exclude = [
-    "*.bib",
-    "*.html",
-    "*.js",
-    "*.csl",
-    "*.css",
-    "*.csv",
-]
+extend-exclude = ["*.bib", "*.html", "*.js", "*.csl", "*.css", "*.csv"]

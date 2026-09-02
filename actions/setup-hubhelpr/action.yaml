@@ -9,7 +9,6 @@ runs:
       with:
         use-public-rspm: true
         extra-repositories: "https://hubverse-org.r-universe.dev"
-
     - name: "Install hubhelpr"
       uses: r-lib/actions/setup-r-dependencies@v2
       with:

@@ -1,6 +1,6 @@
 name: "Generate Baseline Forecast"
-description: "Within a hub: generate baseline forecasts, commit to a new branch, and create a pull request. Requires R and hubhelpr to be installed beforehand."
-
+description: "Within a hub: generate baseline forecasts, commit to a new branch,
+  and create a pull request. Requires R and hubhelpr to be installed beforehand."
 inputs:
   disease:
     description: "Disease identifier ('covid' or 'rsv')."
@@ -13,13 +13,15 @@ inputs:
     required: false
     default: "."
   reference_date:
-    description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the last day of the current MMWR epiweek."
+    description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday).
+      Defaults to the last day of the current MMWR epiweek."
     required: true
   targets:
-    description: "JSON array of full target names for which to generate baselines (e.g., '[\"wk inc covid hosp\", \"wk inc covid prop ed visits\"]'). Defaults to all unique targets in time-series data."
+    description: "JSON array of full target names for which to generate baselines
+      (e.g., '[\"wk inc covid hosp\", \"wk inc covid prop ed visits\"]'). Defaults
+      to all unique targets in time-series data."
     required: false
     default: ""
-
 runs:
   using: "composite"
   steps:
@@ -45,7 +47,6 @@ runs:
           "${{ inputs.disease }}", targets = targets
         )
         writeLines(sprintf("date=%s", today), Sys.getenv("GITHUB_OUTPUT"))
-
     - name: "Commit Changes"
       shell: bash
       run: |
@@ -55,7 +56,6 @@ runs:
         git add .
         git commit -m "Add ${{ inputs.disease }} baseline forecasts"
         git push origin "add-${{ inputs.disease }}-baseline-${{ steps.generate.outputs.date }}"
-
     - name: "Create Pull Request"
       shell: bash
       env:
