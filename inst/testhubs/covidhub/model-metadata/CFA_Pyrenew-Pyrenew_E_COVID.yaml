@@ -9,6 +9,7 @@ model_contributors: [{"name": "Damon M. Bayer", "affiliation": "CFA/CDC", "email
     "name": "Subekshya Bidari", "affiliation": "CFA/CDC", "email": "zib2@cdc.gov"},
   {"name": "Trevor Martin", "affiliation": "CFA/CDC", "email": "upx3@cdc.gov"}, {
     "name": "Dylan H. Morris", "affiliation": "CFA/CDC", "email": "dzl1@cdc.gov"}]
+
 license: "CC-BY-4.0"
 designated_model: false
 designated_targets: ["wk inc covid prop ed visits"]

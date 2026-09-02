@@ -1,6 +1,8 @@
 name: "Upload hub contents to an AWS bucket"
+
 description: "Upload contents of a Hub GitHub repository to a Hubverse-format Amazon
   Web Services (AWS) Simple Storage Service (S3) bucket."
+
 inputs:
   aws_account:
     description: "AWS account ID."
@@ -32,6 +34,7 @@ inputs:
       by workflows running from non-default branches. Boolean, default `true`"
     required: false
     default: "true"
+
 runs:
   using: "composite"
   steps:
@@ -46,6 +49,7 @@ runs:
           exit 1
         fi
       shell: bash
+
     - name: "Get Hub cloud config"
       # save cloud-related fields from admin config as environment variables
       # (jq json parser is installed on Github-hosted runners)
@@ -57,6 +61,7 @@ runs:
         echo "CLOUD_ENABLED=$cloud_enabled" >> $GITHUB_ENV
         echo "CLOUD_STORAGE_LOCATION=$cloud_storage_location" >> $GITHUB_ENV
       shell: bash
+
     - name: "Configure AWS credentials"
       # request credentials to assume the Hub's AWS role via OpenID Connect
       if: ${{ fromJSON(env.CLOUD_ENABLED) }}
@@ -65,6 +70,7 @@ runs:
         role-to-assume: arn:aws:iam::${{ inputs.aws_account }}:role/${{ env.CLOUD_STORAGE_LOCATION
           }}
         aws-region: us-east-1
+
     - name: "Install latest rclone"
       if: ${{ fromJSON(env.CLOUD_ENABLED) }}
       # Install the latest rclone from the official script rather than the apt
@@ -77,6 +83,7 @@ runs:
         curl -fsSL https://rclone.org/install.sh | sudo bash
         rclone version
       shell: bash
+
     - name: "Sync files to bucket"
       if: ${{ fromJSON(env.CLOUD_ENABLED) }}
       run: |

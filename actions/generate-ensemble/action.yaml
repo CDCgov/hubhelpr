@@ -1,6 +1,7 @@
 name: "Generate Ensemble Forecast"
 description: "Within a hub: generate ensemble forecasts, commit to a new branch,
   and create a pull request. Requires R and hubhelpr to be installed beforehand."
+
 inputs:
   disease:
     description: "Disease identifier ('covid' or 'rsv')."
@@ -22,6 +23,7 @@ inputs:
       to all unique targets in time-series data."
     required: false
     default: ""
+
 runs:
   using: "composite"
   steps:
@@ -47,6 +49,7 @@ runs:
           "${{ inputs.disease }}", targets = targets
         )
         writeLines(sprintf("date=%s", today), Sys.getenv("GITHUB_OUTPUT"))
+
     - name: "Commit Changes"
       shell: bash
       run: |
@@ -56,6 +59,7 @@ runs:
         git add .
         git commit -m "Add ${{ inputs.disease }} ensemble forecasts"
         git push origin "add-${{ inputs.disease }}-ensemble-${{ steps.generate.outputs.date }}"
+
     - name: "Create Pull Request"
       shell: bash
       env:

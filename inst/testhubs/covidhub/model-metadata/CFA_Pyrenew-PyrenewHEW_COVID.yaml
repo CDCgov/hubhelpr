@@ -9,6 +9,7 @@ model_contributors: [{"name": "Subekshya Bidari", "affiliation": "CFA/CDC", "ema
   {"name": "Samuel Brand", "affiliation": "CFA/CDC", "email": "usi1@cdc.gov"}, {
     "name": "Trevor Martin", "affiliation": "CFA/CDC", "email": "upx3@cdc.gov"},
   {"name": "Dylan H. Morris", "affiliation": "CFA/CDC", "email": "dzl1@cdc.gov"}]
+
 license: "CC-BY-4.0"
 designated_model: true
 methods: "Renewal model using the Pyrenew-HEW framework fit jointly to three epidemiological

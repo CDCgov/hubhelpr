@@ -1,5 +1,4 @@
 # Workflow derived from https://github.com/posit-dev/setup-air/tree/main/examples
-
 on:
   pull_request:
 
@@ -15,10 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+
       - name: "Install"
         uses: posit-dev/setup-air@v1
+
       - name: "Format"
         run: air format .
+
       - name: "Suggest"
         uses: reviewdog/action-suggester@v1
         with:
