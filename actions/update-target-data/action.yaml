@@ -1,7 +1,5 @@
 name: "Update Target Data"
-description: "Within a hub: pull NHSN/NSSP target data, generate hubverse format
-  target data (time series and oracle output formats), and create a pull request
-  if there are changes. Requires R and hubhelpr to be installed beforehand."
+description: "Within a hub: pull NHSN/NSSP target data, generate hubverse format target data (time series and oracle output formats), and create a pull request if there are changes. Requires R and hubhelpr to be installed beforehand."
 
 inputs:
   disease:
@@ -33,10 +31,7 @@ inputs:
     required: false
     default: "false"
   excluded_locations:
-    description: "JSON array or object of US state/territory abbreviations to exclude.
-      Array (e.g., '[\"VI\", \"GU\"]') excludes from all targets. Object (e.g., '{\"all\":
-      [\"VI\"], \"wk inc covid hosp\": [\"GU\"]}') supports target-specific exclusions.
-      Defaults to no exclusions."
+    description: "JSON array or object of US state/territory abbreviations to exclude. Array (e.g., '[\"VI\", \"GU\"]') excludes from all targets. Object (e.g., '{\"all\": [\"VI\"], \"wk inc covid hosp\": [\"GU\"]}') supports target-specific exclusions. Defaults to no exclusions."
     required: false
     default: "[]"
 

@@ -1,6 +1,5 @@
 name: "Check Authorized Users"
-description: "Verify that a GitHub user is authorized to modify model output directories
-  in a Hub. Requires R and hubhelpr to be installed beforehand."
+description: "Verify that a GitHub user is authorized to modify model output directories in a Hub. Requires R and hubhelpr to be installed beforehand."
 
 inputs:
   changed_files:

@@ -1,8 +1,6 @@
 name: "Generate Visualization Data"
 
-description: "Generate weekly visualization data files for a forecast hub, commit
-  to a new branch, and create a pull request. Requires R and hubhelpr to be installed
-  beforehand."
+description: "Generate weekly visualization data files for a forecast hub, commit to a new branch, and create a pull request. Requires R and hubhelpr to be installed beforehand."
 
 inputs:
   disease:
@@ -19,8 +17,7 @@ inputs:
     required: false
     default: "."
   reference_date:
-    description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday).
-      Defaults to the last day of the current MMWR epiweek."
+    description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the last day of the current MMWR epiweek."
     required: false
     default: "latest"
   output_folder:
@@ -28,21 +25,15 @@ inputs:
     required: false
     default: "weekly-summaries"
   targets:
-    description: "JSON array of full target names (e.g., '[\"wk inc covid hosp\",
-      \"wk inc covid prop ed visits\"]'). Defaults to all unique targets in time-series
-      data."
+    description: "JSON array of full target names (e.g., '[\"wk inc covid hosp\", \"wk inc covid prop ed visits\"]'). Defaults to all unique targets in time-series data."
     required: false
     default: ""
   excluded_locations:
-    description: "JSON array or object of US state/territory abbreviations to exclude.
-      Array (e.g., '[\"VI\", \"GU\"]') excludes from all targets. Object (e.g., '{\"all\":
-      [\"VI\"], \"wk inc covid hosp\": [\"GU\"]}') supports target-specific exclusions.
-      Defaults to no exclusions."
+    description: "JSON array or object of US state/territory abbreviations to exclude. Array (e.g., '[\"VI\", \"GU\"]') excludes from all targets. Object (e.g., '{\"all\": [\"VI\"], \"wk inc covid hosp\": [\"GU\"]}') supports target-specific exclusions. Defaults to no exclusions."
     required: false
     default: "[]"
   n_models_for_ens_reporting:
-    description: "Minimum number of designated model submissions required to include
-      an ensemble forecast in the report."
+    description: "Minimum number of designated model submissions required to include an ensemble forecast in the report."
     required: false
     default: "2"
 

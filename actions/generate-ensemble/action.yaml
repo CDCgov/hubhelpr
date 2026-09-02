@@ -1,6 +1,5 @@
 name: "Generate Ensemble Forecast"
-description: "Within a hub: generate ensemble forecasts, commit to a new branch,
-  and create a pull request. Requires R and hubhelpr to be installed beforehand."
+description: "Within a hub: generate ensemble forecasts, commit to a new branch, and create a pull request. Requires R and hubhelpr to be installed beforehand."
 
 inputs:
   disease:
@@ -14,13 +13,10 @@ inputs:
     required: false
     default: "."
   reference_date:
-    description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday).
-      Defaults to the last day of the current MMWR epiweek."
+    description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the last day of the current MMWR epiweek."
     required: true
   targets:
-    description: "JSON array of full target names for which to generate ensembles
-      (e.g., '[\"wk inc covid hosp\", \"wk inc covid prop ed visits\"]'). Defaults
-      to all unique targets in time-series data."
+    description: "JSON array of full target names for which to generate ensembles (e.g., '[\"wk inc covid hosp\", \"wk inc covid prop ed visits\"]'). Defaults to all unique targets in time-series data."
     required: false
     default: ""
 
