@@ -1,10 +1,14 @@
 # Workflow derived from https://github.com/posit-dev/setup-air/tree/main/examples
+
 on:
   pull_request:
+
 name: "Format Suggest"
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
+
 jobs:
   format-suggest:
     name: "format-suggest"

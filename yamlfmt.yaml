@@ -1,3 +1,4 @@
 formatter:
   type: basic
   max_line_length: 79
+  retain_line_breaks_single: true
