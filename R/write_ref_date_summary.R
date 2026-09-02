@@ -165,7 +165,7 @@ filter_reportable_ensemble <- function(
 #' NULL, which uses the minimum designated for
 #' `reference_date`, so that regenerating an older report
 #' applies the rule it was published under rather than
-#' today's. See [n_models_for_ens_reporting_as_of()].
+#' today's. See [get_reference_date_ens_minimum()].
 #' @param overwrite_existing logical. If TRUE, overwrite
 #' existing files. Default: FALSE.
 #'
@@ -190,7 +190,9 @@ write_ref_date_summary_ens <- function(
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
 
   if (is.null(n_models_for_ens_reporting)) {
-    n_models_for_ens_reporting <- n_models_for_ens_reporting_as_of(
+    n_models_for_ens_reporting <- get_reference_date_ens_minimum(
+      hub_reports_path,
+      disease,
       reference_date
     )
   }
@@ -289,7 +291,7 @@ write_ref_date_summary_ens <- function(
 #' `reference_date`, so that regenerating an older
 #' report applies the rule it was published under
 #' rather than today's rule. See
-#' [n_models_for_ens_reporting_as_of()].
+#' [get_reference_date_ens_minimum()].
 #' @param overwrite_existing logical. If TRUE,
 #' overwrite existing files. Default: FALSE.
 #'
@@ -314,7 +316,9 @@ write_ref_date_summary_all <- function(
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
 
   if (is.null(n_models_for_ens_reporting)) {
-    n_models_for_ens_reporting <- n_models_for_ens_reporting_as_of(
+    n_models_for_ens_reporting <- get_reference_date_ens_minimum(
+      hub_reports_path,
+      disease,
       reference_date
     )
   }

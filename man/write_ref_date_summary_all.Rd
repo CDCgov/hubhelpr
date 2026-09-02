@@ -59,7 +59,7 @@ NULL, which uses the minimum reporting rule for the
 \code{reference_date}, so that regenerating an older
 report applies the rule it was published under
 rather than today's rule. See
-\code{\link[=n_models_for_ens_reporting_as_of]{n_models_for_ens_reporting_as_of()}}.}
+\code{\link[=get_reference_date_ens_minimum]{get_reference_date_ens_minimum()}}.}
 
 \item{overwrite_existing}{logical. If TRUE,
 overwrite existing files. Default: FALSE.}

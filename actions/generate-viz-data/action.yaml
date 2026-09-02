@@ -32,7 +32,7 @@ inputs:
     required: false
     default: "[]"
   n_models_for_ens_reporting:
-    description: "Minimum number of designated model submissions required to include an ensemble forecast in the report. Defaults to the minimum in force for the reference date, so regenerating an older report applies the rule it was published under."
+    description: "Minimum number of designated model submissions required to include an ensemble forecast in the report. Defaults to the minimum rule for the reference date, so regenerating an older report applies the rule it was published under."
     required: false
     default: ""
 
@@ -108,9 +108,30 @@ runs:
           excluded_locations = excluded_locations
         )
 
+        applied_minimum <- n_models_for_ens_reporting
+        if (is.null(applied_minimum)) {
+          applied_minimum <- hubhelpr::get_reference_date_ens_minimum(
+            hub_reports_path,
+            disease,
+            ref_date
+          )
+        }
+
         writeLines(
-          sprintf("date=%s", as.character(ref_date)),
+          c(
+            sprintf("date=%s", as.character(ref_date)),
+            sprintf("n_models_for_ens_reporting=%d", applied_minimum)
+          ),
           Sys.getenv("GITHUB_OUTPUT")
+        )
+
+        writeLines(
+          sprintf(
+            "Reference date `%s` generated with an ensemble reporting minimum of `%d`.",
+            as.character(ref_date),
+            applied_minimum
+          ),
+          Sys.getenv("GITHUB_STEP_SUMMARY")
         )
 
     - name: "Commit Changes"
