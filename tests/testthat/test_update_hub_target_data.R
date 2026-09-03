@@ -11,8 +11,6 @@ if (fs::dir_exists(mockdir_tests)) {
   )
 }
 
-test_excluded_locations <- c("VI", "GU", "AS", "MP", "UM")
-
 # mock get_hub_supported_targets for a disease; avoid
 # full hub-config directory in temp test hubs
 mock_supported_targets <- function(disease, env = parent.frame()) {
@@ -27,16 +25,108 @@ mock_supported_targets <- function(disease, env = parent.frame()) {
   )
 }
 
-purrr::walk(c("covid", "rsv"), function(disease) {
-  test_that(
-    glue::glue("update_hub_target_data returns expected data for {disease}"),
-    {
-      mock_supported_targets(disease)
-      base_hub_path <- withr::local_tempdir(paste0("base_hub_", disease, "_"))
-      output_file <- fs::path(base_hub_path, "target-data/time-series.parquet")
-      fs::dir_create(fs::path(base_hub_path, "target-data"))
 
-      httptest2::with_mock_dir(mockdir_tests, {
+test_excluded_locations <- c("VI", "GU", "AS", "MP", "UM")
+
+
+httptest2::with_mock_dir(mockdir_tests, {
+  default_test_as_of <- lubridate::ymd("2026-08-18")
+  default_test_disease <- "covid"
+  nhsn_all <- get_hubverse_format_nhsn_data(
+    disease = default_test_disease,
+    as_of = default_test_as_of
+  )
+  nssp_all <- get_hubverse_format_nssp_data(
+    disease = default_test_disease,
+    base_hub_path = tempdir(),
+    as_of = default_test_as_of
+  )
+
+  test_that(
+    paste0(
+      "get_hubverse_format_*_data functions respects start date, ",
+      "end date, and date col name"
+    ),
+    {
+      test_get_hubverse_format_data_fn <- function(fn, full_data) {
+        custom_end_date <- lubridate::ymd("2026-01-01")
+        custom_start_date <- lubridate::ymd("2025-01-01")
+
+        with_start <- fn(
+          disease = default_test_disease,
+          as_of = default_test_as_of,
+          start_date = custom_start_date
+        )
+        with_end <- fn(
+          disease = default_test_disease,
+          as_of = default_test_as_of,
+          end_date = custom_end_date
+        )
+        with_bounds <- fn(
+          disease = default_test_disease,
+          as_of = default_test_as_of,
+          start_date = custom_start_date,
+          end_date = custom_end_date
+        )
+        with_colname <- fn(
+          disease = default_test_disease,
+          as_of = default_test_as_of,
+          start_date = custom_start_date,
+          end_date = custom_end_date,
+          date_col_name = "date"
+        )
+
+        expect_equal(
+          dplyr::filter(
+            full_data,
+            .data$target_end_date >= !!custom_start_date
+          ),
+          with_start
+        )
+        expect_equal(
+          dplyr::filter(full_data, .data$target_end_date <= !!custom_end_date),
+          with_end
+        )
+        expect_equal(
+          dplyr::filter(with_start, .data$target_end_date <= !!custom_end_date),
+          with_bounds
+        )
+
+        checkmate::expect_names(
+          names(with_colname),
+          identical.to = c("date", "observation", "location", "as_of", "target")
+        )
+        ## results with a custom date column should be identical to results without,
+        ## except for the column name itself
+        expect_equal(
+          with_colname |> dplyr::rename("target_end_date" = "date"),
+          with_bounds
+        )
+      }
+
+      test_get_hubverse_format_data_fn(get_hubverse_format_nhsn_data, nhsn_all)
+      test_get_hubverse_format_data_fn(
+        purrr::partial(
+          get_hubverse_format_nssp_data,
+          base_hub_path = tempdir()
+        ),
+        nssp_all
+      )
+    }
+  )
+
+  purrr::walk(c("covid", "rsv"), function(disease) {
+    test_that(
+      glue::glue("update_hub_target_data returns expected data for {disease}"),
+      {
+        mock_supported_targets(disease)
+        base_hub_path <- withr::local_tempdir(paste0("base_hub_", disease, "_"))
+        output_file <- fs::path(
+          base_hub_path,
+          "target-data/time-series.parquet"
+        )
+        fs::dir_create(fs::path(base_hub_path, "target-data"))
+
         hubhelpr::update_hub_target_data(
           base_hub_path = base_hub_path,
           disease = disease,
@@ -70,42 +160,81 @@ purrr::walk(c("covid", "rsv"), function(disease) {
             excluded_codes
           )
         )
-      })
-    }
-  )
-})
+      }
+    )
+  })
 
-test_that("update_hub_target_data errors for unsupported disease", {
-  expect_error(
-    update_hub_target_data(
-      base_hub_path = tempdir(),
-      disease = "measles"
-    ),
-    "Must be element of set \\{'covid','rsv'\\}"
-  )
-})
+  test_that("update_hub_target_data respects distinct start dates for NHSN and NSSP", {
+    mock_supported_targets(default_test_disease)
 
-# test which exercises the full update_hub_target_data
-# pipeline twice using mocked API responses; the first
-# call writes target data to a temp hub directory; the
-# second call with the same as_of date should error
-# because the existing ows conflict with the incoming
-# data; the third call with overwrite_existing = TRUE
-# succeeding would confirm the parameter get through.
-purrr::walk(c("covid", "rsv"), function(disease) {
-  test_that(
-    glue::glue(
-      "update_hub_target_data errors on duplicate run for {disease}"
-    ),
-    {
-      mock_supported_targets(disease)
-      base_hub_path <- withr::local_tempdir(
-        paste0("base_hub_dup_", disease, "_")
-      )
-      fs::dir_create(fs::path(base_hub_path, "target-data"))
+    nhsn_start_date <- lubridate::ymd("2026-01-01")
+    nssp_start_date <- lubridate::ymd("2026-07-02")
+    base_hub_path <- withr::local_tempdir(paste0(
+      "base_hub_",
+      default_test_disease,
+      "_"
+    ))
+    output_file <- fs::path(
+      base_hub_path,
+      "target-data/time-series.parquet"
+    )
+    fs::dir_create(fs::path(base_hub_path, "target-data"))
+    hubhelpr::update_hub_target_data(
+      base_hub_path = base_hub_path,
+      disease = default_test_disease,
+      as_of = default_test_as_of,
+      start_date_nhsn = nhsn_start_date,
+      start_date_nssp = nssp_start_date
+    )
+    target_ts <- forecasttools::read_tabular(
+      output_file
+    )
+    manual_ts <- dplyr::bind_rows(
+      dplyr::filter(nhsn_all, .data$target_end_date >= !!nhsn_start_date),
+      dplyr::filter(nssp_all, .data$target_end_date >= !!nssp_start_date)
+    ) |>
+      filter_to_expected_locations(
+        excluded_locations = NULL,
+        base_hub_path = base_hub_path
+      ) |>
+      dplyr::mutate(target = as.character(.data$target))
+    # account for glue->chr in target_ts round trip to parquet
 
-      httptest2::with_mock_dir(mockdir_tests, {
-        # first run succeeds
+    expect_equal(
+      target_ts,
+      manual_ts
+    )
+  })
+
+  test_that("update_hub_target_data errors for unsupported disease", {
+    expect_error(
+      update_hub_target_data(
+        base_hub_path = tempdir(),
+        disease = "measles"
+      ),
+      "Must be element of set \\{'covid','rsv'\\}"
+    )
+  })
+
+  # test which exercises the full update_hub_target_data
+  # pipeline twice using mocked API responses; the first
+  # call writes target data to a temp hub directory; the
+  # second call with the same as_of date should error
+  # because the existing ows conflict with the incoming
+  # data; the third call with overwrite_existing = TRUE
+  # succeeding would confirm the parameter get through.
+  purrr::walk(c("covid", "rsv"), function(disease) {
+    test_that(
+      glue::glue(
+        "update_hub_target_data errors on duplicate run for {disease}"
+      ),
+      {
+        mock_supported_targets(disease)
+        base_hub_path <- withr::local_tempdir(
+          paste0("base_hub_dup_", disease, "_")
+        )
+        fs::dir_create(fs::path(base_hub_path, "target-data"))
+
         hubhelpr::update_hub_target_data(
           base_hub_path = base_hub_path,
           disease = disease,
@@ -133,172 +262,141 @@ purrr::walk(c("covid", "rsv"), function(disease) {
           excluded_locations = test_excluded_locations,
           overwrite_existing = TRUE
         )
-      })
-    }
-  )
-})
-
-
-# mocked NHSN COVID response in hubverse format
-httptest2::with_mock_dir(mockdir_tests, {
-  nhsn_mock <- hubhelpr::get_hubverse_format_nhsn_data(
-    disease = "covid",
-    as_of = lubridate::as_date("2025-08-18"),
-    start_date = lubridate::as_date("2024-11-09")
-  )
-})
-
-test_that("get_hubverse_format_nhsn_data respects configurable date_col_name", {
-  httptest2::with_mock_dir(mockdir_tests, {
-    nhsn_custom <- hubhelpr::get_hubverse_format_nhsn_data(
-      disease = "covid",
-      as_of = lubridate::as_date("2025-08-18"),
-      start_date = lubridate::as_date("2024-11-09"),
-      date_col_name = "date"
+      }
     )
   })
-  expect_equal(
-    names(nhsn_custom),
-    c("date", "observation", "location", "as_of", "target")
-  )
-  # contained values should be same as default version,
-  # only date col name should be different
-  expect_equal(
-    nhsn_custom |> dplyr::rename(target_end_date = "date"),
-    nhsn_mock
-  )
-})
 
-# 2 locs, most recent date in data
-real_td <- nhsn_mock |>
-  dplyr::filter(
-    .data$location %in% c("01", "02"),
-    .data$target_end_date == max(.data$target_end_date)
-  )
-
-second_as_of <- lubridate::as_date("2025-08-25")
-
-test_that("merge_target_data with NULL existing returns new data", {
-  result <- merge_target_data(NULL, real_td)
-  expect_equal(result, real_td)
-})
-
-test_that("merge_target_data appends non-overlapping vintages", {
-  existing <- real_td
-  new_data <- real_td |>
-    dplyr::mutate(as_of = second_as_of)
-  result <- merge_target_data(existing, new_data)
-  expect_equal(nrow(result), nrow(existing) + nrow(new_data))
-  expect_setequal(
-    unique(result$as_of),
-    c(real_td$as_of[1], second_as_of)
-  )
-})
-
-test_that("merge_target_data errors on conflict by default", {
-  existing <- real_td
-  new_data <- real_td |>
-    dplyr::mutate(observation = observation + 1)
-  expect_error(
-    merge_target_data(existing, new_data),
-    "overwrite"
-  )
-})
-
-test_that("merge_target_data overwrites only shared rows when TRUE", {
-  # create existing data with two targets using real
-  # nhsn data for hosp and a derived ed target
-  hosp_td <- real_td
-  ed_td <- real_td |>
-    dplyr::mutate(
-      target = "wk inc covid prop ed visits",
-      observation = 0.05
+  # 2 locs, most recent date in data
+  real_td <- nhsn_all |>
+    dplyr::filter(
+      .data$location %in% c("01", "02"),
+      .data$target_end_date == max(.data$target_end_date)
     )
-  existing <- dplyr::bind_rows(hosp_td, ed_td)
 
-  # update ED with diff values; not hosp
-  new_ed <- ed_td |>
-    dplyr::mutate(observation = 0.07)
+  second_as_of <- default_test_as_of + lubridate::days(5)
 
-  result <- merge_target_data(
-    existing,
-    new_ed,
-    overwrite_existing = TRUE
-  )
+  test_that("merge_target_data with NULL existing returns new data", {
+    result <- merge_target_data(NULL, real_td)
+    expect_equal(result, real_td)
+  })
 
-  hosp_rows <- dplyr::filter(
-    result,
-    hubhelpr::is_hosp_target(.data$target)
-  )
-  expect_equal(hosp_rows, hosp_td)
-
-  ed_rows <- dplyr::filter(
-    result,
-    hubhelpr::is_ed_target(.data$target)
-  )
-  # ed rows should be the same as input with the
-  # observation overwritten
-  expect_equal(
-    ed_rows |> dplyr::mutate(target = as.character(target)),
-    ed_td |> dplyr::mutate(observation = 0.07)
-  )
-})
-
-test_that("merge_target_data overwrite with identical data has no duplicates", {
-  result <- merge_target_data(real_td, real_td, overwrite_existing = TRUE)
-  expect_equal(nrow(result), nrow(real_td))
-})
-
-# verifies that merge_target_data treats pre-existing
-# duplicate rows as a data issue rather than silently
-# deduplicating them; existing data is (intended)
-# doubled via bind_rows, and the function should abort
-# with a message (even though the new data itself
-# doesnt overlap with the duplicated keys)
-test_that("merge_target_data errors on duplicate rows in existing data", {
-  existing <- dplyr::bind_rows(real_td, real_td)
-  new_data <- real_td |>
-    dplyr::mutate(as_of = second_as_of)
-  expect_error(
-    merge_target_data(existing, new_data),
-    "Duplicate rows found"
-  )
-})
-
-# verifies that the error message from merge_target_data
-# includes the exact number of rows that would be
-# overwritten. the row count in the message should match
-# the number of rows in the real data slice that share
-# key columns with the new data.
-test_that("merge_target_data reports correct overwrite count", {
-  existing <- real_td
-  new_data <- real_td |>
-    dplyr::mutate(observation = observation + 1)
-  n_conflicts <- nrow(real_td)
-  expect_error(
-    merge_target_data(existing, new_data),
-    glue::glue("{n_conflicts} row")
-  )
-})
-
-# verifies that after overwrite, the resulting data
-# frame retains the expected hubverse time-series column
-# structure and that the observation values come entirely
-# from the new data.
-test_that("merge_target_data preserves all columns after overwrite", {
-  existing <- real_td
-  new_data <- real_td |>
-    dplyr::mutate(observation = observation + 1)
-  result <- merge_target_data(existing, new_data, overwrite_existing = TRUE)
-  checkmate::expect_names(
-    names(result),
-    identical.to = c(
-      "target_end_date",
-      "observation",
-      "location",
-      "as_of",
-      "target"
+  test_that("merge_target_data appends non-overlapping vintages", {
+    existing <- real_td
+    new_data <- real_td |>
+      dplyr::mutate(as_of = second_as_of)
+    result <- merge_target_data(existing, new_data)
+    expect_equal(nrow(result), nrow(existing) + nrow(new_data))
+    expect_setequal(
+      unique(result$as_of),
+      c(real_td$as_of[1], second_as_of)
     )
-  )
-  expect_equal(result$observation, new_data$observation)
+  })
+
+  test_that("merge_target_data errors on conflict by default", {
+    existing <- real_td
+    new_data <- real_td |>
+      dplyr::mutate(observation = observation + 1)
+    expect_error(
+      merge_target_data(existing, new_data),
+      "overwrite"
+    )
+  })
+
+  test_that("merge_target_data overwrites only shared rows when TRUE", {
+    # create existing data with two targets using real
+    # nhsn data for hosp and a derived ed target
+    hosp_td <- real_td
+    ed_td <- real_td |>
+      dplyr::mutate(
+        target = "wk inc covid prop ed visits",
+        observation = 0.05
+      )
+    existing <- dplyr::bind_rows(hosp_td, ed_td)
+
+    # update ED with diff values; not hosp
+    new_ed <- ed_td |>
+      dplyr::mutate(observation = 0.07)
+
+    result <- merge_target_data(
+      existing,
+      new_ed,
+      overwrite_existing = TRUE
+    )
+
+    hosp_rows <- dplyr::filter(
+      result,
+      hubhelpr::is_hosp_target(.data$target)
+    )
+    expect_equal(hosp_rows, hosp_td)
+
+    ed_rows <- dplyr::filter(
+      result,
+      hubhelpr::is_ed_target(.data$target)
+    )
+    # ed rows should be the same as input with the
+    # observation overwritten
+    expect_equal(
+      ed_rows |> dplyr::mutate(target = as.character(target)),
+      ed_td |> dplyr::mutate(observation = 0.07)
+    )
+  })
+
+  test_that("merge_target_data overwrite with identical data has no duplicates", {
+    result <- merge_target_data(real_td, real_td, overwrite_existing = TRUE)
+    expect_equal(nrow(result), nrow(real_td))
+  })
+
+  # verifies that merge_target_data treats pre-existing
+  # duplicate rows as a data issue rather than silently
+  # deduplicating them; existing data is (intended)
+  # doubled via bind_rows, and the function should abort
+  # with a message (even though the new data itself
+  # doesnt overlap with the duplicated keys)
+  test_that("merge_target_data errors on duplicate rows in existing data", {
+    existing <- dplyr::bind_rows(real_td, real_td)
+    new_data <- real_td |>
+      dplyr::mutate(as_of = second_as_of)
+    expect_error(
+      merge_target_data(existing, new_data),
+      "Duplicate rows found"
+    )
+  })
+
+  # verifies that the error message from merge_target_data
+  # includes the exact number of rows that would be
+  # overwritten. the row count in the message should match
+  # the number of rows in the real data slice that share
+  # key columns with the new data.
+  test_that("merge_target_data reports correct overwrite count", {
+    existing <- real_td
+    new_data <- real_td |>
+      dplyr::mutate(observation = observation + 1)
+    n_conflicts <- nrow(real_td)
+    expect_error(
+      merge_target_data(existing, new_data),
+      glue::glue("{n_conflicts} row")
+    )
+  })
+
+  # verifies that after overwrite, the resulting data
+  # frame retains the expected hubverse time-series column
+  # structure and that the observation values come entirely
+  # from the new data.
+  test_that("merge_target_data preserves all columns after overwrite", {
+    existing <- real_td
+    new_data <- real_td |>
+      dplyr::mutate(observation = observation + 1)
+    result <- merge_target_data(existing, new_data, overwrite_existing = TRUE)
+    checkmate::expect_names(
+      names(result),
+      identical.to = c(
+        "target_end_date",
+        "observation",
+        "location",
+        "as_of",
+        "target"
+      )
+    )
+    expect_equal(result$observation, new_data$observation)
+  })
 })

@@ -13,6 +13,7 @@ repos:
     rev: v6.0.0
     hooks:
     -   id: check-added-large-files
+        exclude: ^tests/testthat/api_mocks
     -   id: check-yaml
         args: ["--allow-multiple-documents"]
     -   id: check-toml
