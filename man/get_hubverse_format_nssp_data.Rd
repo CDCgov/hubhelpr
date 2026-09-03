@@ -20,7 +20,7 @@ get_hubverse_format_nssp_data(
 \item{base_hub_path}{Path to the base hub directory.}
 
 \item{as_of}{As-of date of the data pull. Default is
-the system date as determined by \code{\link[lubridate:now]{lubridate::today()}}.}
+the system date as determined by \code{\link[lubridate:today]{lubridate::today()}}.}
 
 \item{nssp_update_local}{Logical. Whether to update NSSP
 data from local file \code{auxiliary-data/latest.parquet}

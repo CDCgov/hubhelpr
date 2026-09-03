@@ -144,7 +144,7 @@ generate_hub_ensemble <- function(
     .data$target
   )
 
-  weekly_models <- get_model_designation(
+  weekly_models <- get_model_designation_current(
     base_hub_path,
     model_ids = dplyr::pull(model_target_pairs, .data$model_id)
   ) |>

@@ -21,7 +21,7 @@ update_hub_target_data(
 \item{disease}{Disease name ("covid" or "rsv").}
 
 \item{as_of}{As-of date of the data pull. Default is
-the system date as determined by \code{\link[lubridate:now]{lubridate::today()}}.}
+the system date as determined by \code{\link[lubridate:today]{lubridate::today()}}.}
 
 \item{start_date}{First week-ending
 date to include for the NHSN dataset. Default value
