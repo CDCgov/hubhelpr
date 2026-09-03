@@ -1,22 +1,22 @@
-test_that("get_current_model_designation designates all targets when designated_targets is absent", {
-  designation <- get_current_model_designation(
+test_that("get_model_designation_current designates all targets when designated_targets is absent", {
+  designation <- get_model_designation_current(
     example_cfa_hub,
     model_ids = "CFA_Pyrenew-PyrenewHEW_COVID"
   )
   expect_equal(nrow(designation), 2)
-  expect_true(all(designation$designated))
+  expect_all_true(designation$designated)
 })
 
-test_that("get_current_model_designation returns FALSE for all targets when designated is FALSE", {
-  designation <- get_current_model_designation(
+test_that("get_model_designation_current returns FALSE for all targets when designated is FALSE", {
+  designation <- get_model_designation_current(
     example_cfa_hub,
     model_ids = "CFA_Pyrenew-Pyrenew_E_COVID"
   )
   expect_false(any(designation$designated))
 })
 
-test_that("get_current_model_designation narrows to only targets listed in designated_targets", {
-  designation <- get_current_model_designation(
+test_that("get_model_designation_current narrows to only targets listed in designated_targets", {
+  designation <- get_model_designation_current(
     example_cfa_hub,
     model_ids = "CFA-EpiAutoGP"
   ) |>
@@ -24,8 +24,8 @@ test_that("get_current_model_designation narrows to only targets listed in desig
   expect_identical(designation$designated, c(TRUE, FALSE))
 })
 
-test_that("get_current_model_designation returns a full model-target grid, including FALSE rows", {
-  designation <- get_current_model_designation(
+test_that("get_model_designation_current returns a full model-target grid, including FALSE rows", {
+  designation <- get_model_designation_current(
     example_cfa_hub,
     model_ids = c(
       "CFA_Pyrenew-PyrenewHEW_COVID",
@@ -43,8 +43,8 @@ test_that("get_current_model_designation returns a full model-target grid, inclu
   expect_true(all(hew_rows))
 })
 
-test_that("get_current_model_designation resolves a mix of broadly-, narrowly-, and non-designated models", {
-  designation <- get_current_model_designation(
+test_that("get_model_designation_current resolves a mix of broadly-, narrowly-, and non-designated models", {
+  designation <- get_model_designation_current(
     example_cfa_hub,
     model_ids = c(
       "CFA-EpiAutoGP",
@@ -60,8 +60,8 @@ test_that("get_current_model_designation resolves a mix of broadly-, narrowly-, 
   )
 })
 
-test_that("get_current_model_designation loads all hub models when model_ids is NULL", {
-  designation <- get_current_model_designation(example_cfa_hub)
+test_that("get_model_designation_current loads all hub models when model_ids is NULL", {
+  designation <- get_model_designation_current(example_cfa_hub)
   n_models <- hubData::load_model_metadata(example_cfa_hub) |>
     dplyr::distinct(.data$model_id) |>
     nrow()
@@ -69,8 +69,8 @@ test_that("get_current_model_designation loads all hub models when model_ids is 
   expect_equal(nrow(designation), n_models * n_targets)
 })
 
-test_that("get_current_model_designation works with a single target input", {
-  designation <- get_current_model_designation(
+test_that("get_model_designation_current works with a single target input", {
+  designation <- get_model_designation_current(
     example_cfa_hub,
     model_ids = "CFA-EpiAutoGP",
     targets = "wk inc covid hosp"
@@ -79,8 +79,8 @@ test_that("get_current_model_designation works with a single target input", {
   expect_true(designation$designated)
 })
 
-test_that("get_current_model_designation uses all hub-supported targets when targets is NULL", {
-  designation <- get_current_model_designation(
+test_that("get_model_designation_current uses all hub-supported targets when targets is NULL", {
+  designation <- get_model_designation_current(
     example_cfa_hub,
     model_ids = "CFA-EpiAutoGP"
   )
@@ -103,7 +103,7 @@ designated_for <- function(designation, model_id, target) {
 }
 
 test_that("designation for a reference date comes from the submissions record, not metadata", {
-  from_metadata <- get_current_model_designation(
+  from_metadata <- get_model_designation_current(
     example_cfa_hub,
     model_ids = "CovidHub-baseline"
   )
@@ -125,8 +125,8 @@ test_that("a record predating the target column designates across every target",
   targets <- get_hub_supported_targets(example_cfa_hub)
 
   expect_setequal(designation$target, targets)
-  expect_true(all(designated_for(designation, "CovidHub-baseline", targets)))
-  expect_false(any(designated_for(designation, "CFA-EpiAutoGP", targets)))
+  expect_all_true(designated_for(designation, "CovidHub-baseline", targets))
+  expect_all_false(designated_for(designation, "CFA-EpiAutoGP", targets))
 })
 
 test_that("a record missing the target column after it was added is an error", {
@@ -169,23 +169,24 @@ test_that("every schema generation of the record is read", {
   })
 })
 
-test_that("models absent from the record are not designated for that week", {
+test_that("models absent from the record have NA designation status", {
   designation <- get_model_designation_as_of(
     example_cfa_hub,
     reference_date = "2026-04-18",
     model_ids = c("CFA-EpiAutoGP", "CFA_Pyrenew-Pyrenew_H_COVID")
   )
 
-  expect_true(all(
+  expect_all_true(
     designated_for(designation, "CFA-EpiAutoGP", c(hosp_target, ed_target))
-  ))
-  expect_false(any(
+  )
+  expect_all_equal(
     designated_for(
       designation,
       "CFA_Pyrenew-Pyrenew_H_COVID",
       c(hosp_target, ed_target)
-    )
-  ))
+    ),
+    NA
+  )
 })
 
 test_that("a reference date with no record is an error, not a fallback", {

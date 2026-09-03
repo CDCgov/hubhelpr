@@ -106,7 +106,7 @@ read_weekly_model_submissions <- function(
 #' and `designated` (logical), with one row per
 #' (model, target) combination.
 #' @export
-get_current_model_designation <- function(
+get_model_designation_current <- function(
   base_hub_path,
   model_ids = NULL,
   targets = NULL
@@ -232,7 +232,7 @@ get_model_designation_as_of <- function(
       model_id = model_ids %||% unique(submissions$model_id),
       target = targets
     ) |>
-    dplyr::left_join(submissions, by = c("model_id", "target"))
+      dplyr::left_join(submissions, by = c("model_id", "target"))
   )
 }
 

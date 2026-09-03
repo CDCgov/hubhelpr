@@ -18,8 +18,9 @@ test_that("summarize_ref_date_forecasts includes 0.10 and 0.90 quantiles", {
 })
 
 test_that("write_ref_date_summary_all includes designation and ensemble columns", {
+  ref_date <- "2026-04-11"
   output_path <- write_ref_date_summary_all(
-    reference_date = "2026-04-11",
+    reference_date = ref_date,
     base_hub_path = example_cfa_hub,
     hub_reports_path = withr::local_tempdir(),
     disease = "covid",
@@ -52,8 +53,9 @@ test_that("write_ref_date_summary_all includes designation and ensemble columns"
     dplyr::filter(.data$model == "CFA-EpiAutoGP") |>
     dplyr::distinct(.data$target, .data$designated_model) |>
     dplyr::arrange(.data$target)
-  expected_designation <- get_model_designation(
+  expected_designation <- get_model_designation_as_of(
     base_hub_path = example_cfa_hub,
+    reference_date = ref_date,
     model_ids = "CFA-EpiAutoGP",
     targets = epi_autogp_flags$target
   ) |>

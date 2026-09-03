@@ -381,8 +381,9 @@ write_ref_date_summary_all <- function(
   non_ensemble <- summary_data |>
     dplyr::filter(.data$model_id != !!ensemble_model_name) |>
     dplyr::mutate(ensemble_of_hub_models = FALSE)
-  non_ensemble_designation <- get_model_designation(
+  non_ensemble_designation <- get_model_designation_as_of(
     base_hub_path = base_hub_path,
+    reference_date = reference_date,
     model_ids = unique(non_ensemble$model_id),
     targets = unique(non_ensemble$target)
   )
