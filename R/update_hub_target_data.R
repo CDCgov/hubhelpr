@@ -211,10 +211,10 @@ get_hubverse_format_nssp_data <- function(
 #' @param as_of As-of date of the data pull. Default is
 #' the system date as determined by [lubridate::today()].
 #' @param start_date_nhsn Earliest week-ending
-#' date to include in the NHSN (admissions) target dataset. 
+#' date to include in the NHSN (admissions) target dataset.
 #' Default `NULL` (include all available data).
-#' @param start_date_nssp Earliest week-ending date to 
-#' include in the NSSP (ED visit) target dataset. 
+#' @param start_date_nssp Earliest week-ending date to
+#' include in the NSSP (ED visit) target dataset.
 #' Default `NULL` (include all available data).
 #' @param excluded_locations NULL, character vector, or
 #' named list of US state/territory abbreviations to
