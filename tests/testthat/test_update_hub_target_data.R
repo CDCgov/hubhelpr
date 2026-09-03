@@ -11,8 +11,6 @@ if (fs::dir_exists(mockdir_tests)) {
   )
 }
 
-test_excluded_locations <- c("VI", "GU", "AS", "MP", "UM")
-
 # mock get_hub_supported_targets for a disease; avoid
 # full hub-config directory in temp test hubs
 mock_supported_targets <- function(disease, env = parent.frame()) {
@@ -27,7 +25,96 @@ mock_supported_targets <- function(disease, env = parent.frame()) {
   )
 }
 
+
+test_excluded_locations <- c("VI", "GU", "AS", "MP", "UM")
+
+
 httptest2::with_mock_dir(mockdir_tests, {
+  default_test_as_of <- lubridate::ymd("2026-08-18")
+  default_test_disease <- "covid"
+  nhsn_all <- get_hubverse_format_nhsn_data(
+    disease = default_test_disease,
+    as_of = default_test_as_of
+  )
+  nssp_all <- get_hubverse_format_nssp_data(
+    disease = default_test_disease,
+    base_hub_path = tempdir(),
+    as_of = default_test_as_of
+  )
+
+  test_that(
+    paste0(
+      "get_hubverse_format_*_data functions respects start date, ",
+      "end date, and date col name"
+    ),
+    {
+      test_get_hubverse_format_data_fn <- function(fn, full_data) {
+        custom_end_date <- lubridate::ymd("2026-01-01")
+        custom_start_date <- lubridate::ymd("2025-01-01")
+
+        with_start <- fn(
+          disease = default_test_disease,
+          as_of = default_test_as_of,
+          start_date = custom_start_date
+        )
+        with_end <- fn(
+          disease = default_test_disease,
+          as_of = default_test_as_of,
+          end_date = custom_end_date
+        )
+        with_bounds <- fn(
+          disease = default_test_disease,
+          as_of = default_test_as_of,
+          start_date = custom_start_date,
+          end_date = custom_end_date
+        )
+        with_colname <- fn(
+          disease = default_test_disease,
+          as_of = default_test_as_of,
+          start_date = custom_start_date,
+          end_date = custom_end_date,
+          date_col_name = "date"
+        )
+
+        expect_equal(
+          dplyr::filter(
+            full_data,
+            .data$target_end_date >= !!custom_start_date
+          ),
+          with_start
+        )
+        expect_equal(
+          dplyr::filter(full_data, .data$target_end_date <= !!custom_end_date),
+          with_end
+        )
+        expect_equal(
+          dplyr::filter(with_start, .data$target_end_date <= !!custom_end_date),
+          with_bounds
+        )
+
+        checkmate::expect_names(
+          names(with_colname),
+          identical.to = c("date", "observation", "location", "as_of", "target")
+        )
+        ## results with a custom date column should be identical to results without,
+        ## except for the column name itself
+        expect_equal(
+          with_colname |> dplyr::rename("target_end_date" = "date"),
+          with_bounds
+        )
+      }
+
+      test_get_hubverse_format_data_fn(get_hubverse_format_nhsn_data, nhsn_all)
+      test_get_hubverse_format_data_fn(
+        purrr::partial(
+          get_hubverse_format_nssp_data,
+          base_hub_path = tempdir()
+        ),
+        nssp_all
+      )
+    }
+  )
+
   purrr::walk(c("covid", "rsv"), function(disease) {
     test_that(
       glue::glue("update_hub_target_data returns expected data for {disease}"),
@@ -74,6 +161,48 @@ httptest2::with_mock_dir(mockdir_tests, {
           )
         )
       }
+    )
+  })
+
+  test_that("update_hub_target_data respects distinct start dates for NHSN and NSSP", {
+    mock_supported_targets(default_test_disease)
+
+    nhsn_start_date <- lubridate::ymd("2026-01-01")
+    nssp_start_date <- lubridate::ymd("2026-07-02")
+    base_hub_path <- withr::local_tempdir(paste0(
+      "base_hub_",
+      default_test_disease,
+      "_"
+    ))
+    output_file <- fs::path(
+      base_hub_path,
+      "target-data/time-series.parquet"
+    )
+    fs::dir_create(fs::path(base_hub_path, "target-data"))
+    hubhelpr::update_hub_target_data(
+      base_hub_path = base_hub_path,
+      disease = default_test_disease,
+      as_of = default_test_as_of,
+      start_date_nhsn = nhsn_start_date,
+      start_date_nssp = nssp_start_date
+    )
+    target_ts <- forecasttools::read_tabular(
+      output_file
+    )
+    manual_ts <- dplyr::bind_rows(
+      dplyr::filter(nhsn_all, .data$target_end_date >= !!nhsn_start_date),
+      dplyr::filter(nssp_all, .data$target_end_date >= !!nssp_start_date)
+    ) |>
+      filter_to_expected_locations(
+        excluded_locations = NULL,
+        base_hub_path = base_hub_path
+      ) |>
+      dplyr::mutate(target = as.character(.data$target))
+    # account for glue->chr in target_ts round trip to parquet
+
+    expect_equal(
+      target_ts,
+      manual_ts
     )
   })
 
@@ -137,39 +266,14 @@ httptest2::with_mock_dir(mockdir_tests, {
     )
   })
 
-  nhsn_mock <- hubhelpr::get_hubverse_format_nhsn_data(
-    disease = "covid",
-    as_of = lubridate::as_date("2025-08-18"),
-    start_date = lubridate::as_date("2024-11-09")
-  )
-
-  test_that("get_hubverse_format_nhsn_data respects configurable date_col_name", {
-    nhsn_custom <- hubhelpr::get_hubverse_format_nhsn_data(
-      disease = "covid",
-      as_of = lubridate::as_date("2025-08-18"),
-      start_date = lubridate::as_date("2024-11-09"),
-      date_col_name = "date"
-    )
-    expect_equal(
-      names(nhsn_custom),
-      c("date", "observation", "location", "as_of", "target")
-    )
-    # contained values should be same as default version,
-    # only date col name should be different
-    expect_equal(
-      nhsn_custom |> dplyr::rename(target_end_date = "date"),
-      nhsn_mock
-    )
-  })
-
   # 2 locs, most recent date in data
-  real_td <- nhsn_mock |>
+  real_td <- nhsn_all |>
     dplyr::filter(
       .data$location %in% c("01", "02"),
       .data$target_end_date == max(.data$target_end_date)
     )
 
-  second_as_of <- lubridate::as_date("2025-08-25")
+  second_as_of <- default_test_as_of + lubridate::days(5)
 
   test_that("merge_target_data with NULL existing returns new data", {
     result <- merge_target_data(NULL, real_td)
