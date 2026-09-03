@@ -32,3 +32,17 @@ repos:
     hooks:
     -   id: typos
         args: ["--force-exclude"]
+-   repo: local
+    hooks:
+    -   id: air-format
+        name: air format
+        entry: air format
+        language: python
+        additional_dependencies: ["air-formatter==0.11.0"]
+        files: \.R$
+    -   id: jarl-check
+        name: jarl check
+        entry: jarl check --fix --allow-dirty
+        language: python
+        additional_dependencies: ["jarl-linter==0.6.0"]
+        files: \.R$
