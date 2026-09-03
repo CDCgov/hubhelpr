@@ -49,7 +49,7 @@ Remotes:
 Additional_repositories: https://hubverse-org.r-universe.dev
 Suggests:
     httptest2,
-    testthat (>= 3.0.0),
+    testthat (>= 3.3.0),
     withr
 Depends:
     R (>= 3.5)
