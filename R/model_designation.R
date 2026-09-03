@@ -291,7 +291,7 @@ count_designated_models <- function(
   designated_pairs <- hub_forecasts |>
     dplyr::distinct(.data$reference_date, .data$model_id) |>
     tidyr::nest(.by = "reference_date", .key = "models") |>
-    purrr::pmap(\(reference_date, models) {
+    purrr::pmap_df(\(reference_date, models) {
       get_model_designation_as_of(
         base_hub_path,
         reference_date = reference_date,
@@ -300,8 +300,7 @@ count_designated_models <- function(
         dplyr::filter(.data$designated) |>
         dplyr::mutate(reference_date = !!reference_date) |>
         dplyr::select("reference_date", "model_id", "target")
-    }) |>
-    purrr::list_rbind()
+    })
 
   designated_forecasts <- hub_forecasts |>
     dplyr::inner_join(
