@@ -407,7 +407,7 @@ generate_webtext_block <- function(
 
   designation <- get_model_designation_as_of(
     base_hub_path,
-    reference_date = reference_date,
+    reference_date,
     model_ids = contributing_model_ids
   )
 

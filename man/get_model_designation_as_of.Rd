@@ -21,7 +21,7 @@ reference date to resolve designation as of.}
 
 \item{model_ids}{character vector of model IDs to
 include, or NULL (default) to include every model in
-that week's record}
+that reference date's record}
 
 \item{targets}{character vector of target names to
 include, or NULL (default) to include all targets
@@ -30,15 +30,13 @@ supported by the hub.}
 \value{
 A tibble with columns \code{model_id}, \code{target},
 and \code{designated} (logical), with one row per
-(model, target) combination.
+(model, target) combination. \code{model_id}s with no
+submission for the reference date have an \code{NA}
+designation status.
 }
 \description{
-Reads the hub's record of that week, written by
-\code{\link[=generate_hub_ensemble]{generate_hub_ensemble()}}, rather than current
-metadata. Designation changes as models changes.
-Resolving a past reference date against
-\verb{model-metadata/} reports today's answer for that
-week: e.g. for \code{2025-01-04} the covid hub's record
-lists ten designated models, and today's metadata
-designates none of the same submitters.
+Reads the hub's record of designation statuses used
+to generate the ensemble for that reference date
+(via \code{\link[=generate_hub_ensemble]{generate_hub_ensemble()}}), not the current
+designation statuses.
 }

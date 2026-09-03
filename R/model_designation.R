@@ -106,7 +106,7 @@ read_weekly_model_submissions <- function(
 #' and `designated` (logical), with one row per
 #' (model, target) combination.
 #' @export
-get_current_model_designation <- function(
+get_model_designation_current <- function(
   base_hub_path,
   model_ids = NULL,
   targets = NULL
@@ -155,14 +155,10 @@ get_current_model_designation <- function(
 #' Resolve per-target model designation as of a
 #' reference date.
 #'
-#' Reads the hub's record of that week, written by
-#' [generate_hub_ensemble()], rather than current
-#' metadata. Designation changes as models changes.
-#' Resolving a past reference date against
-#' `model-metadata/` reports today's answer for that
-#' week: e.g. for `2025-01-04` the covid hub's record
-#' lists ten designated models, and today's metadata
-#' designates none of the same submitters.
+#' Reads the hub's record of designation statuses used
+#' to generate the ensemble for that reference date
+#' (via [generate_hub_ensemble()]), not the current
+#' designation statuses.
 #'
 #' @param base_hub_path character, path to the base hub
 #' directory.
@@ -170,14 +166,16 @@ get_current_model_designation <- function(
 #' reference date to resolve designation as of.
 #' @param model_ids character vector of model IDs to
 #' include, or NULL (default) to include every model in
-#' that week's record
+#' that reference date's record
 #' @param targets character vector of target names to
 #' include, or NULL (default) to include all targets
 #' supported by the hub.
 #'
 #' @return A tibble with columns `model_id`, `target`,
 #' and `designated` (logical), with one row per
-#' (model, target) combination.
+#' (model, target) combination. `model_id`s with no
+#' submission for the reference date have an `NA`
+#' designation status.
 #' @export
 get_model_designation_as_of <- function(
   base_hub_path,
@@ -234,8 +232,7 @@ get_model_designation_as_of <- function(
       model_id = model_ids %||% unique(submissions$model_id),
       target = targets
     ) |>
-      dplyr::left_join(submissions, by = c("model_id", "target")) |>
-      dplyr::mutate(designated = dplyr::coalesce(.data$designated, FALSE))
+      dplyr::left_join(submissions, by = c("model_id", "target"))
   )
 }
 
@@ -294,7 +291,7 @@ count_designated_models <- function(
   designated_pairs <- hub_forecasts |>
     dplyr::distinct(.data$reference_date, .data$model_id) |>
     tidyr::nest(.by = "reference_date", .key = "models") |>
-    purrr::pmap(\(reference_date, models) {
+    purrr::pmap_df(\(reference_date, models) {
       get_model_designation_as_of(
         base_hub_path,
         reference_date = reference_date,
@@ -303,8 +300,7 @@ count_designated_models <- function(
         dplyr::filter(.data$designated) |>
         dplyr::mutate(reference_date = !!reference_date) |>
         dplyr::select("reference_date", "model_id", "target")
-    }) |>
-    purrr::list_rbind()
+    })
 
   designated_forecasts <- hub_forecasts |>
     dplyr::inner_join(
