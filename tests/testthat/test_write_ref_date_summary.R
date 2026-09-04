@@ -107,7 +107,7 @@ test_that("write_ref_date_summary_all rate columns rescale counts by population"
   expect_gt(nrow(ed_data), 0)
   expect_true(all(is.na(ed_data$rate_quantile_0.5)))
   expect_true(all(is.na(ed_data$rate_quantile_0.5_rounded)))
-  expect_false(any(is.na(ed_data$count_quantile_0.5)))
+  expect_false(anyNA(ed_data$count_quantile_0.5))
 })
 
 test_that("write_ref_date_summary_ens uses count_/rate_ prefixed columns", {
