@@ -1,3 +1,47 @@
+#' Look up PRISM reference populations for hub
+#' locations.
+#'
+#' Rate transforms use the denominator PRISM used to
+#' derive rate-scale activity cutpoints, so a reported
+#' rate reconciles with the activity level it is
+#' categorized into, and forecast rates are directly
+#' comparable to the rates NHSN publishes alongside its
+#' counts.
+#'
+#' A location PRISM publishes no population for is an
+#' error rather than an NA. PRISM currently covers
+#' every location both hubs publish.
+#'
+#' @param location Character vector of hub location
+#' codes.
+#' @param as_of Date. Reference population vintage to
+#' look up, clamped to PRISM's earliest published
+#' vintage.
+#' @return Tibble with "location" and "population"
+#' columns, one row per distinct input location.
+#' @noRd
+prism_reference_populations <- function(location, as_of) {
+  earliest_vintage <- min(
+    forecasttools::prism_rate_reference_populations$as_of
+  )
+  as_of <- max(lubridate::as_date(as_of), earliest_vintage)
+
+  return(
+    tibble::tibble(location = unique(location)) |>
+      dplyr::mutate(
+        population = forecasttools::get_prism_reference_population(
+          forecasttools::us_location_recode(
+            .data$location,
+            "hub",
+            "abbr"
+          ),
+          as_of = as_of
+        )
+      )
+  )
+}
+
+
 #' Summarize forecast hub data for a specific reference date.
 #'
 #' This function generates a tibble of forecast data
@@ -11,8 +55,6 @@
 #' directory.
 #' @param disease character, disease name ("covid" or
 #' "rsv"). Used to derive hub name and file prefix.
-#' @param population_data data frame with columns "location"
-#' and "population". Adds population-based calculations.
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
 #' @param excluded_locations NULL, character vector, or
@@ -34,7 +76,6 @@ summarize_ref_date_forecasts <- function(
   reference_date,
   base_hub_path,
   disease,
-  population_data,
   horizons_to_include = c(0, 1, 2),
   excluded_locations = NULL,
   targets = NULL,
@@ -81,6 +122,11 @@ summarize_ref_date_forecasts <- function(
     )
   }
 
+  reference_population_values <- prism_reference_populations(
+    unique(current_forecasts$location),
+    as_of = reference_date
+  )
+
   forecasts_data <- forecasttools::pivot_hubverse_quantiles_wider(
     hubverse_table = current_forecasts,
     pivot_quantiles = c(
@@ -105,13 +151,7 @@ summarize_ref_date_forecasts <- function(
         "abbr"
       )
     ) |>
-    dplyr::left_join(
-      population_data,
-      by = "location"
-    ) |>
-    dplyr::mutate(
-      population = as.numeric(.data$population)
-    ) |>
+    dplyr::left_join(reference_population_values, by = "location") |>
     dplyr::mutate(
       target_data_type = get_target_data_type(.data$target)
     ) |>
@@ -119,7 +159,7 @@ summarize_ref_date_forecasts <- function(
       dplyr::across(
         tidyselect::starts_with("quantile_"),
         ~ dplyr::case_when(
-          is_hosp_target(.data$target) ~ .x / .data$population * 100000,
+          is_hosp_target(.data$target) ~ .x / .data$population * 1e5,
           is_ed_target(.data$target) ~ NA_real_
         ),
         .names = "{.col}_per100k"

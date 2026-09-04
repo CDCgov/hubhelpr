@@ -5,7 +5,10 @@
 #' from NHSN and NSSP APIs, then writes to the
 #' weekly-summaries directory for use by the visualization
 #' webpage. Output includes columns: week_ending_date,
-#' location, location_name, target, target_data_type, and value.
+#' location, location_name, target, target_data_type,
+#' count_value, and rate_value. N.B. `rate_value` is
+#' derived from `count_value` and the PRISM reference
+#' population for the reference date.
 #'
 #' @param reference_date Character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
@@ -108,13 +111,31 @@ write_viz_target_data <- function(
         .data$observation
       )
     ) |>
+    dplyr::left_join(
+      prism_reference_populations(
+        target_data$location,
+        as_of = reference_date
+      ),
+      by = "location"
+    ) |>
+    dplyr::mutate(
+      observation_rate = dplyr::if_else(
+        .data$target_data_type == "hosp",
+        janitor::round_half_up(
+          .data$observation / .data$population * 100000,
+          2
+        ),
+        NA_real_
+      )
+    ) |>
     dplyr::select(
       week_ending_date = "target_end_date",
       "location",
       "location_name",
       "target",
       "target_data_type",
-      value = "observation"
+      count_value = "observation",
+      rate_value = "observation_rate"
     )
 
   output_folder_path <- fs::path(
