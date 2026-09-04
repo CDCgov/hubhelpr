@@ -17,10 +17,11 @@ generate_hub_report(
   n_models_for_ens_reporting = NULL,
   output_format = "csv",
   overwrite_existing = FALSE,
-  observed_data_use_hub = FALSE,
+  observed_data_use_hub = TRUE,
   observed_data_as_of = "latest",
   observed_data_start_date = NULL,
-  observed_data_end_date = NULL
+  observed_data_end_date = NULL,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -84,6 +85,8 @@ available vintage. Default "latest". Used only when
 \item{observed_data_start_date}{Date, latest date to include in observed
 data shown in the report. Default: NULL (no filtering).
 Used only when \code{observed_data_use_hub = FALSE}.}
+
+\item{verbose}{Report progress to the terminal? Default \code{TRUE}.}
 }
 \value{
 NULL, invsibly
