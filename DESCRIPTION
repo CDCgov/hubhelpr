@@ -52,6 +52,6 @@ Suggests:
     testthat (>= 3.3.0),
     withr
 Depends:
-    R (>= 3.5)
+    R (>= 4.1)
 LazyData: true
 Config/roxygen2/version: 8.1.0
