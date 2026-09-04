@@ -159,7 +159,7 @@ summarize_ref_date_forecasts <- function(
       dplyr::across(
         tidyselect::starts_with("quantile_"),
         ~ dplyr::case_when(
-          is_hosp_target(.data$target) ~ .x / .data$population * 100000,
+          is_hosp_target(.data$target) ~ .x / .data$population * 1e5,
           is_ed_target(.data$target) ~ NA_real_
         ),
         .names = "{.col}_per100k"

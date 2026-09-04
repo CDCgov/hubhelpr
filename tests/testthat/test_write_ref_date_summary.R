@@ -101,7 +101,7 @@ test_that("write_ref_date_summary_all rate columns rescale counts by population"
     hosp_data$rate_quantile_0.5,
     hosp_data$count_quantile_0.5 /
       as.numeric(hosp_data$population) *
-      100000
+      1e5
   )
   ed_data <- dplyr::filter(summary_data, .data$target_data_type == "prop_ed")
   expect_gt(nrow(ed_data), 0)
