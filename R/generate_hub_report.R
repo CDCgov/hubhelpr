@@ -52,7 +52,7 @@
 #' @param observed_data_start_date Date, earliest date to include in observed
 #' data shown in the report. Default: NULL (no filtering).
 #' Used only when `observed_data_use_hub = FALSE`.
-#' @param observed_data_start_date Date, latest date to include in observed
+#' @param observed_data_end_date Date, latest date to include in observed
 #' data shown in the report. Default: NULL (no filtering).
 #' Used only when `observed_data_use_hub = FALSE`.
 #' @param verbose Report progress to the terminal? Default `TRUE`.

@@ -82,7 +82,11 @@ data shown in the report. Either an object coercible by
 available vintage. Default "latest". Used only when
 \code{observed_data_use_hub = TRUE}.}
 
-\item{observed_data_start_date}{Date, latest date to include in observed
+\item{observed_data_start_date}{Date, earliest date to include in observed
+data shown in the report. Default: NULL (no filtering).
+Used only when \code{observed_data_use_hub = FALSE}.}
+
+\item{observed_data_end_date}{Date, latest date to include in observed
 data shown in the report. Default: NULL (no filtering).
 Used only when \code{observed_data_use_hub = FALSE}.}
 
