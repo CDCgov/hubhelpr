@@ -9,8 +9,7 @@ get_hubverse_format_nhsn_data(
   as_of = lubridate::today(),
   start_date = NULL,
   end_date = NULL,
-  date_col_name = "target_end_date",
-  include_rate = FALSE
+  date_col_name = "target_end_date"
 )
 }
 \arguments{
@@ -29,10 +28,6 @@ filtering).}
 
 \item{date_col_name}{Character. Name for the date
 column in the output. Default is "target_end_date".}
-
-\item{include_rate}{Logical. If TRUE, add an
-"observation_rate" column carrying NHSN's published
-admissions per 100k. Default: FALSE.}
 }
 \value{
 Data frame with formatted NHSN data.

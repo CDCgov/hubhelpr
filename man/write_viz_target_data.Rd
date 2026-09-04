@@ -72,10 +72,7 @@ from NHSN and NSSP APIs, then writes to the
 weekly-summaries directory for use by the visualization
 webpage. Output includes columns: week_ending_date,
 location, location_name, target, target_data_type,
-count_value, and rate_value.
-}
-\details{
-\code{rate_value} carries NHSN HRD's published admissions
-per 100k, taken directly rather than derived, so no
-population denominator is involved.
+count_value, and rate_value. N.B. \code{rate_value} is
+derived from \code{count_value} and the PRISM reference
+population for the reference date.
 }

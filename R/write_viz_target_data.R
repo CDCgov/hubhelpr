@@ -6,11 +6,9 @@
 #' weekly-summaries directory for use by the visualization
 #' webpage. Output includes columns: week_ending_date,
 #' location, location_name, target, target_data_type,
-#' count_value, and rate_value.
-#'
-#' `rate_value` carries NHSN HRD's published admissions
-#' per 100k, taken directly rather than derived, so no
-#' population denominator is involved.
+#' count_value, and rate_value. N.B. `rate_value` is
+#' derived from `count_value` and the PRISM reference
+#' population for the reference date.
 #'
 #' @param reference_date Character, the reference date for
 #' the forecast in YYYY-MM-DD format (ISO-8601).
@@ -68,15 +66,12 @@ write_viz_target_data <- function(
       apply_target_location_exclusions(
         excluded_locations,
         base_hub_path
-      ) |>
-      # the hub time series carries observations only
-      dplyr::mutate(observation_rate = NA_real_)
+      )
   } else {
     nhsn_data <- get_hubverse_format_nhsn_data(
       disease,
       start_date = start_date,
-      end_date = end_date,
-      include_rate = TRUE
+      end_date = end_date
     ) |>
       # remove data for reporting dates May 1, 2024 – October 31,
       # 2024 due to the absence of a reporting mandate. Reporting
@@ -114,6 +109,23 @@ write_viz_target_data <- function(
         .data$target_data_type == "prop_ed",
         janitor::round_half_up(.data$observation, 4),
         .data$observation
+      )
+    ) |>
+    dplyr::left_join(
+      prism_reference_populations(
+        target_data$location,
+        as_of = reference_date
+      ),
+      by = "location"
+    ) |>
+    dplyr::mutate(
+      observation_rate = dplyr::if_else(
+        .data$target_data_type == "hosp",
+        janitor::round_half_up(
+          .data$observation / .data$population * 100000,
+          2
+        ),
+        NA_real_
       )
     ) |>
     dplyr::select(

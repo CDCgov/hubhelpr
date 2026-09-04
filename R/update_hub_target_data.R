@@ -77,10 +77,6 @@ merge_target_data <- function(
 #' filtering).
 #' @param date_col_name Character. Name for the date
 #' column in the output. Default is "target_end_date".
-#' @param include_rate Logical. If TRUE, add an
-#' "observation_rate" column carrying NHSN's published
-#' admissions per 100k. Default: FALSE.
-#'
 #' @return Data frame with formatted NHSN data.
 #' @export
 get_hubverse_format_nhsn_data <- function(
@@ -88,46 +84,21 @@ get_hubverse_format_nhsn_data <- function(
   as_of = lubridate::today(),
   start_date = NULL,
   end_date = NULL,
-  date_col_name = "target_end_date",
-  include_rate = FALSE
+  date_col_name = "target_end_date"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
-  checkmate::assert_flag(include_rate)
 
-  output_columns <- c(
-    hubverse_ts_req_cols,
-    if (include_rate) "observation_rate"
-  )
+  nhsn_col_name <- get_nhsn_col_name(disease)
 
-  admissions_columns <- forecasttools::nhsn_hrd_admissions_column_names(
-    disease
-  )
-
-  raw_admissions <- if (include_rate) {
-    forecasttools::pull_nhsn_hrd_admissions(
-      disease = disease,
-      dataset = "nhsn_hrd_prelim",
-      start_date = start_date,
-      end_date = end_date
-    )
-  } else {
-    forecasttools::pull_data_cdc_gov_dataset(
-      dataset = "nhsn_hrd_prelim",
-      columns = admissions_columns[["count"]],
-      start_date = start_date,
-      end_date = end_date
-    ) |>
-      dplyr::mutate(
-        count = as.numeric(.data[[admissions_columns[["count"]]]]),
-        rate = NA_real_
-      )
-  }
-
-  hubverse_format_nhsn_data <- raw_admissions |>
+  hubverse_format_nhsn_data <- forecasttools::pull_data_cdc_gov_dataset(
+    dataset = "nhsn_hrd_prelim",
+    columns = nhsn_col_name,
+    start_date = start_date,
+    end_date = end_date
+  ) |>
     dplyr::mutate(
       target_end_date = lubridate::as_date(.data$weekendingdate),
-      observation = .data$count,
-      observation_rate = .data$rate,
+      observation = as.numeric(.data[[nhsn_col_name]]),
       location = forecasttools::us_location_recode(
         .data$jurisdiction,
         "hrd",
@@ -136,7 +107,7 @@ get_hubverse_format_nhsn_data <- function(
       as_of = !!as_of,
       target = glue::glue("wk inc {disease} hosp")
     ) |>
-    dplyr::select(tidyselect::all_of(output_columns)) |>
+    dplyr::select(tidyselect::all_of(hubverse_ts_req_cols)) |>
     dplyr::rename(!!date_col_name := "target_end_date")
 
   return(hubverse_format_nhsn_data)
