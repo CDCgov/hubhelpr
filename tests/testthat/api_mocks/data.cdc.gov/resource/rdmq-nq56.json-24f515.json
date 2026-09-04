@@ -1,0 +1,2801 @@
+[
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Delaware"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Illinois"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Kansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.3",
+    "geography": "Louisiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "Michigan"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.19",
+    "geography": "Mississippi"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "Ohio"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.02",
+    "geography": "North Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "New York"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.0",
+    "geography": "Vermont"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "South Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Oregon"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "North Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Indiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "geography": "Iowa"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "New Jersey"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Arkansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "California"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "District of Columbia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.37",
+    "geography": "Florida"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Georgia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.35",
+    "geography": "Hawaii"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Idaho"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Maryland"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Minnesota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.01",
+    "geography": "Montana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Missouri"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.02",
+    "geography": "Nebraska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.18",
+    "geography": "Nevada"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "New Hampshire"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "South Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "West Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Oklahoma"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Pennsylvania"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.0",
+    "geography": "Rhode Island"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Tennessee"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.24",
+    "geography": "Texas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "United States"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "Utah"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.02",
+    "geography": "Wisconsin"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "New Mexico"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "Massachusetts"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Maine"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Kentucky"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Arizona"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "Alaska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Colorado"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Connecticut"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.27",
+    "geography": "Wyoming"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "Washington"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-04T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Alabama"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Tennessee"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.0",
+    "geography": "Rhode Island"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "South Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "Washington"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.02",
+    "geography": "North Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Oklahoma"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.31",
+    "geography": "Texas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "United States"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "West Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.02",
+    "geography": "Wisconsin"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Alabama"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "California"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "Delaware"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "District of Columbia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Georgia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.35",
+    "geography": "Hawaii"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "geography": "Iowa"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "Maryland"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Massachusetts"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Michigan"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Oregon"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "New York"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "New Hampshire"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Montana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.02",
+    "geography": "Maine"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.46",
+    "geography": "Florida"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.23",
+    "geography": "Nevada"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "New Jersey"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "New Mexico"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.49",
+    "geography": "Wyoming"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Vermont"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "Utah"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "South Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "Pennsylvania"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Nebraska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Minnesota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Kentucky"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Indiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Illinois"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.17",
+    "geography": "Idaho"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Colorado"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Arkansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Alaska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "North Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Arizona"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "Connecticut"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "Kansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.34",
+    "geography": "Louisiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.2",
+    "geography": "Mississippi"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Missouri"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-11T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "Ohio"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Kansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "geography": "Iowa"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.17",
+    "geography": "Idaho"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.54",
+    "geography": "Florida"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Arkansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Arizona"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.22",
+    "geography": "Alabama"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "Colorado"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "West Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.41",
+    "geography": "Texas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "Tennessee"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.18",
+    "geography": "Alaska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Oklahoma"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "Montana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "Missouri"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Minnesota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Michigan"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Massachusetts"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "Maryland"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Delaware"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Connecticut"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "California"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "South Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Rhode Island"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Pennsylvania"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "North Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Illinois"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Indiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Maine"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.31",
+    "geography": "Mississippi"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "New Hampshire"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "New Mexico"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "North Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Ohio"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Oregon"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.18",
+    "geography": "United States"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.6",
+    "geography": "Hawaii"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Georgia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "District of Columbia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.47",
+    "geography": "Wyoming"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Wisconsin"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "Washington"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "Vermont"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Utah"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "South Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "New York"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "New Jersey"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.2",
+    "geography": "Nevada"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "Nebraska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.38",
+    "geography": "Louisiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-18T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Kentucky"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Washington"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.55",
+    "geography": "Texas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Rhode Island"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.2",
+    "geography": "North Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.39",
+    "geography": "Mississippi"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Minnesota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Massachusetts"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Kansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.29",
+    "geography": "Alabama"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Arkansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.21",
+    "geography": "California"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Delaware"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.0",
+    "geography": "District of Columbia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.62",
+    "geography": "Florida"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.2",
+    "geography": "Georgia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Idaho"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Illinois"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Indiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Montana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.21",
+    "geography": "Nevada"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "New Hampshire"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "New York"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "North Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Oregon"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "South Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.22",
+    "geography": "United States"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Utah"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.18",
+    "geography": "Tennessee"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Oklahoma"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Ohio"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Nebraska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Maine"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "geography": "Iowa"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Connecticut"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.21",
+    "geography": "Arizona"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.31",
+    "geography": "Alaska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.38",
+    "geography": "Wyoming"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Colorado"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.58",
+    "geography": "Hawaii"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "Kentucky"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.51",
+    "geography": "Louisiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "Maryland"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Michigan"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "Missouri"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "New Jersey"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.19",
+    "geography": "New Mexico"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Pennsylvania"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "South Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "West Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Wisconsin"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-07-25T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "Vermont"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "geography": "Iowa"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.27",
+    "geography": "Alaska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Colorado"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.2",
+    "geography": "Idaho"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Illinois"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Montana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "Nebraska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.18",
+    "geography": "New Jersey"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.22",
+    "geography": "Tennessee"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.7",
+    "geography": "Texas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.27",
+    "geography": "United States"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Vermont"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "Wisconsin"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.36",
+    "geography": "Wyoming"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.22",
+    "geography": "Arizona"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.29",
+    "geography": "California"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "Delaware"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.65",
+    "geography": "Florida"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.36",
+    "geography": "Georgia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.66",
+    "geography": "Hawaii"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Kansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Kentucky"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Massachusetts"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.44",
+    "geography": "Mississippi"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "New Hampshire"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.27",
+    "geography": "North Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Ohio"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "Pennsylvania"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "Rhode Island"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.19",
+    "geography": "South Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "South Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.17",
+    "geography": "Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.17",
+    "geography": "Washington"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Connecticut"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "District of Columbia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "Indiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.54",
+    "geography": "Louisiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Michigan"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Missouri"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.17",
+    "geography": "New York"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.03",
+    "geography": "North Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Oklahoma"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.19",
+    "geography": "Oregon"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.33",
+    "geography": "Alabama"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.19",
+    "geography": "Arkansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Maine"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Maryland"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Minnesota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.32",
+    "geography": "Nevada"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "New Mexico"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "Utah"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-01T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "West Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Vermont"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.22",
+    "geography": "Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Wisconsin"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Kansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.72",
+    "geography": "Louisiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.89",
+    "geography": "Hawaii"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Idaho"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Indiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.83",
+    "geography": "Texas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.26",
+    "geography": "Tennessee"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.22",
+    "geography": "Oregon"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.21",
+    "geography": "New York"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "Montana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Massachusetts"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.17",
+    "geography": "Kentucky"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Illinois"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "District of Columbia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Connecticut"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Colorado"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Maryland"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Utah"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "Ohio"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Missouri"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.46",
+    "geography": "Georgia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.52",
+    "geography": "Mississippi"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.46",
+    "geography": "Nevada"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Oklahoma"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Pennsylvania"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.18",
+    "geography": "Rhode Island"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.44",
+    "geography": "Wyoming"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "West Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.26",
+    "geography": "Washington"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "South Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.29",
+    "geography": "South Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "North Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.34",
+    "geography": "North Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.2",
+    "geography": "New Mexico"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.19",
+    "geography": "New Jersey"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "New Hampshire"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Nebraska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "Minnesota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Michigan"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.04",
+    "geography": "Maine"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "geography": "Iowa"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.71",
+    "geography": "Florida"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.29",
+    "geography": "Arkansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.39",
+    "geography": "Alabama"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.34",
+    "geography": "Arizona"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Delaware"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.37",
+    "geography": "California"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.39",
+    "geography": "Alaska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-08T00:00:00.000",
+    "percent_visits_covid": "0.32",
+    "geography": "United States"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "West Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.33",
+    "geography": "Washington"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Vermont"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "North Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "South Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.88",
+    "geography": "Mississippi"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "Massachusetts"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Indiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "Illinois"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.22",
+    "geography": "New York"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.5",
+    "geography": "Nevada"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.47",
+    "geography": "Wyoming"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.25",
+    "geography": "Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.99",
+    "geography": "Texas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.47",
+    "geography": "South Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Rhode Island"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Ohio"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.35",
+    "geography": "New Mexico"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.24",
+    "geography": "New Jersey"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Montana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Michigan"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Maine"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Kansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "geography": "Iowa"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.17",
+    "geography": "Delaware"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "Colorado"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.44",
+    "geography": "California"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.31",
+    "geography": "Arkansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.44",
+    "geography": "Arizona"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.2",
+    "geography": "Alaska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.22",
+    "geography": "Connecticut"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.23",
+    "geography": "Kentucky"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.2",
+    "geography": "Maryland"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Minnesota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Nebraska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "New Hampshire"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.45",
+    "geography": "North Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Oklahoma"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.27",
+    "geography": "Oregon"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Pennsylvania"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.37",
+    "geography": "Tennessee"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.39",
+    "geography": "United States"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Utah"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.26",
+    "geography": "Idaho"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "District of Columbia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.46",
+    "geography": "Alabama"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Missouri"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.87",
+    "geography": "Louisiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.97",
+    "geography": "Hawaii"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.69",
+    "geography": "Georgia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.82",
+    "geography": "Florida"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-15T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Wisconsin"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.31",
+    "geography": "New Jersey"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.22",
+    "geography": "Maryland"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Illinois"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.4",
+    "geography": "Idaho"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "1.33",
+    "geography": "Hawaii"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "District of Columbia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.26",
+    "geography": "Connecticut"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.24",
+    "geography": "Colorado"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.56",
+    "geography": "Arizona"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.67",
+    "geography": "Alabama"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "1.26",
+    "geography": "Louisiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.97",
+    "geography": "Mississippi"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "New Hampshire"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.29",
+    "geography": "New Mexico"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.33",
+    "geography": "Oregon"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Rhode Island"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.6",
+    "geography": "South Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.25",
+    "geography": "Utah"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "geography": "Iowa"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Minnesota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Missouri"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Nebraska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.27",
+    "geography": "New York"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.26",
+    "geography": "North Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "South Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.51",
+    "geography": "Wyoming"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Wisconsin"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "West Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.34",
+    "geography": "Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.51",
+    "geography": "United States"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "1.38",
+    "geography": "Texas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.53",
+    "geography": "Tennessee"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "Pennsylvania"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.22",
+    "geography": "Oklahoma"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "Ohio"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.54",
+    "geography": "Nevada"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Montana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.19",
+    "geography": "Massachusetts"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.05",
+    "geography": "Maine"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.17",
+    "geography": "Indiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.77",
+    "geography": "Georgia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.19",
+    "geography": "Delaware"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.59",
+    "geography": "California"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.38",
+    "geography": "Arkansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.22",
+    "geography": "Alaska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "1.0",
+    "geography": "Florida"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "Kansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.27",
+    "geography": "Kentucky"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.4",
+    "geography": "Washington"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "Vermont"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.56",
+    "geography": "North Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-22T00:00:00.000",
+    "percent_visits_covid": "0.08",
+    "geography": "Michigan"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.33",
+    "geography": "New Jersey"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.31",
+    "geography": "New Mexico"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.12",
+    "geography": "Rhode Island"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.88",
+    "geography": "Georgia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.39",
+    "geography": "Idaho"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.87",
+    "geography": "Mississippi"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.07",
+    "geography": "North Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.54",
+    "geography": "Wyoming"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.19",
+    "geography": "West Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Vermont"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.6",
+    "geography": "Tennessee"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.75",
+    "geography": "South Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.34",
+    "geography": "Oregon"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.34",
+    "geography": "Oklahoma"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.14",
+    "geography": "Ohio"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.25",
+    "geography": "New Hampshire"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.58",
+    "geography": "Nevada"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Montana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.16",
+    "geography": "Minnesota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.21",
+    "geography": "Massachusetts"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.23",
+    "geography": "Maryland"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "1.5",
+    "geography": "Louisiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.32",
+    "geography": "Kentucky"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.36",
+    "geography": "Connecticut"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.23",
+    "geography": "Colorado"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.46",
+    "geography": "Arkansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.61",
+    "geography": "Arizona"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.31",
+    "geography": "Alaska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.42",
+    "geography": "Virginia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.46",
+    "geography": "Washington"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.11",
+    "geography": "Wisconsin"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.25",
+    "geography": "Delaware"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.75",
+    "geography": "California"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "District of Columbia"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "1.17",
+    "geography": "Florida"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.18",
+    "geography": "Indiana"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.18",
+    "geography": "Missouri"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.09",
+    "geography": "Nebraska"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.32",
+    "geography": "New York"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.66",
+    "geography": "North Carolina"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "Pennsylvania"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.15",
+    "geography": "South Dakota"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "1.68",
+    "geography": "Texas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.61",
+    "geography": "United States"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.25",
+    "geography": "Utah"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.84",
+    "geography": "Alabama"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "1.54",
+    "geography": "Hawaii"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.18",
+    "geography": "Illinois"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "geography": "Iowa"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.13",
+    "geography": "Kansas"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.06",
+    "geography": "Maine"
+  },
+  {
+    "county": "All",
+    "week_end": "2026-08-29T00:00:00.000",
+    "percent_visits_covid": "0.1",
+    "geography": "Michigan"
+  }
+]

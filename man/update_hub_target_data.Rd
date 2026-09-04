@@ -8,7 +8,8 @@ update_hub_target_data(
   base_hub_path,
   disease,
   as_of = lubridate::today(),
-  start_date = lubridate::as_date("2024-11-09"),
+  start_date_nhsn = NULL,
+  start_date_nssp = NULL,
   excluded_locations = NULL,
   legacy_file = FALSE,
   nssp_update_local = FALSE,
@@ -23,9 +24,13 @@ update_hub_target_data(
 \item{as_of}{As-of date of the data pull. Default is
 the system date as determined by \code{\link[lubridate:today]{lubridate::today()}}.}
 
-\item{start_date}{First week-ending
-date to include for the NHSN dataset. Default value
-is "2024-11-09".}
+\item{start_date_nhsn}{Earliest week-ending
+date to include in the NHSN (admissions) target dataset.
+Default \code{NULL} (include all available data).}
+
+\item{start_date_nssp}{Earliest week-ending date to
+include in the NSSP (ED visit) target dataset.
+Default \code{NULL} (include all available data).}
 
 \item{excluded_locations}{NULL, character vector, or
 named list of US state/territory abbreviations to

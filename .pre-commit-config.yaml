@@ -8,11 +8,13 @@ ci:
     autoupdate_schedule: weekly
     skip: []
     submodules: false
+
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
     -   id: check-added-large-files
+        exclude: ^tests/testthat/api_mocks
     -   id: check-yaml
         args: ["--allow-multiple-documents"]
     -   id: check-toml
@@ -21,14 +23,27 @@ repos:
     -   id: trailing-whitespace
     -   id: pretty-format-json
         args: ["--autofix", "--no-sort-keys"]
+
 -   repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
     hooks:
     -   id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
         exclude: package.lock.json
+
 -   repo: https://github.com/crate-ci/typos
     rev: v1
     hooks:
     -   id: typos
         args: ["--force-exclude"]
+
+-   repo: https://github.com/posit-dev/air-pre-commit
+    rev: 0.11.0
+    hooks:
+      - id: air-format
+
+-   repo: https://github.com/etiennebacher/jarl-pre-commit
+    rev: 0.6.0
+    hooks:
+      - id: jarl-check
+        args: ["--fix", "--allow-dirty"]
