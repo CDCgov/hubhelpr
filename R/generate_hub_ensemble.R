@@ -33,10 +33,9 @@ ensemble_by_target <- function(
     .var.name = "weekly_models columns"
   )
 
-  expected_cols <- c(names(forecasttools::hubverse_std_colnames), task_id_cols)
   checkmate::assertSetEqual(
     colnames(weekly_forecasts),
-    expected_cols,
+    names(forecasttools::cdc_hub_std_colnames),
     .var.name = "weekly_forecasts columns"
   )
 
