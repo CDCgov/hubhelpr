@@ -69,15 +69,7 @@ write_viz_target_data <- function(
       disease,
       start_date = start_date,
       end_date = end_date
-    ) |>
-      # remove data for reporting dates May 1, 2024 – October 31,
-      # 2024 due to the absence of a reporting mandate. Reporting
-      # rates during this period were much lower,
-      # and data not comparable to other time periods.
-      dplyr::filter(
-        !(.data$target_end_date >= lubridate::as_date("2024-05-01") &
-          .data$target_end_date <= lubridate::as_date("2024-10-31"))
-      )
+    )
     nssp_data <- get_hubverse_format_nssp_data(
       disease,
       base_hub_path,
@@ -100,6 +92,15 @@ write_viz_target_data <- function(
         "name"
       ),
       target_data_type = get_target_data_type(.data$target)
+    ) |>
+    # remove NHSN data for reporting dates May 1, 2024 – October 31,
+    # 2024 due to the absence of a reporting mandate. Reporting
+    # rates during this period were much lower,
+    # and data not comparable to other time periods.
+    dplyr::filter_out(
+      .data$target_end_date >= lubridate::as_date("2024-05-01") &
+        .data$target_end_date <= lubridate::as_date("2024-10-31") &
+        .data$target_data_type == "hosp"
     ) |>
     dplyr::mutate(
       observation = dplyr::if_else(
