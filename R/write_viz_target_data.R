@@ -111,18 +111,16 @@ write_viz_target_data <- function(
         .data$observation
       )
     ) |>
-    dplyr::left_join(
-      prism_reference_populations(
-        target_data$location,
-        as_of = reference_date
-      ),
-      by = "location"
-    ) |>
     dplyr::mutate(
       observation_rate = dplyr::if_else(
         .data$target_data_type == "hosp",
         janitor::round_half_up(
-          .data$observation / .data$population * 100000,
+          .data$observation /
+            prism_reference_populations(
+              .data$location,
+              as_of = !!reference_date
+            ) *
+            1e5,
           2
         ),
         NA_real_

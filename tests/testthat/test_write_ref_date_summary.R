@@ -157,13 +157,13 @@ test_that("reference populations come from PRISM", {
   )
 
   expect_equal(
-    populations$population,
+    populations,
     forecasttools::get_prism_reference_population(
       c("AL", "US"),
       as_of = earliest_vintage
     )
   )
-  expect_equal(populations$population[[2]], 337492878)
+  expect_equal(populations[[2]], 337492878)
 })
 
 test_that("reference dates before PRISM's first vintage take the earliest vintage", {
@@ -195,4 +195,20 @@ test_that("a location PRISM has no population for is an error, not an NA", {
     prism_reference_populations(c("01", "60"), as_of = earliest_vintage),
     "No PRISM reference population"
   )
+})
+
+test_that("reference populations are returned one per input, repeats included", {
+  # the lookup runs over distinct locations and is spread back
+  # across the input, so a repeated location repeats its population
+  earliest_vintage <- min(
+    forecasttools::prism_rate_reference_populations$as_of
+  )
+
+  populations <- prism_reference_populations(
+    c("01", "US", "01"),
+    as_of = earliest_vintage
+  )
+
+  expect_length(populations, 3)
+  expect_identical(populations[[1]], populations[[3]])
 })

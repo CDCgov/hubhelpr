@@ -17,28 +17,22 @@
 #' @param as_of Date. Reference population vintage to
 #' look up, clamped to PRISM's earliest published
 #' vintage.
-#' @return Tibble with "location" and "population"
-#' columns, one row per distinct input location.
+#' @return Numeric vector of populations, one per
+#' element of `location`.
 #' @noRd
 prism_reference_populations <- function(location, as_of) {
+  as_of <- lubridate::as_date(as_of)
+  checkmate::assert_date(as_of, len = 1, any.missing = FALSE)
+
   earliest_vintage <- min(
     forecasttools::prism_rate_reference_populations$as_of
   )
-  as_of <- max(lubridate::as_date(as_of), earliest_vintage)
+  as_of <- max(as_of, earliest_vintage)
 
-  return(
-    tibble::tibble(location = unique(location)) |>
-      dplyr::mutate(
-        population = forecasttools::get_prism_reference_population(
-          forecasttools::us_location_recode(
-            .data$location,
-            "hub",
-            "abbr"
-          ),
-          as_of = as_of
-        )
-      )
-  )
+  return(forecasttools::get_prism_reference_population(
+    forecasttools::us_location_recode(location, "hub", "abbr"),
+    as_of = as_of
+  ))
 }
 
 
@@ -122,11 +116,6 @@ summarize_ref_date_forecasts <- function(
     )
   }
 
-  reference_population_values <- prism_reference_populations(
-    unique(current_forecasts$location),
-    as_of = reference_date
-  )
-
   forecasts_data <- forecasttools::pivot_hubverse_quantiles_wider(
     hubverse_table = current_forecasts,
     pivot_quantiles = c(
@@ -151,7 +140,12 @@ summarize_ref_date_forecasts <- function(
         "abbr"
       )
     ) |>
-    dplyr::left_join(reference_population_values, by = "location") |>
+    dplyr::mutate(
+      population = prism_reference_populations(
+        .data$location,
+        as_of = !!reference_date
+      )
+    ) |>
     dplyr::mutate(
       target_data_type = get_target_data_type(.data$target)
     ) |>
