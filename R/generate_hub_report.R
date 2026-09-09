@@ -56,7 +56,7 @@
 #' data shown in the report. Default: NULL (no filtering).
 #' Used only when `observed_data_use_hub = FALSE`.
 #' @param verbose Report progress to the terminal? Default `TRUE`.
-#' @return NULL, invsibly
+#' @return NULL, invisibly
 #' @export
 generate_hub_report <- function(
   reference_date,
