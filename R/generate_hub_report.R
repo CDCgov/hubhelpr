@@ -43,7 +43,7 @@
 #' @param observed_data_use_hub Logical, whether to read data from
 #' the hub's time-series file (TRUE) or pull fresh data
 #' from raw sources (FALSE) when creating observed data files.
-#' Default: FALSE.
+#' Default: `FALSE`.
 #' @param observed_data_as_of As of date for the observed
 #' data shown in the report. Either an object coercible by
 #' [as.Date()] or "latest" to use the most recent
@@ -70,7 +70,7 @@ generate_hub_report <- function(
   n_models_for_ens_reporting = NULL,
   output_format = "csv",
   overwrite_existing = FALSE,
-  observed_data_use_hub = TRUE,
+  observed_data_use_hub = FALSE,
   observed_data_as_of = "latest",
   observed_data_start_date = NULL,
   observed_data_end_date = NULL,

@@ -35,7 +35,7 @@ inputs:
   observed_data_use_hub:
     description: "Use Hub's own target data to generate oserved data files (true) or pull from remote sources (false)"
     required: false
-    default: true
+    default: false
 
 runs:
   using: "composite"

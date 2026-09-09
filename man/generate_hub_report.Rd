@@ -17,7 +17,7 @@ generate_hub_report(
   n_models_for_ens_reporting = NULL,
   output_format = "csv",
   overwrite_existing = FALSE,
-  observed_data_use_hub = TRUE,
+  observed_data_use_hub = FALSE,
   observed_data_as_of = "latest",
   observed_data_start_date = NULL,
   observed_data_end_date = NULL,
@@ -74,7 +74,7 @@ existing files. Default: FALSE.}
 \item{observed_data_use_hub}{Logical, whether to read data from
 the hub's time-series file (TRUE) or pull fresh data
 from raw sources (FALSE) when creating observed data files.
-Default: FALSE.}
+Default: \code{FALSE}.}
 
 \item{observed_data_as_of}{As of date for the observed
 data shown in the report. Either an object coercible by
@@ -93,7 +93,7 @@ Used only when \code{observed_data_use_hub = FALSE}.}
 \item{verbose}{Report progress to the terminal? Default \code{TRUE}.}
 }
 \value{
-NULL, invsibly
+NULL, invisibly
 }
 \description{
 Wrapper function for \code{\link[=write_ref_date_summary_ens]{write_ref_date_summary_ens()}},
