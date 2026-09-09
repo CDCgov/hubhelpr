@@ -6,7 +6,7 @@
 
 #' Write a mock record of ensemble minima
 #' to the given directory (for dynamically created
-#' hub reports directories in testing
+#' hub reports directories in testing)
 write_mock_ens_minimums_file <- function(
   reports_dir,
   disease,
