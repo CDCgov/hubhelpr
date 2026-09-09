@@ -83,7 +83,7 @@ runs:
           base_hub_path = base_hub_path,
           excluded_locations = excluded_locations,
           targets = targets,
-          n_models_for_ens_report = n_models_for_ens_reporting,
+          n_models_for_ens_reporting = n_models_for_ens_reporting,
           observed_data_use_hub = as.logical("${{ inputs.observed_data_use_hub }}")
         )
 
