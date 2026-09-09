@@ -20,7 +20,7 @@ Roxygen: list(markdown = TRUE)
 Imports:
     checkmate,
     cli,
-    dplyr,
+    dplyr (>= 1.2.0),
     epipredict,
     epiprocess,
     forecasttools,
@@ -52,6 +52,6 @@ Suggests:
     testthat (>= 3.3.0),
     withr
 Depends:
-    R (>= 4.1)
+    R (>= 4.4)
 LazyData: true
 Config/roxygen2/version: 8.1.0
