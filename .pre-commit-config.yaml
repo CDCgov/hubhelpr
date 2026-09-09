@@ -48,11 +48,3 @@ repos:
       - id: taplo-format
       - id: taplo-lint
         args: ["--no-schema"]
-  - repo: https://github.com/google/yamlfmt
-    rev: v0.19.0
-    hooks:
-      - id: yamlfmt
-        # test hub fixtures mimic real hub metadata,
-        # so they are left as the hubs write them,
-        # rather than reformatted
-        exclude: ^inst/testhubs/
