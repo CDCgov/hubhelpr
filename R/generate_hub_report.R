@@ -95,7 +95,6 @@ generate_hub_report <- function(
   if (verbose) {
     cli::cli_inform("Writing ensemble summary file...")
   }
-
   write_ref_date_summary_ens(
     reference_date = reference_date,
     base_hub_path = base_hub_path,
