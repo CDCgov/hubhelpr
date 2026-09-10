@@ -8,21 +8,18 @@ inputs:
   github_token:
     description: "GitHub token for creating the pull request."
     required: true
-  base_hub_path:
-    description: "Path to the hub repository directory."
-    required: true
   hub_reports_path:
     description: "Path to the hub reports directory."
     required: false
     default: "."
+  base_hub_path:
+    description: "Path to the hub repository directory. If not provided, use the Hub S3 bucket for the given disease."
+    required: false
+    default: ""
   reference_date:
     description: "Reference date for the forecast (YYYY-MM-DD, must be a Saturday). Defaults to the last day of the current MMWR epiweek."
     required: false
     default: "latest"
-  output_folder:
-    description: "Name of the folder where visualization data files are written."
-    required: false
-    default: "weekly-summaries"
   targets:
     description: "JSON array of full target names (e.g., '[\"wk inc covid hosp\", \"wk inc covid prop ed visits\"]'). Defaults to all unique targets in time-series data."
     required: false
@@ -35,6 +32,18 @@ inputs:
     description: "Minimum number of designated model submissions required to include an ensemble forecast in the report. Defaults to the minimum rule for the reference date, so regenerating an older report applies the rule it was published under."
     required: false
     default: ""
+  observed_data_use_hub:
+    description: "Use Hub's own target data to generate observed data files (true) or pull from remote sources (false)"
+    required: false
+    default: false
+  observed_data_as_of:
+    description: "As of date for the observed data shown in the report. Either an string coercible by R's as.Date() or 'latest' to use the most recent available vintage. Used only when observed_data_use_hub is true)"
+    required: false
+    default: "latest"
+  overwrite_existing:
+    description: "Overwrite existing report files, if any?"
+    required: false
+    default: false
 
 runs:
   using: "composite"
@@ -52,6 +61,8 @@ runs:
         message("Using reference date: ", as.character(ref_date))
 
         base_hub_path <- "${{ inputs.base_hub_path }}"
+        if (nchar(base_hub_path) == 0) base_hub_path <- NULL
+
         hub_reports_path <- "${{ inputs.hub_reports_path }}"
         disease <- "${{ inputs.disease }}"
 
@@ -63,7 +74,7 @@ runs:
         }
 
         excluded_locations <- jsonlite::fromJSON(
-          '${{ inputs.excluded_locations }}'
+          "${{ inputs.excluded_locations }}"
         )
 
         input_n_models <- "${{ inputs.n_models_for_ens_reporting }}"
@@ -73,40 +84,19 @@ runs:
           n_models_for_ens_reporting <- as.integer(input_n_models)
         }
 
-        hubhelpr::write_ref_date_summary_ens(
+        hubhelpr::generate_hub_report(
           reference_date = ref_date,
-          base_hub_path = base_hub_path,
-          hub_reports_path = hub_reports_path,
           disease = disease,
+          hub_reports_path = hub_reports_path,
+          base_hub_path = base_hub_path,
           excluded_locations = excluded_locations,
-          n_models_for_ens_reporting = n_models_for_ens_reporting
-        )
-
-        hubhelpr::write_ref_date_summary_all(
-          reference_date = ref_date,
-          base_hub_path = base_hub_path,
-          hub_reports_path = hub_reports_path,
-          disease = disease,
-          excluded_locations = excluded_locations,
-          n_models_for_ens_reporting = n_models_for_ens_reporting
-        )
-
-        hubhelpr::write_viz_target_data(
-          reference_date = ref_date,
-          base_hub_path = base_hub_path,
-          hub_reports_path = hub_reports_path,
-          disease = disease,
-          excluded_locations = excluded_locations
-        )
-
-        hubhelpr::write_webtext(
-          reference_date = ref_date,
-          disease = disease,
-          base_hub_path = base_hub_path,
-          hub_reports_path = hub_reports_path,
           targets = targets,
-          excluded_locations = excluded_locations
+          n_models_for_ens_reporting = n_models_for_ens_reporting,
+          observed_data_use_hub = as.logical("${{ inputs.observed_data_use_hub }}"),
+          observed_data_as_of = "${{ inputs.observed_data_as_of }}",
+          overwrite_existing = as.logical("{{ inputs.overwrite_existing }}")
         )
+
 
         writeLines(
           sprintf("date=%s", as.character(ref_date)),
@@ -119,7 +109,7 @@ runs:
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git checkout -b "add-viz-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}"
-        git add "${{ inputs.output_folder }}"
+        git add "weekly-summaries"
         git commit -m "Update weekly ${{ inputs.disease }} visualization data"
         git push origin "add-viz-${{ inputs.disease }}-data-${{ steps.generate.outputs.date }}"
 

@@ -1,16 +1,3 @@
-mockdir_tests <- fs::path(mockdir)
-
-## replace env variables with fakes if and only if
-## we are mocking api calls
-if (fs::dir_exists(mockdir_tests)) {
-  withr::local_envvar(
-    .new = c(
-      "DATA_CDC_GOV_API_KEY_ID" = "fake_key",
-      "DATA_CDC_GOV_API_KEY_SECRET" = "fake_secret" #pragma: allowlist secret
-    )
-  )
-}
-
 # mock get_hub_supported_targets for a disease; avoid
 # full hub-config directory in temp test hubs
 mock_supported_targets <- function(disease, env = parent.frame()) {
@@ -28,8 +15,11 @@ mock_supported_targets <- function(disease, env = parent.frame()) {
 
 test_excluded_locations <- c("VI", "GU", "AS", "MP", "UM")
 
+mockdir_target_data <- fs::path(mockdir_tests, "target-data")
 
-httptest2::with_mock_dir(mockdir_tests, {
+httptest2::with_mock_dir(mockdir_target_data, {
+  replace_env_vars_if_mocking(mockdir_target_data)
+
   default_test_as_of <- lubridate::ymd("2026-08-18")
   default_test_disease <- "covid"
   nhsn_all <- get_hubverse_format_nhsn_data(
