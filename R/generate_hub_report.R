@@ -83,18 +83,17 @@ generate_hub_report <- function(
       disease,
       reference_date
     )
-  if (verbose) {
-    cli::cli_inform(c(
-      "Starting hub report generation for disease ",
-      "{disease} and reference date {reference_date} ",
-      "using hub at {base_hub_path} and writing ",
-      "to {hub_reports_path}..."
-    ))
-  }
 
-  if (verbose) {
-    cli::cli_inform("Writing ensemble summary file...")
-  }
+  log_message <- function(msg) if (verbose) cli::cli_inform(msg)
+
+  log_message(c(
+    "Starting hub report generation for disease ",
+    "{disease} and reference date {reference_date} ",
+    "using hub at {base_hub_path} and writing ",
+    "to {hub_reports_path}..."
+  ))
+
+  log_message("Writing ensemble summary file...")
   write_ref_date_summary_ens(
     reference_date = reference_date,
     base_hub_path = base_hub_path,
@@ -109,9 +108,7 @@ generate_hub_report <- function(
     overwrite_existing = overwrite_existing
   )
 
-  if (verbose) {
-    cli::cli_inform("Writing all model summary file...")
-  }
+  log_message("Writing all model summary file...")
   write_ref_date_summary_all(
     reference_date = reference_date,
     base_hub_path = base_hub_path,
@@ -126,9 +123,7 @@ generate_hub_report <- function(
     overwrite_existing = overwrite_existing
   )
 
-  if (verbose) {
-    cli::cli_inform("Writing observed data file...")
-  }
+  log_message("Writing observed data file...")
   write_viz_target_data(
     reference_date = reference_date,
     base_hub_path = base_hub_path,
@@ -142,9 +137,8 @@ generate_hub_report <- function(
     output_format = output_format,
     overwrite_existing = overwrite_existing
   )
-  if (verbose) {
-    cli::cli_inform("Writing webtext...")
-  }
+
+  log_message(cli::cli_inform("Writing webtext..."))
   write_webtext(
     reference_date = reference_date,
     disease = disease,
@@ -156,5 +150,6 @@ generate_hub_report <- function(
     overwrite_existing = overwrite_existing
   )
 
+  log_message("Done generating report.")
   invisible()
 }
