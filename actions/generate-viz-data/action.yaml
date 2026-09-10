@@ -33,7 +33,15 @@ inputs:
     required: false
     default: ""
   observed_data_use_hub:
-    description: "Use Hub's own target data to generate oserved data files (true) or pull from remote sources (false)"
+    description: "Use Hub's own target data to generate observed data files (true) or pull from remote sources (false)"
+    required: false
+    default: false
+  observed_data_as_of:
+    description: "As of date for the observed data shown in the report. Either an string coercible by R's as.Date() or 'latest' to use the most recent available vintage. Used only when observed_data_use_hub is true)"
+    required: false
+    default: "latest"
+  overwrite_existing:
+    description: "Overwrite existing report files, if any?"
     required: false
     default: false
 
@@ -66,7 +74,7 @@ runs:
         }
 
         excluded_locations <- jsonlite::fromJSON(
-          '${{ inputs.excluded_locations }}'
+          "${{ inputs.excluded_locations }}"
         )
 
         input_n_models <- "${{ inputs.n_models_for_ens_reporting }}"
@@ -84,7 +92,9 @@ runs:
           excluded_locations = excluded_locations,
           targets = targets,
           n_models_for_ens_reporting = n_models_for_ens_reporting,
-          observed_data_use_hub = as.logical("${{ inputs.observed_data_use_hub }}")
+          observed_data_use_hub = as.logical("${{ inputs.observed_data_use_hub }}"),
+          observed_data_as_of = "${{ inputs.observed_data_as_of }}",
+          overwrite_existing = as.logical("{{ inputs.overwrite_existing }}")
         )
 
 
