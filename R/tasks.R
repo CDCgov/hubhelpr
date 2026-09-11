@@ -55,12 +55,6 @@ get_hub_tasks <- function(hub_path, ...) {
     hubValidations::expand_model_out_grid(
       config_tasks,
       id,
-      derived_task_ids = "target_end_date",
-      ## hard-coded for now for the hubs we run,
-      ## can be relaxed when
-      ## https://github.com/CDCgov/covid19-forecast-hub/issues/1413
-      ## https://github.com/CDCgov/rsv-forecast-hub/issues/392
-      ## are addressed
       required_vals_only = FALSE,
       force_output_types = FALSE,
       ...
