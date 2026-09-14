@@ -61,6 +61,44 @@ merge_target_data <- function(
   return(data)
 }
 
+#' Format raw NHSN HRD data in the hubverse time-series
+#' format.
+#'
+#' For data.cdc.gov pulls and archived NHSN HRD
+#' snapshots so both produce identical target data
+#' rows.
+#'
+#' @param raw_nhsn_data Data frame of NHSN HRD data
+#' with columns `weekendingdate`, `jurisdiction`, and the
+#' disease's admissions column (see
+#' [get_nhsn_col_name()]).
+#' @param disease Disease name ("covid", "rsv", or
+#' "flu").
+#' @param as_of As-of date to record for the rows.
+#' @return Data frame with columns `target_end_date`,
+#' `observation`, `location`, `as_of`, and `target`.
+#' @noRd
+format_nhsn_hubverse_data <- function(raw_nhsn_data, disease, as_of) {
+  checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
+  nhsn_col_name <- get_nhsn_col_name(disease)
+
+  return(
+    raw_nhsn_data |>
+      dplyr::mutate(
+        target_end_date = lubridate::as_date(.data$weekendingdate),
+        observation = as.numeric(.data[[nhsn_col_name]]),
+        location = forecasttools::us_location_recode(
+          .data$jurisdiction,
+          "hrd",
+          "code"
+        ),
+        as_of = !!as_of,
+        target = glue::glue("wk inc {disease} hosp")
+      ) |>
+      dplyr::select(tidyselect::all_of(hubverse_ts_req_cols))
+  )
+}
+
 #' Get and format NHSN data for a given disease.
 #'
 #' This function pulls the NHSN hospital admissions data,
@@ -89,26 +127,13 @@ get_hubverse_format_nhsn_data <- function(
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
 
-  nhsn_col_name <- get_nhsn_col_name(disease)
-
   hubverse_format_nhsn_data <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "nhsn_hrd_prelim",
-    columns = nhsn_col_name,
+    columns = get_nhsn_col_name(disease),
     start_date = start_date,
     end_date = end_date
   ) |>
-    dplyr::mutate(
-      target_end_date = lubridate::as_date(.data$weekendingdate),
-      observation = as.numeric(.data[[nhsn_col_name]]),
-      location = forecasttools::us_location_recode(
-        .data$jurisdiction,
-        "hrd",
-        "code"
-      ),
-      as_of = !!as_of,
-      target = glue::glue("wk inc {disease} hosp")
-    ) |>
-    dplyr::select(tidyselect::all_of(hubverse_ts_req_cols)) |>
+    format_nhsn_hubverse_data(disease, as_of) |>
     dplyr::rename(!!date_col_name := "target_end_date")
 
   return(hubverse_format_nhsn_data)
