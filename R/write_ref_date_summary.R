@@ -145,8 +145,6 @@ filter_reportable_ensemble <- function(
 #' "rsv").
 #' @param horizons_to_include integer vector, horizons
 #' to include in the output. Default: c(0, 1, 2).
-#' @param population_data data frame with columns
-#' "location" and "population". Default: population_data.
 #' @param excluded_locations NULL, character vector, or
 #' named list of US state/territory abbreviations to
 #' exclude. If a character vector, locations are
@@ -179,7 +177,6 @@ write_ref_date_summary_ens <- function(
   hub_reports_path,
   disease,
   horizons_to_include = c(0, 1, 2),
-  population_data = hubhelpr::population_data,
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
@@ -200,18 +197,18 @@ write_ref_date_summary_ens <- function(
   ensemble_columns <- c(
     "location_name",
     "horizon",
-    "quantile_0.025_per100k",
-    "quantile_0.5_per100k",
-    "quantile_0.975_per100k",
-    "quantile_0.025",
-    "quantile_0.5",
-    "quantile_0.975",
-    "quantile_0.025_per100k_rounded",
-    "quantile_0.5_per100k_rounded",
-    "quantile_0.975_per100k_rounded",
-    "quantile_0.025_rounded",
-    "quantile_0.5_rounded",
-    "quantile_0.975_rounded",
+    rate_quantile_0.025 = "quantile_0.025_per100k",
+    rate_quantile_0.5 = "quantile_0.5_per100k",
+    rate_quantile_0.975 = "quantile_0.975_per100k",
+    count_quantile_0.025 = "quantile_0.025",
+    count_quantile_0.5 = "quantile_0.5",
+    count_quantile_0.975 = "quantile_0.975",
+    rate_quantile_0.025_rounded = "quantile_0.025_per100k_rounded",
+    rate_quantile_0.5_rounded = "quantile_0.5_per100k_rounded",
+    rate_quantile_0.975_rounded = "quantile_0.975_per100k_rounded",
+    count_quantile_0.025_rounded = "quantile_0.025_rounded",
+    count_quantile_0.5_rounded = "quantile_0.5_rounded",
+    count_quantile_0.975_rounded = "quantile_0.975_rounded",
     "target",
     "target_data_type",
     "target_end_date",
@@ -227,7 +224,6 @@ write_ref_date_summary_ens <- function(
     reference_date = reference_date,
     base_hub_path = base_hub_path,
     disease = disease,
-    population_data = population_data,
     horizons_to_include = horizons_to_include,
     excluded_locations = excluded_locations,
     targets = targets,
@@ -270,8 +266,6 @@ write_ref_date_summary_ens <- function(
 #' "rsv").
 #' @param horizons_to_include integer vector, horizons to
 #' include in the output. Default: c(0, 1, 2).
-#' @param population_data data frame with columns
-#' "location" and "population". Default: [population_data].
 #' @param excluded_locations NULL, character vector, or
 #' named list of US state/territory abbreviations to
 #' exclude. If a character vector, locations are
@@ -305,7 +299,6 @@ write_ref_date_summary_all <- function(
   hub_reports_path,
   disease,
   horizons_to_include = c(0, 1, 2),
-  population_data = hubhelpr::population_data,
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
@@ -332,20 +325,34 @@ write_ref_date_summary_all <- function(
     forecast_date = "reference_date",
     "target_end_date",
     model = "model_id",
-    "quantile_0.025",
-    "quantile_0.10",
-    "quantile_0.25",
-    "quantile_0.5",
-    "quantile_0.75",
-    "quantile_0.90",
-    "quantile_0.975",
-    "quantile_0.025_rounded",
-    "quantile_0.10_rounded",
-    "quantile_0.25_rounded",
-    "quantile_0.5_rounded",
-    "quantile_0.75_rounded",
-    "quantile_0.90_rounded",
-    "quantile_0.975_rounded",
+    count_quantile_0.025 = "quantile_0.025",
+    count_quantile_0.10 = "quantile_0.10",
+    count_quantile_0.25 = "quantile_0.25",
+    count_quantile_0.5 = "quantile_0.5",
+    count_quantile_0.75 = "quantile_0.75",
+    count_quantile_0.90 = "quantile_0.90",
+    count_quantile_0.975 = "quantile_0.975",
+    count_quantile_0.025_rounded = "quantile_0.025_rounded",
+    count_quantile_0.10_rounded = "quantile_0.10_rounded",
+    count_quantile_0.25_rounded = "quantile_0.25_rounded",
+    count_quantile_0.5_rounded = "quantile_0.5_rounded",
+    count_quantile_0.75_rounded = "quantile_0.75_rounded",
+    count_quantile_0.90_rounded = "quantile_0.90_rounded",
+    count_quantile_0.975_rounded = "quantile_0.975_rounded",
+    rate_quantile_0.025 = "quantile_0.025_per100k",
+    rate_quantile_0.10 = "quantile_0.10_per100k",
+    rate_quantile_0.25 = "quantile_0.25_per100k",
+    rate_quantile_0.5 = "quantile_0.5_per100k",
+    rate_quantile_0.75 = "quantile_0.75_per100k",
+    rate_quantile_0.90 = "quantile_0.90_per100k",
+    rate_quantile_0.975 = "quantile_0.975_per100k",
+    rate_quantile_0.025_rounded = "quantile_0.025_per100k_rounded",
+    rate_quantile_0.10_rounded = "quantile_0.10_per100k_rounded",
+    rate_quantile_0.25_rounded = "quantile_0.25_per100k_rounded",
+    rate_quantile_0.5_rounded = "quantile_0.5_per100k_rounded",
+    rate_quantile_0.75_rounded = "quantile_0.75_per100k_rounded",
+    rate_quantile_0.90_rounded = "quantile_0.90_per100k_rounded",
+    rate_quantile_0.975_rounded = "quantile_0.975_per100k_rounded",
     designated_model = "designated",
     "ensemble_of_hub_models",
     forecast_team = "team_name",
@@ -357,7 +364,6 @@ write_ref_date_summary_all <- function(
     reference_date = reference_date,
     base_hub_path = base_hub_path,
     disease = disease,
-    population_data = population_data,
     horizons_to_include = horizons_to_include,
     excluded_locations = excluded_locations,
     targets = targets
