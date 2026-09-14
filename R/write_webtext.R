@@ -257,7 +257,7 @@ compute_target_webtext_values <- function(
       .data$location == "US"
     )
 
-  last_reported_raw <- last_reported_target_data$value
+  last_reported_raw <- last_reported_target_data$count_value
   last_reported <- format_forecast(last_reported_raw)
 
   forecast_raw <- target_ensemble$count_quantile_0.5

@@ -26,10 +26,15 @@ test_that("generate_hub_report() writes all expected files", {
       "covid",
       report_dir,
       base_hub_path = example_cfa_hub,
-      excluded_locations = "UM" # not in NHSN, excluded from real reports
+      # PRISM publishes no reference population for AS,
+      # GU, or MP
+      excluded_locations = c("VI", "GU", "AS", "MP", "UM")
     )
   })
 
   expect_true(fs::dir_exists(expected_summary_dir))
   expect_all_true(fs::file_exists(expected_files))
+
+  webtext <- paste(readLines(expected_files[[4]]), collapse = "\n")
+  expect_match(webtext, "compared to the [0-9,]+ admissions so far reported")
 })
