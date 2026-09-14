@@ -1,5 +1,5 @@
 library(httptest2)
-mockdir <- "api_mocks"
+mockdir_tests <- fs::path("api_mocks")
 
 example_hub_paths <- purrr::pmap_vec(
   tidyr::crossing(
