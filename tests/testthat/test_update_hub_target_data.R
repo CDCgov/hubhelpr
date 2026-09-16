@@ -180,7 +180,8 @@ httptest2::with_mock_dir(mockdir_target_data, {
       output_file
     )
     manual_ts <- dplyr::bind_rows(
-      dplyr::filter(nhsn_all, .data$target_end_date >= !!nhsn_start_date),
+      dplyr::filter(nhsn_all, .data$target_end_date >= !!nhsn_start_date) |>
+        drop_leading_missing_observations(),
       dplyr::filter(nssp_all, .data$target_end_date >= !!nssp_start_date)
     ) |>
       filter_to_expected_locations(
@@ -389,4 +390,42 @@ httptest2::with_mock_dir(mockdir_target_data, {
     )
     expect_equal(result$observation, new_data$observation)
   })
+})
+
+test_that("drop_leading_missing_observations drops only leading missing values per series", {
+  series <- tidyr::crossing(
+    as_of = lubridate::as_date(c("2026-09-02", "2026-09-09")),
+    location = c("01", "02"),
+    target = "wk inc rsv hosp",
+    target_end_date = lubridate::as_date("2023-11-04") + 7 * 0:4
+  ) |>
+    dplyr::mutate(
+      observation = dplyr::case_when(
+        # location 01: two leading missing weeks,
+        # then one inner gap
+        location == "01" & target_end_date <= "2023-11-11" ~ NA_real_,
+        location == "01" & target_end_date == "2023-11-25" ~ NA_real_,
+        # location 02: never reported in the earlier vintage
+        location == "02" & as_of == "2026-09-02" ~ NA_real_,
+        .default = 1
+      )
+    ) |>
+    dplyr::slice_sample(prop = 1)
+
+  result <- drop_leading_missing_observations(series)
+
+  expect_equal(names(result), names(series))
+  expect_equal(
+    dplyr::count(result, as_of, location, name = "rows"),
+    tibble::tribble(
+      ~as_of                           , ~location , ~rows ,
+      lubridate::as_date("2026-09-02") , "01"      , 3L    ,
+      lubridate::as_date("2026-09-09") , "01"      , 3L    ,
+      lubridate::as_date("2026-09-09") , "02"      , 5L
+    )
+  )
+  # the interior gap is kept
+  expect_equal(sum(is.na(result$observation)), 2L)
+  # row order is good
+  expect_equal(result, dplyr::semi_join(series, result, by = names(series)))
 })

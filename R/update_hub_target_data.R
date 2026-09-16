@@ -99,6 +99,32 @@ format_nhsn_hubverse_data <- function(raw_nhsn_data, disease, as_of) {
   )
 }
 
+#' Drop missing observations before each series' first
+#' reported value.
+#'
+#' A series is one location, target, and as-of date,
+#' and missing observations before the series' first
+#' non-missing one are dropped; missing observations
+#' after it are kept.
+#'
+#' @param data Data frame in hubverse time-series
+#' format.
+#' @return `data` without leading missing observations.
+#' @noRd
+drop_leading_missing_observations <- function(data) {
+  return(
+    data |>
+      dplyr::mutate(.row = dplyr::row_number()) |>
+      dplyr::arrange(.data$target_end_date) |>
+      dplyr::filter(
+        !dplyr::cumall(is.na(.data$observation)),
+        .by = c("as_of", "location", "target")
+      ) |>
+      dplyr::arrange(.data$.row) |>
+      dplyr::select(-".row")
+  )
+}
+
 #' Get and format NHSN data for a given disease.
 #'
 #' This function pulls the NHSN hospital admissions data,
@@ -279,7 +305,8 @@ update_hub_target_data <- function(
     disease,
     as_of = as_of,
     start_date = start_date_nhsn
-  )
+  ) |>
+    drop_leading_missing_observations()
 
   assert_data_up_to_date(
     nhsn_data,
