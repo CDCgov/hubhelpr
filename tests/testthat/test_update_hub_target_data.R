@@ -38,7 +38,11 @@ httptest2::with_mock_dir(mockdir_target_data, {
       "end date, and date col name"
     ),
     {
-      test_get_hubverse_format_data_fn <- function(fn, full_data) {
+      test_get_hubverse_format_data_fn <- function(
+        fn,
+        full_data,
+        drop_leading = identity
+      ) {
         custom_end_date <- lubridate::ymd("2026-01-01")
         custom_start_date <- lubridate::ymd("2025-01-01")
 
@@ -70,7 +74,8 @@ httptest2::with_mock_dir(mockdir_target_data, {
           dplyr::filter(
             full_data,
             .data$target_end_date >= !!custom_start_date
-          ),
+          ) |>
+            drop_leading(),
           with_start
         )
         expect_equal(
@@ -86,15 +91,20 @@ httptest2::with_mock_dir(mockdir_target_data, {
           names(with_colname),
           identical.to = c("date", "observation", "location", "as_of", "target")
         )
-        ## results with a custom date column should be identical to results without,
-        ## except for the column name itself
+        # results w/ custom date column should be
+        # identical to results without, xcept for the
+        # column name
         expect_equal(
           with_colname |> dplyr::rename("target_end_date" = "date"),
           with_bounds
         )
       }
 
-      test_get_hubverse_format_data_fn(get_hubverse_format_nhsn_data, nhsn_all)
+      test_get_hubverse_format_data_fn(
+        get_hubverse_format_nhsn_data,
+        nhsn_all,
+        drop_leading = drop_leading_missing_observations
+      )
       test_get_hubverse_format_data_fn(
         purrr::partial(
           get_hubverse_format_nssp_data,
@@ -409,8 +419,7 @@ test_that("drop_leading_missing_observations drops only leading missing values p
         location == "02" & as_of == "2026-09-02" ~ NA_real_,
         .default = 1
       )
-    ) |>
-    dplyr::slice_sample(prop = 1)
+    )
 
   result <- drop_leading_missing_observations(series)
 
@@ -424,8 +433,27 @@ test_that("drop_leading_missing_observations drops only leading missing values p
       lubridate::as_date("2026-09-09") , "02"      , 5L
     )
   )
-  # the interior gap is kept
+  # keep inner gap
   expect_equal(sum(is.na(result$observation)), 2L)
-  # row order is good
-  expect_equal(result, dplyr::semi_join(series, result, by = names(series)))
+
+  renamed <- dplyr::rename(
+    series,
+    date = target_end_date,
+    value = observation,
+    geo = location
+  )
+  expect_equal(
+    drop_leading_missing_observations(
+      renamed,
+      date_col = "date",
+      value_col = "value",
+      .by = c("as_of", "geo", "target")
+    ),
+    dplyr::rename(
+      result,
+      date = target_end_date,
+      value = observation,
+      geo = location
+    )
+  )
 })

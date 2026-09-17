@@ -102,33 +102,39 @@ format_nhsn_hubverse_data <- function(raw_nhsn_data, disease, as_of) {
 #' Drop missing observations before each series' first
 #' reported value.
 #'
-#' A series is one location, target, and as-of date,
-#' and missing observations before the series' first
-#' non-missing one are dropped; missing observations
-#' after it are kept.
-#'
-#' @param data Data frame in hubverse time-series
-#' format.
-#' @return `data` without leading missing observations.
+#' @param data Data frame of time series.
+#' @param date_col Character, name of the date column.
+#' Default "target_end_date".
+#' @param value_col Character, name of the value column.
+#' Default "observation".
+#' @param .by Character vector, names of the columns
+#' identifying a series. Default
+#' `c("as_of", "location", "target")`.
+#' @return `data` without leading missing values.
 #' @noRd
-drop_leading_missing_observations <- function(data) {
+drop_leading_missing_observations <- function(
+  data,
+  date_col = "target_end_date",
+  value_col = "observation",
+  .by = c("as_of", "location", "target")
+) {
   return(
     data |>
-      dplyr::mutate(.row = dplyr::row_number()) |>
-      dplyr::arrange(.data$target_end_date) |>
-      dplyr::filter(
-        !dplyr::cumall(is.na(.data$observation)),
-        .by = c("as_of", "location", "target")
-      ) |>
-      dplyr::arrange(.data$.row) |>
-      dplyr::select(-".row")
+      dplyr::arrange(.data[[date_col]]) |>
+      dplyr::filter_out(
+        dplyr::cumall(is.na(.data[[value_col]])),
+        .by = tidyselect::all_of(.by)
+      )
   )
 }
 
 #' Get and format NHSN data for a given disease.
 #'
-#' This function pulls the NHSN hospital admissions data,
-#' formats and returns it in the hubverse format.
+#' This function pulls the NHSN hospital admissions
+#' data, formats and returns it in the hubverse format.
+#' Missing observations before each location's first
+#' reported week within the requested date range are
+#' dropped.
 #'
 #' @param disease Disease name ("covid" or "rsv").
 #' @param as_of As-of date of the data pull. Default is
@@ -160,6 +166,7 @@ get_hubverse_format_nhsn_data <- function(
     end_date = end_date
   ) |>
     format_nhsn_hubverse_data(disease, as_of) |>
+    drop_leading_missing_observations() |>
     dplyr::rename(!!date_col_name := "target_end_date")
 
   return(hubverse_format_nhsn_data)
@@ -305,8 +312,7 @@ update_hub_target_data <- function(
     disease,
     as_of = as_of,
     start_date = start_date_nhsn
-  ) |>
-    drop_leading_missing_observations()
+  )
 
   assert_data_up_to_date(
     nhsn_data,
