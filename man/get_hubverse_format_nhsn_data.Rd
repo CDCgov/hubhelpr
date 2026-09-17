@@ -33,6 +33,9 @@ in the output. Default is "target_end_date".}
 Data frame with formatted NHSN data.
 }
 \description{
-This function pulls the NHSN hospital admissions data,
-formats and returns it in the hubverse format.
+This function pulls the NHSN hospital admissions
+data, formats and returns it in the hubverse format.
+Missing observations before each location's first
+reported week within the requested date range are
+dropped.
 }
