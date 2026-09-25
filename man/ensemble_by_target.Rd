@@ -14,23 +14,28 @@ ensemble_by_target(
 )
 }
 \arguments{
-\item{weekly_models}{Data frame of model metadata for the week.
-Must include \code{model_id}, \code{designated} and \code{target} columns.}
+\item{weekly_models}{Data frame of model metadata
+for the week. Must include \code{model_id}, \code{designated}
+and \code{target} columns.}
 
-\item{weekly_forecasts}{Data frame of forecasts for the week.}
+\item{weekly_forecasts}{Data frame of forecasts for
+the week.}
 
-\item{target_name}{Character. Name of the target to ensemble,
-e.g., "wk inc covid hosp".}
+\item{target_name}{Character. Name of the target to
+ensemble, e.g., "wk inc covid hosp".}
 
-\item{ensemble_model_id}{Character. Model_id to assign to the ensemble
-output.}
+\item{ensemble_model_id}{Character. Model_id to
+assign to the ensemble output.}
 
-\item{ensemble_output_type}{Output type to ensemble. Default "quantile".}
+\item{ensemble_output_type}{Output type to ensemble.
+Default "quantile".}
 
-\item{ensemble_agg_fun}{Aggregation function to use. Default "median".}
+\item{ensemble_agg_fun}{Aggregation function to use.
+Default "median".}
 }
 \value{
-A data frame of ensemble forecasts for the specified target.
+A data frame of ensemble forecasts for the
+specified target.
 }
 \description{
 Create an ensemble forecast for a single target
