@@ -50,7 +50,7 @@ write_ref_date_summary <- function(
 
   fs::dir_create(output_folder_path)
 
-  assert_overwritable(output_filepath, overwrite_existing)
+  assert_empty_or_overwritable(output_filepath, overwrite_existing)
 
   forecasttools::write_tabular(summary_data, output_filepath)
   cli::cli_inform("File saved as: {output_filepath}.")

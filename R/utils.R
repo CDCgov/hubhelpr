@@ -250,7 +250,7 @@ get_target_data_type <- function(target) {
 #' @return Invisible NULL. Raises an error if `path` e
 #' xists and `overwrite_existing` is FALSE.
 #' @noRd
-assert_overwritable <- function(path, overwrite_existing) {
+assert_empty_or_overwritable <- function(path, overwrite_existing) {
   if (fs::file_exists(path) && !overwrite_existing) {
     cli::cli_abort(
       c(

@@ -145,7 +145,7 @@ generate_hub_ensemble <- function(
     ext = output_format
   )
 
-  assert_overwritable(output_filepath, overwrite_existing)
+  assert_empty_or_overwritable(output_filepath, overwrite_existing)
 
   if (!fs::dir_exists(output_dirpath)) {
     fs::dir_create(output_dirpath, recurse = TRUE)

@@ -541,7 +541,7 @@ write_webtext <- function(
     ext = "md"
   )
 
-  assert_overwritable(output_path, overwrite_existing)
+  assert_empty_or_overwritable(output_path, overwrite_existing)
 
   writeLines(web_text, output_path)
   cli::cli_inform("Webtext saved as: {output_path}.")
