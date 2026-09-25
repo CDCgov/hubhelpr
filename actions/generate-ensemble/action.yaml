@@ -1,5 +1,5 @@
 name: "Generate Ensemble Forecast"
-description: "Within a hub: generate ensemble forecasts, commit to a new branch, and create a pull request. Requires R and hubhelpr to be installed beforehand."
+description: "Within a hub: generate ensemble forecasts, commit to a new branch, and create a pull request. Fails without creating a pull request if an ensemble for the reference date is already present in the hub, unless 'overwrite_existing' is set. Requires R and hubhelpr to be installed beforehand."
 
 inputs:
   disease:
@@ -19,6 +19,10 @@ inputs:
     description: "JSON array of full target names for which to generate ensembles (e.g., '[\"wk inc covid hosp\", \"wk inc covid prop ed visits\"]'). Defaults to all unique targets in time-series data."
     required: false
     default: ""
+  overwrite_existing:
+    description: "Whether to regenerate the ensemble when one for the reference date is already present in the hub, e.g. from an earlier manual run that has since been merged ('true' or 'false'). Defaults to 'false', which fails the run rather than opening a duplicate pull request."
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -42,7 +46,8 @@ runs:
         }
         hubhelpr::generate_hub_ensemble(
           "${{ inputs.base_hub_path }}", ref_date,
-          "${{ inputs.disease }}", targets = targets
+          "${{ inputs.disease }}", targets = targets,
+          overwrite_existing = as.logical("${{ inputs.overwrite_existing }}")
         )
         writeLines(sprintf("date=%s", today), Sys.getenv("GITHUB_OUTPUT"))
 
