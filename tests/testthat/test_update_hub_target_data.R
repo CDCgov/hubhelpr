@@ -92,7 +92,7 @@ httptest2::with_mock_dir(mockdir_target_data, {
           identical.to = c("date", "observation", "location", "as_of", "target")
         )
         # results w/ custom date column should be
-        # identical to results without, xcept for the
+        # identical to results without, except for the
         # column name
         expect_equal(
           with_colname |> dplyr::rename("target_end_date" = "date"),
