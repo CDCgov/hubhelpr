@@ -541,14 +541,7 @@ write_webtext <- function(
     ext = "md"
   )
 
-  if (fs::file_exists(output_path) && !overwrite_existing) {
-    cli::cli_abort(
-      c(
-        "File already exists: {output_path}.",
-        "i" = "Use {.arg overwrite_existing = TRUE} to overwrite."
-      )
-    )
-  }
+  assert_empty_or_overwritable(output_path, overwrite_existing)
 
   writeLines(web_text, output_path)
   cli::cli_inform("Webtext saved as: {output_path}.")

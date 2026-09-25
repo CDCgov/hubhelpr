@@ -10,24 +10,33 @@ generate_hub_ensemble(
   reference_date,
   disease,
   targets = NULL,
-  output_format = "csv"
+  output_format = "csv",
+  overwrite_existing = FALSE
 )
 }
 \arguments{
 \item{base_hub_path}{Path to the base hub directory.}
 
-\item{reference_date}{Reference date (should be a Saturday).}
+\item{reference_date}{Reference date (should be a
+Saturday).}
 
 \item{disease}{Disease name ("covid" or "rsv").}
 
-\item{targets}{Character vector of full target names to
-generate ensembles for (e.g., c("wk inc covid hosp",
-"wk inc covid prop ed visits")). Defaults to NULL,
-which generates ensembles for all unique targets in
-the time-series data.}
+\item{targets}{Character vector of full target names
+to generate ensembles for (e.g., c("wk inc covid
+hosp", "wk inc covid prop ed visits")). Defaults to
+NULL, which generates ensembles for all unique
+targets in the time-series data.}
 
-\item{output_format}{Character, output file format. One
-of "csv", "tsv", or "parquet". Default: "csv".}
+\item{output_format}{Character, output file format.
+One of "csv", "tsv", or "parquet". Default: "csv".}
+
+\item{overwrite_existing}{Logical. If TRUE,
+regenerate the ensemble even when an ensemble file
+for \code{reference_date} is already present in the hub.
+If FALSE (default), error in that case, since the
+existing ensemble has (typically) already been
+reviewed and merged.}
 }
 \value{
 NULL. Writes ensemble forecast file to hub's
