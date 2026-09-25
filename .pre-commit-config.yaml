@@ -32,7 +32,7 @@ repos:
         exclude: package.lock.json
 
 -   repo: https://github.com/crate-ci/typos
-    rev: v1
+    rev: v1.50.2
     hooks:
     -   id: typos
         args: ["--force-exclude"]
