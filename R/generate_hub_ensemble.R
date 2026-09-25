@@ -9,16 +9,21 @@ task_id_cols <- c(
 
 #' Create an ensemble forecast for a single target
 #'
-#' @param weekly_models Data frame of model metadata for the week.
-#' Must include `model_id`, `designated` and `target` columns.
-#' @param weekly_forecasts Data frame of forecasts for the week.
-#' @param target_name Character. Name of the target to ensemble,
-#' e.g., "wk inc covid hosp".
-#' @param ensemble_model_id Character. Model_id to assign to the ensemble
-#' output.
-#' @param ensemble_output_type Output type to ensemble. Default "quantile".
-#' @param ensemble_agg_fun Aggregation function to use. Default "median".
-#' @return A data frame of ensemble forecasts for the specified target.
+#' @param weekly_models Data frame of model metadata
+#' for the week. Must include `model_id`, `designated`
+#' and `target` columns.
+#' @param weekly_forecasts Data frame of forecasts for
+#' the week.
+#' @param target_name Character. Name of the target to
+#' ensemble, e.g., "wk inc covid hosp".
+#' @param ensemble_model_id Character. Model_id to
+#' assign to the ensemble output.
+#' @param ensemble_output_type Output type to ensemble.
+#' Default "quantile".
+#' @param ensemble_agg_fun Aggregation function to use.
+#' Default "median".
+#' @return A data frame of ensemble forecasts for the
+#' specified target.
 ensemble_by_target <- function(
   weekly_models,
   weekly_forecasts,
@@ -73,15 +78,22 @@ ensemble_by_target <- function(
 #' reference date.
 #'
 #' @param base_hub_path Path to the base hub directory.
-#' @param reference_date Reference date (should be a Saturday).
+#' @param reference_date Reference date (should be a
+#' Saturday).
 #' @param disease Disease name ("covid" or "rsv").
-#' @param targets Character vector of full target names to
-#' generate ensembles for (e.g., c("wk inc covid hosp",
-#' "wk inc covid prop ed visits")). Defaults to NULL,
-#' which generates ensembles for all unique targets in
-#' the time-series data.
-#' @param output_format Character, output file format. One
-#' of "csv", "tsv", or "parquet". Default: "csv".
+#' @param targets Character vector of full target names
+#' to generate ensembles for (e.g., c("wk inc covid
+#' hosp", "wk inc covid prop ed visits")). Defaults to
+#' NULL, which generates ensembles for all unique
+#' targets in the time-series data.
+#' @param output_format Character, output file format.
+#' One of "csv", "tsv", or "parquet". Default: "csv".
+#' @param overwrite_existing Logical. If TRUE,
+#' regenerate the ensemble even when an ensemble file
+#' for `reference_date` is already present in the hub.
+#' If FALSE (default), error in that case, since the
+#' existing ensemble has (typically) already been
+#' reviewed and merged.
 #' @return NULL. Writes ensemble forecast file to hub's
 #' model-output directory.
 #' @export
@@ -90,7 +102,8 @@ generate_hub_ensemble <- function(
   reference_date,
   disease,
   targets = NULL,
-  output_format = "csv"
+  output_format = "csv",
+  overwrite_existing = FALSE
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
   reference_date <- lubridate::as_date(reference_date)
@@ -126,7 +139,13 @@ generate_hub_ensemble <- function(
   ensemble_model_name <- glue::glue("{hub_name}-ensemble")
 
   output_dirpath <- fs::path(base_hub_path, "model-output", ensemble_model_name)
-  output_filename <- glue::glue("{reference_date}-{hub_name}-ensemble")
+  output_filepath <- fs::path(
+    output_dirpath,
+    glue::glue("{reference_date}-{hub_name}-ensemble"),
+    ext = output_format
+  )
+
+  assert_overwritable(output_filepath, overwrite_existing)
 
   if (!fs::dir_exists(output_dirpath)) {
     fs::dir_create(output_dirpath, recurse = TRUE)
@@ -183,9 +202,6 @@ generate_hub_ensemble <- function(
   ) |>
     dplyr::bind_rows()
 
-  forecasttools::write_tabular(
-    median_ensemble_outputs,
-    fs::path(output_dirpath, output_filename, ext = output_format)
-  )
+  forecasttools::write_tabular(median_ensemble_outputs, output_filepath)
   return(invisible())
 }

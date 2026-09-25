@@ -238,3 +238,26 @@ get_target_data_type <- function(target) {
     TRUE ~ NA_character_
   )
 }
+
+
+#' Error if a file exists and overwriting was not
+#' requested.
+#'
+#' @param path Path to the file that would be written.
+#' @param overwrite_existing Logical. If TRUE, allow an
+#' existing file at `path` to be overwritten. If FALSE,
+#' error when `path` already exists.
+#' @return Invisible NULL. Raises an error if `path` e
+#' xists and `overwrite_existing` is FALSE.
+#' @noRd
+assert_overwritable <- function(path, overwrite_existing) {
+  if (fs::file_exists(path) && !overwrite_existing) {
+    cli::cli_abort(
+      c(
+        "File already exists: {path}.",
+        "i" = "Use {.arg overwrite_existing = TRUE} to overwrite."
+      )
+    )
+  }
+  return(invisible())
+}
