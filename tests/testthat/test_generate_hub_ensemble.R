@@ -33,19 +33,34 @@ test_that("generate_hub_ensemble() overwrites an existing ensemble on request", 
     "CovidHub-ensemble",
     "2026-04-18-CovidHub-ensemble.parquet"
   )
-  existing_ensemble <- forecasttools::read_tabular(output_path)
 
-  expect_no_error(
-    generate_hub_ensemble(
-      hub_path,
-      "2026-04-18",
-      "covid",
-      output_format = "parquet",
-      overwrite_existing = TRUE
-    )
+  fs::file_delete(output_path)
+  generate_hub_ensemble(
+    hub_path,
+    "2026-04-18",
+    "covid",
+    output_format = "parquet"
   )
+  expected_ensemble <- forecasttools::read_tabular(output_path)
+
+  # drop rows, so file left in place is distinguishable
+  # from a file actually is rewritten
+  forecasttools::write_tabular(
+    head(expected_ensemble, 5),
+    output_path
+  )
+  expect_identical(nrow(forecasttools::read_tabular(output_path)), 5L)
+
+  generate_hub_ensemble(
+    hub_path,
+    "2026-04-18",
+    "covid",
+    output_format = "parquet",
+    overwrite_existing = TRUE
+  )
+
   expect_identical(
-    colnames(forecasttools::read_tabular(output_path)),
-    colnames(existing_ensemble)
+    forecasttools::read_tabular(output_path),
+    expected_ensemble
   )
 })
