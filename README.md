@@ -28,7 +28,7 @@ Most hub maintenance runs through the composite actions in [`actions/`](actions/
 | `setup-hubhelpr` | set up R with `hubhelpr` installed (required to run first) |
 | `update-target-data` | pull NHSN/NSSP data and open a PR with updated target data |
 | `generate-baseline` | generate baseline forecasts and open a PR |
-| `generate-ensemble` | generate ensemble forecasts and open a PR |
+| `generate-ensemble` | generate ensemble forecasts and open a PR (errors instead if an ensemble for the reference date is already in the hub, unless `overwrite_existing: "true"`) |
 | `check-authorized-users` | validate PR changes for auto-approval |
 | `generate-viz-data` | generate weekly visualization data files and open a PR |
 
