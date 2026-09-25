@@ -11,7 +11,6 @@ generate_hub_report(
   hub_reports_path,
   base_hub_path = NULL,
   horizons = c(0, 1, 2),
-  population_data = hubhelpr::population_data,
   excluded_locations = NULL,
   targets = NULL,
   n_models_for_ens_reporting = NULL,
@@ -39,11 +38,6 @@ hub directory.}
 
 \item{horizons}{integer vector, forecast horizons
 to include in the output. Default: c(0, 1, 2).}
-
-\item{population_data}{data frame with columns
-"location" and "population". Used to compute per-population
-metrics such as rates per 100k from rate counts.
-Default: \link{population_data}.}
 
 \item{excluded_locations}{NULL, character vector, or
 named list of US state/territory abbreviations to

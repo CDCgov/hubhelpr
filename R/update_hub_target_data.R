@@ -63,8 +63,8 @@ merge_target_data <- function(
 
 #' Get and format NHSN data for a given disease.
 #'
-#' This function pulls the NHSN hospital admissions data,
-#' formats and returns it in the hubverse format.
+#' This function pulls the NHSN hospital admissions
+#' data, formats and returns it in the hubverse format.
 #'
 #' @param disease Disease name ("covid" or "rsv").
 #' @param as_of As-of date of the data pull. Default is
@@ -72,12 +72,11 @@ merge_target_data <- function(
 #' @param start_date First week-ending
 #' date to include for the NHSN dataset. Default value
 #' is NULL (no filtering).
-#' @param end_date Last week-ending
-#' date to include for the NHSN dataset. Default value
-#' is NULL (no filtering).
-#' @param date_col_name Character. Name for the date column
-#' in the output. Default is "target_end_date".
-#'
+#' @param end_date Last week-ending date to include for
+#' the NHSN dataset. Default value is NULL (no
+#' filtering).
+#' @param date_col_name Character. Name for the date
+#' column in the output. Default is "target_end_date".
 #' @return Data frame with formatted NHSN data.
 #' @export
 get_hubverse_format_nhsn_data <- function(
