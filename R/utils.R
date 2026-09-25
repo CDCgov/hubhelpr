@@ -247,8 +247,8 @@ get_target_data_type <- function(target) {
 #' @param overwrite_existing Logical. If TRUE, allow an
 #' existing file at `path` to be overwritten. If FALSE,
 #' error when `path` already exists.
-#' @return Invisible NULL. Raises an error if `path` e
-#' xists and `overwrite_existing` is FALSE.
+#' @return Invisible NULL. Raises an error if `path`
+#' exists and `overwrite_existing` is FALSE.
 #' @noRd
 assert_empty_or_overwritable <- function(path, overwrite_existing) {
   if (fs::file_exists(path) && !overwrite_existing) {
