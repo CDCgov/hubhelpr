@@ -74,7 +74,7 @@ runs:
         }
 
         excluded_locations <- jsonlite::fromJSON(
-          "${{ inputs.excluded_locations }}"
+          '${{ inputs.excluded_locations }}'
         )
 
         input_n_models <- "${{ inputs.n_models_for_ens_reporting }}"
@@ -94,7 +94,7 @@ runs:
           n_models_for_ens_reporting = n_models_for_ens_reporting,
           observed_data_use_hub = as.logical("${{ inputs.observed_data_use_hub }}"),
           observed_data_as_of = "${{ inputs.observed_data_as_of }}",
-          overwrite_existing = as.logical("{{ inputs.overwrite_existing }}")
+          overwrite_existing = as.logical("${{ inputs.overwrite_existing }}")
         )
 
 
