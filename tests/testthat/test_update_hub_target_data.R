@@ -38,7 +38,11 @@ httptest2::with_mock_dir(mockdir_target_data, {
       "end date, and date col name"
     ),
     {
-      test_get_hubverse_format_data_fn <- function(fn, full_data) {
+      test_get_hubverse_format_data_fn <- function(
+        fn,
+        full_data,
+        drop_leading = identity
+      ) {
         custom_end_date <- lubridate::ymd("2026-01-01")
         custom_start_date <- lubridate::ymd("2025-01-01")
 
@@ -70,7 +74,8 @@ httptest2::with_mock_dir(mockdir_target_data, {
           dplyr::filter(
             full_data,
             .data$target_end_date >= !!custom_start_date
-          ),
+          ) |>
+            drop_leading(),
           with_start
         )
         expect_equal(
@@ -86,15 +91,20 @@ httptest2::with_mock_dir(mockdir_target_data, {
           names(with_colname),
           identical.to = c("date", "observation", "location", "as_of", "target")
         )
-        ## results with a custom date column should be identical to results without,
-        ## except for the column name itself
+        # results w/ custom date column should be
+        # identical to results without, except for the
+        # column name
         expect_equal(
           with_colname |> dplyr::rename("target_end_date" = "date"),
           with_bounds
         )
       }
 
-      test_get_hubverse_format_data_fn(get_hubverse_format_nhsn_data, nhsn_all)
+      test_get_hubverse_format_data_fn(
+        get_hubverse_format_nhsn_data,
+        nhsn_all,
+        drop_leading = drop_leading_missing_observations
+      )
       test_get_hubverse_format_data_fn(
         purrr::partial(
           get_hubverse_format_nssp_data,
@@ -180,7 +190,8 @@ httptest2::with_mock_dir(mockdir_target_data, {
       output_file
     )
     manual_ts <- dplyr::bind_rows(
-      dplyr::filter(nhsn_all, .data$target_end_date >= !!nhsn_start_date),
+      dplyr::filter(nhsn_all, .data$target_end_date >= !!nhsn_start_date) |>
+        drop_leading_missing_observations(),
       dplyr::filter(nssp_all, .data$target_end_date >= !!nssp_start_date)
     ) |>
       filter_to_expected_locations(
@@ -389,4 +400,60 @@ httptest2::with_mock_dir(mockdir_target_data, {
     )
     expect_equal(result$observation, new_data$observation)
   })
+})
+
+test_that("drop_leading_missing_observations drops only leading missing values per series", {
+  series <- tidyr::crossing(
+    as_of = lubridate::as_date(c("2026-09-02", "2026-09-09")),
+    location = c("01", "02"),
+    target = "wk inc rsv hosp",
+    target_end_date = lubridate::as_date("2023-11-04") + 7 * 0:4
+  ) |>
+    dplyr::mutate(
+      observation = dplyr::case_when(
+        # location 01: two leading missing weeks,
+        # then one inner gap
+        location == "01" & target_end_date <= "2023-11-11" ~ NA_real_,
+        location == "01" & target_end_date == "2023-11-25" ~ NA_real_,
+        # location 02: never reported in the earlier vintage
+        location == "02" & as_of == "2026-09-02" ~ NA_real_,
+        .default = 1
+      )
+    )
+
+  result <- drop_leading_missing_observations(series)
+
+  expect_equal(names(result), names(series))
+  expect_equal(
+    dplyr::count(result, as_of, location, name = "rows"),
+    tibble::tribble(
+      ~as_of                           , ~location , ~rows ,
+      lubridate::as_date("2026-09-02") , "01"      , 3L    ,
+      lubridate::as_date("2026-09-09") , "01"      , 3L    ,
+      lubridate::as_date("2026-09-09") , "02"      , 5L
+    )
+  )
+  # keep inner gap
+  expect_equal(sum(is.na(result$observation)), 2L)
+
+  renamed <- dplyr::rename(
+    series,
+    date = target_end_date,
+    value = observation,
+    geo = location
+  )
+  expect_equal(
+    drop_leading_missing_observations(
+      renamed,
+      date_col = "date",
+      value_col = "value",
+      .by = c("as_of", "geo", "target")
+    ),
+    dplyr::rename(
+      result,
+      date = target_end_date,
+      value = observation,
+      geo = location
+    )
+  )
 })
