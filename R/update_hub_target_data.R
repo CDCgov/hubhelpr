@@ -78,7 +78,7 @@ merge_target_data <- function(
 #' @return Data frame with columns `target_end_date`,
 #' `observation`, `location`, `as_of`, and `target`.
 #' @noRd
-format_nhsn_hubverse_data <- function(raw_nhsn_data, disease, as_of) {
+format_nhsn_data_as_hubverse <- function(raw_nhsn_data, disease, as_of) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
   nhsn_col_name <- get_nhsn_col_name(disease)
 
@@ -165,7 +165,7 @@ get_hubverse_format_nhsn_data <- function(
     start_date = start_date,
     end_date = end_date
   ) |>
-    format_nhsn_hubverse_data(disease, as_of) |>
+    format_nhsn_data_as_hubverse(disease, as_of) |>
     drop_leading_missing_observations() |>
     dplyr::rename(!!date_col_name := "target_end_date")
 
