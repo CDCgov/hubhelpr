@@ -1,7 +1,7 @@
 name: "Set Up hubhelpr"
 description: "This action sets up R with the hubhelpr package installed."
 inputs:
-  hubhelpr_ref:
+  version:
     description: >
       Git reference (branch, tag, or commit SHA) of
       CDCgov/hubhelpr to install. If this is pinned to,
@@ -23,4 +23,4 @@ runs:
       with:
         pak-version: "devel"
         packages: |
-          github::cdcgov/hubhelpr@${{ inputs.hubhelpr_ref }}
+          github::cdcgov/hubhelpr@${{ inputs.version }}
