@@ -25,7 +25,7 @@ Most hub maintenance runs through the composite actions in [`actions/`](actions/
 
 | Action | Purpose |
 |---|---|
-| `setup-hubhelpr` | set up R with `hubhelpr` installed (required to run first) |
+| `setup-hubhelpr` | set up R with `hubhelpr` installed (required to run first); `version` pins the version installed, defaulting to `main` |
 | `update-target-data` | pull NHSN/NSSP data and open a PR with updated target data |
 | `generate-baseline` | generate baseline forecasts and open a PR |
 | `generate-ensemble` | generate ensemble forecasts and open a PR (errors instead if an ensemble for the reference date is already in the hub, unless `overwrite_existing: "true"`) |
@@ -34,6 +34,8 @@ Most hub maintenance runs through the composite actions in [`actions/`](actions/
 
 ```yaml
 - uses: cdcgov/hubhelpr/actions/setup-hubhelpr@main
+  with:
+    version: "*release" # latest release, can also pin a tag, branch, or a commit hash
 - uses: cdcgov/hubhelpr/actions/generate-baseline@main
   with:
     disease: "covid" # 'covid' or 'rsv'
