@@ -35,9 +35,7 @@ Most hub maintenance runs through the composite actions in [`actions/`](actions/
 ```yaml
 - uses: cdcgov/hubhelpr/actions/setup-hubhelpr@main
   with:
-    # omit to track main; pin to a tag or SHA to hold
-    # this caller on a known version of the package
-    version: "main"
+    version: "*release" # latest release, can also pin a tag, branch, or a commit hash
 - uses: cdcgov/hubhelpr/actions/generate-baseline@main
   with:
     disease: "covid" # 'covid' or 'rsv'
