@@ -4,9 +4,7 @@ inputs:
   version:
     description: >
       Git reference (branch, tag, or commit SHA) of
-      CDCgov/hubhelpr to install. If this is pinned to,
-      a caller on a known version is held, so merges to
-      main to do not change what the caller produces.
+      CDCgov/hubhelpr to install.
     required: false
     default: "main"
 runs:
