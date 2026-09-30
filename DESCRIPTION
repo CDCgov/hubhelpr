@@ -1,6 +1,6 @@
 Package: hubhelpr
 Title: Helper functions for CDC hubs maintenance
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R:
     c(person("Subekshya", "Bidari",
     email = "zib2@cdc.gov",
