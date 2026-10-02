@@ -8,7 +8,6 @@ summarize_ref_date_forecasts(
   reference_date,
   base_hub_path,
   disease,
-  population_data,
   horizons_to_include = c(0, 1, 2),
   excluded_locations = NULL,
   targets = NULL,
@@ -24,9 +23,6 @@ directory.}
 
 \item{disease}{character, disease name ("covid" or
 "rsv"). Used to derive hub name and file prefix.}
-
-\item{population_data}{data frame with columns "location"
-and "population". Adds population-based calculations.}
 
 \item{horizons_to_include}{integer vector, horizons to
 include in the output. Default: c(0, 1, 2).}
