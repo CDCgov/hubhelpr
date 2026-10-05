@@ -116,5 +116,3 @@ test_that("ensemble is correctly dated, and quantiles are monotone", {
   expect_true(all(checks$multiple_quantiles))
   expect_true(all(checks$nondecreasing))
 })
-
- 
