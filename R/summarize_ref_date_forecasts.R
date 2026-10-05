@@ -165,5 +165,41 @@ summarize_ref_date_forecasts <- function(
       forecast_due_date_formatted = format(.data$forecast_due_date, "%B %d, %Y")
     )
 
+  # get PRISM category probabilities using the set of
+  # hub quantiles; left NA for certain targets
+  # (e.g. hospital admissions)
+  category_prob_data <- current_forecasts |>
+    dplyr::filter(is_ed_target(.data$target)) |>
+    category_probs_from_quantiles(
+      disease = get_disease_name(disease),
+      as_of = reference_date
+    ) |>
+    tidyr::pivot_wider(
+      names_from = "prism_cat",
+      values_from = "prob",
+      names_expand = TRUE,
+      values_fill = 0,
+      names_glue = "category_prob_{prism_cat}"
+    ) |>
+    dplyr::rename_with(
+      .fn = \(x) {
+        x |> stringr::str_to_lower() |> stringr::str_replace_all(" ", "_")
+      },
+      .cols = tidyselect::starts_with("category_prob_")
+    ) |>
+    dplyr::mutate(target_end_date = as.Date(.data$target_end_date))
+
+  forecasts_data <- forecasts_data |>
+    dplyr::left_join(
+      category_prob_data,
+      by = c("location", "target", "target_end_date")
+    )
+
+  missing_cat_cols <- setdiff(
+    category_prob_colnames(),
+    names(forecasts_data)
+  )
+  forecasts_data[missing_cat_cols] <- NA_real_
+
   return(forecasts_data)
 }
