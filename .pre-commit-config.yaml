@@ -32,13 +32,13 @@ repos:
         exclude: package.lock.json
 
 -   repo: https://github.com/crate-ci/typos
-    rev: v1.50.3
+    rev: typos-dict-v0.14.2
     hooks:
     -   id: typos
         args: ["--force-exclude"]
 
 -   repo: https://github.com/posit-dev/air-pre-commit
-    rev: 0.11.0
+    rev: 0.12.0
     hooks:
       - id: air-format
 
