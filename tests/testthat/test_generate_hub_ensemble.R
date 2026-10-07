@@ -90,7 +90,6 @@ test_that("ensemble is correctly dated, and quantiles are monotone. Lastly, all 
   expect_true(fs::file_exists(output_path))
   forecasts <- forecasttools::read_tabular(output_path)
 
-
   expect_gt(nrow(forecasts), 0L)
   expect_true(all(is.finite(forecasts$value)))
 
