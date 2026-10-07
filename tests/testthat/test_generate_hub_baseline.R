@@ -88,5 +88,3 @@ test_that("baseline quantiles are nondecreasing", {
   expect_true(all(checks$nondecreasing))
 
 })
-
-  

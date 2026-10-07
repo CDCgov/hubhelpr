@@ -65,7 +65,7 @@ test_that("generate_hub_ensemble() overwrites an existing ensemble on request", 
   )
 })
 
-test_that("ensemble is correctly dated, and quantiles are monotone", {
+test_that("ensemble is correctly dated, and quantiles are monotone. Lastly, all locations and targets are accounted for", {
   hub_path <- fs::path(withr::local_tempdir(), "covidhub")
   fs::dir_copy(example_cfa_hub, hub_path)
   reference_date <- as.Date("2026-04-18")
@@ -89,6 +89,8 @@ test_that("ensemble is correctly dated, and quantiles are monotone", {
 
   expect_true(fs::file_exists(output_path))
   forecasts <- forecasttools::read_tabular(output_path)
+
+
   expect_gt(nrow(forecasts), 0L)
   expect_true(all(is.finite(forecasts$value)))
 
@@ -115,6 +117,32 @@ test_that("ensemble is correctly dated, and quantiles are monotone", {
 
   expect_true(all(checks$multiple_quantiles))
   expect_true(all(checks$nondecreasing))
+
+  expected_n_locations <- c(
+    "wk inc covid hosp" = 53L,
+    "wk inc covid prop ed visits" = 51L
+  )
+
+  counts <- forecasts |>
+    dplyr::group_by(target) |>
+    dplyr::summarise(
+      n_locations = dplyr::n_distinct(location),
+      n_rows = dplyr::n(),
+      .groups = "drop"
+    )
+
+  expect_setequal(counts$target, names(expected_n_locations))
+  expected <- c(53L, 51L)
+
+  expect_equal(counts$n_locations, expected)
+  expect_equal(counts$n_rows, expected * 5L * 23L)
+  expect_equal(nrow(forecasts), sum(expected_n_locations) * 5L * 23L)
 })
+
+
+
+  
+
+
 
  
