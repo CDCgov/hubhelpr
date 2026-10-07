@@ -1,4 +1,3 @@
-# First, let us create tests for the CovidHub baseline:
 test_that("baseline hindcasts have the correct target date, also that all quantiles at horizon -1 have unique value and in total we have 23 quantiles", {
   base_hub_path <- fs::path(withr::local_tempdir(), "covidhub")
   fs::dir_copy(example_cfa_hub, base_hub_path)
