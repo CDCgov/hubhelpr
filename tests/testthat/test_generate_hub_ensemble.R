@@ -117,32 +117,4 @@ test_that("ensemble is correctly dated, and quantiles are monotone. Lastly, all 
 
   expect_true(all(checks$multiple_quantiles))
   expect_true(all(checks$nondecreasing))
-
-  expected_n_locations <- c(
-    "wk inc covid hosp" = 53L,
-    "wk inc covid prop ed visits" = 51L
-  )
-
-  counts <- forecasts |>
-    dplyr::group_by(target) |>
-    dplyr::summarise(
-      n_locations = dplyr::n_distinct(location),
-      n_rows = dplyr::n(),
-      .groups = "drop"
-    )
-
-  expect_setequal(counts$target, names(expected_n_locations))
-  expected <- c(53L, 51L)
-
-  expect_equal(counts$n_locations, expected)
-  expect_equal(counts$n_rows, expected * 5L * 23L)
-  expect_equal(nrow(forecasts), sum(expected_n_locations) * 5L * 23L)
 })
-
-
-
-  
-
-
-
- 

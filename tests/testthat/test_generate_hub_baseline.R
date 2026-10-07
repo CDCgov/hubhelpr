@@ -1,4 +1,3 @@
-# First, let us create tests for the CovidHub baseline:
 test_that("baseline hindcasts have the correct target date, also that all quantiles at horizon -1 have unique value and in total we have 23 quantiles", {
   base_hub_path <- fs::path(withr::local_tempdir(), "covidhub")
   fs::dir_copy(example_cfa_hub, base_hub_path)
@@ -21,18 +20,18 @@ test_that("baseline hindcasts have the correct target date, also that all quanti
     "covid",
     output_format = "csv"
   )
-# after generating hub baseline file, check its existence 
+  # after generating hub baseline file, check its existence
   expect_true(fs::file_exists(output_path))
   forecasts <- forecasttools::read_tabular(output_path)
 
   hindcasts <- dplyr::filter(forecasts, horizon == -1L)
-# now checking that all forecasts/hindcasts have the correct target date -- one week prior to the current reference date
+  # now checking that all forecasts/hindcasts have the correct target date -- one week prior to the current reference date
   expect_true(all(as.Date(forecasts$reference_date) == reference_date))
   expect_setequal(forecasts$horizon, -1:3)
   expect_equal(
-  as.Date(forecasts$target_end_date),
-  reference_date + 7L * forecasts$horizon
-)
+    as.Date(forecasts$target_end_date),
+    reference_date + 7L * forecasts$horizon
+  )
   expect_true(all(
     as.Date(hindcasts$target_end_date) == reference_date - 7L
   ))
@@ -53,18 +52,19 @@ test_that("baseline hindcasts have the correct target date, also that all quanti
 
 # now a final check that guarantees all predicted quantiles do not cross for each group of forecasts:
 
-test_that("baseline quantiles are nondecreasing", {  
-
+test_that("baseline quantiles are nondecreasing", {
   base_hub_path <- fs::path(withr::local_tempdir(), "covidhub")
   fs::dir_copy(example_cfa_hub, base_hub_path)
 
   output_path <- fs::path(
-      base_hub_path, "model-output", "CovidHub-baseline",
-      "2026-04-18-CovidHub-baseline.csv"
-    )
+    base_hub_path,
+    "model-output",
+    "CovidHub-baseline",
+    "2026-04-18-CovidHub-baseline.csv"
+  )
   if (fs::file_exists(output_path)) {
-      fs::file_delete(output_path)
-    }
+    fs::file_delete(output_path)
+  }
 
   generate_hub_baseline(base_hub_path, "2026-04-18", "covid")
   forecasts <- forecasttools::read_tabular(output_path)
@@ -76,7 +76,13 @@ test_that("baseline quantiles are nondecreasing", {
   expect_false(anyNA(ordered$quantile_level))
 
   checks <- ordered |>
-    dplyr::group_by(reference_date, location, target, horizon, target_end_date) |>
+    dplyr::group_by(
+      reference_date,
+      location,
+      target,
+      horizon,
+      target_end_date
+    ) |>
     dplyr::arrange(quantile_level, .by_group = TRUE) |>
     dplyr::summarise(
       multiple_quantiles = dplyr::n_distinct(quantile_level) > 1L,
@@ -87,4 +93,23 @@ test_that("baseline quantiles are nondecreasing", {
   expect_true(all(checks$multiple_quantiles))
   expect_true(all(checks$nondecreasing))
 
+  expected_n_locations <- c(
+    "wk inc covid hosp" = 53L,
+    "wk inc covid prop ed visits" = 51L
+  )
+
+  counts <- forecasts |>
+    dplyr::group_by(target) |>
+    dplyr::summarise(
+      n_locations = dplyr::n_distinct(location),
+      n_rows = dplyr::n(),
+      .groups = "drop"
+    )
+
+  expect_setequal(counts$target, names(expected_n_locations))
+  expected <- c(53L, 51L)
+
+  expect_equal(counts$n_locations, expected)
+  expect_equal(counts$n_rows, expected * 5L * 23L)
+  expect_equal(nrow(forecasts), sum(expected_n_locations) * 5L * 23L)
 })
