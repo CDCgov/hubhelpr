@@ -142,12 +142,11 @@ drop_leading_missing_observations <- function(
 #' @param start_date First week-ending
 #' date to include for the NHSN dataset. Default value
 #' is NULL (no filtering).
-#' @param end_date Last week-ending
-#' date to include for the NHSN dataset. Default value
-#' is NULL (no filtering).
-#' @param date_col_name Character. Name for the date column
-#' in the output. Default is "target_end_date".
-#'
+#' @param end_date Last week-ending date to include for
+#' the NHSN dataset. Default value is NULL (no
+#' filtering).
+#' @param date_col_name Character. Name for the date
+#' column in the output. Default is "target_end_date".
 #' @return Data frame with formatted NHSN data.
 #' @export
 get_hubverse_format_nhsn_data <- function(

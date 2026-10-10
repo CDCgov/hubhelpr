@@ -22,12 +22,12 @@ the system date as determined by \code{\link[lubridate:today]{lubridate::today()
 date to include for the NHSN dataset. Default value
 is NULL (no filtering).}
 
-\item{end_date}{Last week-ending
-date to include for the NHSN dataset. Default value
-is NULL (no filtering).}
+\item{end_date}{Last week-ending date to include for
+the NHSN dataset. Default value is NULL (no
+filtering).}
 
-\item{date_col_name}{Character. Name for the date column
-in the output. Default is "target_end_date".}
+\item{date_col_name}{Character. Name for the date
+column in the output. Default is "target_end_date".}
 }
 \value{
 Data frame with formatted NHSN data.
@@ -35,7 +35,10 @@ Data frame with formatted NHSN data.
 \description{
 This function pulls the NHSN hospital admissions
 data, formats and returns it in the hubverse format.
+<<<<<<< HEAD
+=======
 Missing observations before each location's first
 reported week within the requested date range are
 dropped.
+>>>>>>> origin/main
 }

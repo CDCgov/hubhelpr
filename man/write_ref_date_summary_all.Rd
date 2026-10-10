@@ -10,7 +10,6 @@ write_ref_date_summary_all(
   hub_reports_path,
   disease,
   horizons_to_include = c(0, 1, 2),
-  population_data = hubhelpr::population_data,
   excluded_locations = NULL,
   output_format = "csv",
   targets = NULL,
@@ -33,9 +32,6 @@ hub reports directory.}
 
 \item{horizons_to_include}{integer vector, horizons to
 include in the output. Default: c(0, 1, 2).}
-
-\item{population_data}{data frame with columns
-"location" and "population". Default: \link{population_data}.}
 
 \item{excluded_locations}{NULL, character vector, or
 named list of US state/territory abbreviations to
