@@ -1,5 +1,10 @@
 # hubhelpr 0.1.0.9000
 
+## Breaking Changes
+
+- Removed the `nssp_update_local` argument from `update_hub_target_data()` and `get_hubverse_format_nssp_data()` and the matching input from the `update-target-data` composite action. NSSP emergency department visit data is now always pulled from the `data.cdc.gov` endpoint. The hub-hosted `auxiliary-data/nssp-raw-data/latest.parquet` that this argument read was removed from both hubs on 2026-10-12. Callers passing `nssp_update_local` now error on an unused argument. Those passing `FALSE`, including both hubs' `update-target-data.yaml`, get unchanged behaviour.
+- `write_viz_target_data(use_hub_data = FALSE)` previously read NSSP data from that same local file. It now pulls from `data.cdc.gov`, which changes the vintage of observed data in reports generated.
+
 # hubhelpr 0.1.0
 
 This is the first release of `hubhelpr`.

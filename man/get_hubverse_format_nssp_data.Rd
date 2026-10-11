@@ -8,7 +8,6 @@ get_hubverse_format_nssp_data(
   disease,
   base_hub_path,
   as_of = lubridate::today(),
-  nssp_update_local = FALSE,
   start_date = NULL,
   end_date = NULL,
   date_col_name = "target_end_date"
@@ -21,10 +20,6 @@ get_hubverse_format_nssp_data(
 
 \item{as_of}{As-of date of the data pull. Default is
 the system date as determined by \code{\link[lubridate:today]{lubridate::today()}}.}
-
-\item{nssp_update_local}{Logical. Whether to update NSSP
-data from local file \code{auxiliary-data/latest.parquet}
-(default: FALSE).}
 
 \item{start_date}{First week-ending
 date to include for the NSSP dataset. Default value

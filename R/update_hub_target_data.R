@@ -181,9 +181,6 @@ get_hubverse_format_nhsn_data <- function(
 #' @param base_hub_path Path to the base hub directory.
 #' @param as_of As-of date of the data pull. Default is
 #' the system date as determined by [lubridate::today()].
-#' @param nssp_update_local Logical. Whether to update NSSP
-#' data from local file `auxiliary-data/latest.parquet`
-#' (default: FALSE).
 #' @param start_date First week-ending
 #' date to include for the NSSP dataset. Default value
 #' is NULL (no filtering).
@@ -199,7 +196,6 @@ get_hubverse_format_nssp_data <- function(
   disease,
   base_hub_path,
   as_of = lubridate::today(),
-  nssp_update_local = FALSE,
   start_date = NULL,
   end_date = NULL,
   date_col_name = "target_end_date"
@@ -208,35 +204,13 @@ get_hubverse_format_nssp_data <- function(
 
   nssp_col_name <- get_nssp_col_name(disease)
 
-  if (nssp_update_local) {
-    nssp_file_path <- fs::path(
-      base_hub_path,
-      "auxiliary-data",
-      "nssp-raw-data",
-      "latest",
-      ext = "parquet"
-    )
-
-    raw_nssp_data <- forecasttools::read_tabular(nssp_file_path) |>
-      dplyr::filter(
-        .data$county == "All",
-        forecasttools::nullable_comparison(.data$week_end, ">=", !!start_date),
-        forecasttools::nullable_comparison(.data$week_end, "<=", !!end_date)
-      ) |>
-      dplyr::select(
-        "week_end",
-        "geography",
-        tidyselect::all_of(nssp_col_name)
-      )
-  } else {
-    raw_nssp_data <- forecasttools::pull_data_cdc_gov_dataset(
-      dataset = "nssp_prop_ed_visits",
-      columns = c(nssp_col_name, "geography"),
-      locations = "All",
-      start_date = start_date,
-      end_date = end_date
-    )
-  }
+  raw_nssp_data <- forecasttools::pull_data_cdc_gov_dataset(
+    dataset = "nssp_prop_ed_visits",
+    columns = c(nssp_col_name, "geography"),
+    locations = "All",
+    start_date = start_date,
+    end_date = end_date
+  )
 
   hubverse_format_nssp_data <- raw_nssp_data |>
     dplyr::mutate(
@@ -283,9 +257,6 @@ get_hubverse_format_nssp_data <- function(
 #' (no exclusions).
 #' @param legacy_file Logical. Whether to write legacy
 #' CSV output (default: FALSE).
-#' @param nssp_update_local Logical. Whether to update NSSP
-#' data from local hub file `auxiliary-data/latest.parquet`
-#' (default: FALSE).
 #' @param overwrite_existing Logical. If TRUE, overwrite
 #' existing rows that share key columns (target_end_date, location,
 #' as_of, target) with the new data. If FALSE (default),
@@ -303,7 +274,6 @@ update_hub_target_data <- function(
   start_date_nssp = NULL,
   excluded_locations = NULL,
   legacy_file = FALSE,
-  nssp_update_local = FALSE,
   overwrite_existing = FALSE
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv"))
@@ -326,7 +296,6 @@ update_hub_target_data <- function(
     disease,
     base_hub_path,
     as_of = as_of,
-    nssp_update_local = nssp_update_local,
     start_date = start_date_nssp
   )
 
