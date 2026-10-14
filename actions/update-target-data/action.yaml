@@ -22,10 +22,6 @@ inputs:
     description: "Whether to write legacy CSV output ('true' or 'false')."
     required: false
     default: "false"
-  nssp_update_local:
-    description: "Whether to update NSSP data from local file ('true' or 'false')."
-    required: false
-    default: "false"
   overwrite_existing:
     description: "Whether to overwrite existing target data files ('true' or 'false')."
     required: false
@@ -57,7 +53,6 @@ runs:
           as_of = today,
           excluded_locations = excluded_locations,
           legacy_file = as.logical("${{ inputs.legacy_file }}"),
-          nssp_update_local = as.logical("${{ inputs.nssp_update_local }}"),
           overwrite_existing = as.logical("${{ inputs.overwrite_existing }}")
         )
         hubhelpr::generate_oracle_output("${{ inputs.base_hub_path }}")

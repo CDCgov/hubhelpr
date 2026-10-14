@@ -74,8 +74,7 @@ write_viz_target_data <- function(
       disease,
       base_hub_path,
       start_date = start_date,
-      end_date = end_date,
-      nssp_update_local = TRUE
+      end_date = end_date
     )
     target_data <- dplyr::bind_rows(nhsn_data, nssp_data) |>
       filter_to_expected_locations(

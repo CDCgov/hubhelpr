@@ -13,6 +13,7 @@ Useful links:
 \itemize{
   \item \url{https://cdcgov.github.io/hubhelpr/}
   \item \url{https://github.com/cdcgov/hubhelpr}
+  \item Report bugs at \url{https://github.com/cdcgov/hubhelpr/issues}
 }
 
 }

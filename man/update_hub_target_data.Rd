@@ -12,7 +12,6 @@ update_hub_target_data(
   start_date_nssp = NULL,
   excluded_locations = NULL,
   legacy_file = FALSE,
-  nssp_update_local = FALSE,
   overwrite_existing = FALSE
 )
 }
@@ -42,10 +41,6 @@ to character vectors of abbreviations. Default: NULL
 
 \item{legacy_file}{Logical. Whether to write legacy
 CSV output (default: FALSE).}
-
-\item{nssp_update_local}{Logical. Whether to update NSSP
-data from local hub file \code{auxiliary-data/latest.parquet}
-(default: FALSE).}
 
 \item{overwrite_existing}{Logical. If TRUE, overwrite
 existing rows that share key columns (target_end_date, location,
