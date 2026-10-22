@@ -1,4 +1,4 @@
-# hubhelpr 0.1.0.9000
+# hubhelpr 0.2.0
 
 ## Breaking Changes
 
