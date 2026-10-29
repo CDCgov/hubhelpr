@@ -10,8 +10,8 @@ parse_ens_min_designated_models_file(path)
 \item{path}{character, path to the minimums file.}
 }
 \value{
-A tibble with columns \code{reference_date} and
-\code{n_models}, ordered by \code{reference_date}.
+A tibble with columns \code{reference_date} and \code{n_models}, ordered
+by \code{reference_date}.
 }
 \description{
 The file is TOML and keyed by the reference date

@@ -14,16 +14,16 @@ forecast hub reports directory.}
 \item{disease}{character, disease name ("covid" or
 "rsv").}
 
-\item{reference_date}{character or Date, the reference
-date to look up.}
+\item{reference_date}{character or Date, the
+reference date to look up.}
 }
 \value{
 A JSON string. An empty entry serializes to
 \code{"[]"}, matching the action's own default.
 }
 \description{
-The action takes \code{excluded_locations} as a JSON string,
-so this is the bridge from the TOML file to the
-workflow. TOML is the storage format because it permits
-comments.
+The action takes \code{excluded_locations} as a JSON
+string, so this is the bridge from the TOML file to
+the workflow. TOML is the storage format because it
+permits comments.
 }

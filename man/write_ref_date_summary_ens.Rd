@@ -35,33 +35,35 @@ hub reports directory.}
 to include in the output. Default: c(0, 1, 2).}
 
 \item{population_data}{data frame with columns
-"location" and "population". Default: population_data.}
+"location" and "population". Default:
+population_data.}
 
-\item{excluded_locations}{NULL, character vector, or
-named list of US state/territory abbreviations to
+\item{excluded_locations}{\code{NULL}, character vector,
+or named list of US state/territory abbreviations to
 exclude. If a character vector, locations are
 excluded across all targets. If a named list, names
 should be target names (or "all" for global
 exclusions) mapping to character vectors of
-abbreviations. Default: NULL (no exclusions).}
+abbreviations. Default: \code{NULL} (no exclusions).}
 
 \item{output_format}{character, output file format.
 One of "csv", "tsv", or "parquet". Default: "csv".}
 
 \item{targets}{character vector, target name(s) to
-filter forecasts. If NULL (default), does not filter
-by target.}
+filter forecasts. If \code{NULL} (default), does not
+filter by target.}
 
 \item{n_models_for_ens_reporting}{integer, minimum
 number of designated model submissions required to
 include an ensemble forecast in the report. Default:
-NULL, which uses the minimum designated for
-\code{reference_date}, so that regenerating an older report
-applies the rule it was published under rather than
-today's. See \code{\link[=get_reference_date_ens_minimum]{get_reference_date_ens_minimum()}}.}
+\code{NULL}, which uses the minimum designated for
+\code{reference_date}, so that regenerating an older
+report applies the rule it was published under
+rather than today's. See
+\code{\link[=get_reference_date_ens_minimum]{get_reference_date_ens_minimum()}}.}
 
-\item{overwrite_existing}{logical. If TRUE, overwrite
-existing files. Default: FALSE.}
+\item{overwrite_existing}{logical. If \code{TRUE}, overwrite
+existing files. Default: \code{FALSE}.}
 }
 \value{
 invisibly returns the file path where data

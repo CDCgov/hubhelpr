@@ -7,14 +7,14 @@
 get_disease_name(disease)
 }
 \arguments{
-\item{disease}{Character. Disease identifier ("covid",
-"rsv", or "flu").}
+\item{disease}{Character. Disease identifier
+("covid", "rsv", or "flu").}
 }
 \value{
-Character. Display name (e.g., "COVID-19", "RSV",
-"Influenza").
+Character. Display name (e.g., "COVID-19",
+"RSV", "Influenza").
 }
 \description{
-Converts disease identifier to human-readable display
-name.
+Converts disease identifier to human-readable
+display name.
 }

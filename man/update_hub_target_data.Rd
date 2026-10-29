@@ -23,29 +23,30 @@ update_hub_target_data(
 \item{as_of}{As-of date of the data pull. Default is
 the system date as determined by \code{\link[lubridate:today]{lubridate::today()}}.}
 
-\item{start_date_nhsn}{Earliest week-ending
-date to include in the NHSN (admissions) target dataset.
+\item{start_date_nhsn}{Earliest week-ending date to
+include in the NHSN (admissions) target dataset.
 Default \code{NULL} (include all available data).}
 
 \item{start_date_nssp}{Earliest week-ending date to
 include in the NSSP (ED visit) target dataset.
 Default \code{NULL} (include all available data).}
 
-\item{excluded_locations}{NULL, character vector, or
-named list of US state/territory abbreviations to
-exclude. If a character vector, locations are excluded
-across all targets. If a named list, names should be
-target names (or "all" for global exclusions) mapping
-to character vectors of abbreviations. Default: NULL
-(no exclusions).}
+\item{excluded_locations}{\code{NULL}, character vector,
+or named list of US state/territory abbreviations to
+exclude. If a character vector, locations are
+excluded across all targets. If a named list, names
+should be target names (or "all" for global
+exclusions) mapping to character vectors of
+abbreviations. Default: \code{NULL} (no exclusions).}
 
 \item{legacy_file}{Logical. Whether to write legacy
-CSV output (default: FALSE).}
+CSV output (default: \code{FALSE}).}
 
-\item{overwrite_existing}{Logical. If TRUE, overwrite
-existing rows that share key columns (target_end_date, location,
-as_of, target) with the new data. If FALSE (default),
-error if any conflicts are found.}
+\item{overwrite_existing}{Logical. If \code{TRUE},
+overwrite existing rows that share key columns
+(target_end_date, location, as_of, target) with the
+new data. If \code{FALSE} (default), error if any
+conflicts are found.}
 }
 \value{
 Writes \code{time-series.parquet} and optionally
@@ -54,6 +55,7 @@ directory in the hub.
 }
 \description{
 This function pulls, formats and saves NHSN and NSSP
-data for use in the Hub. It combines both data sources
-with any existing data and writes to the target-data directory.
+data for use in the Hub. It combines both data
+sources with any existing data and writes to the
+target-data directory.
 }

@@ -7,13 +7,13 @@
 get_target_label(target)
 }
 \arguments{
-\item{target}{Character. Full target name (e.g.,
-"wk inc covid hosp", "wk inc rsv prop ed visits").}
+\item{target}{Character. Full target name (e.g., "wk
+inc covid hosp", "wk inc rsv prop ed visits").}
 }
 \value{
 Character. Human-readable label.
 }
 \description{
-Converts a full target name to a human-readable label
-for use in error messages and assertions.
+Converts a full target name to a human-readable
+label for use in error messages and assertions.
 }

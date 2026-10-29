@@ -7,8 +7,9 @@
 check_changes_for_autoapproval(changed_files, gh_actor, base_hub_path)
 }
 \arguments{
-\item{changed_files}{Character vector. List of changed
-file paths from the GitHub changed-files workflow output.}
+\item{changed_files}{Character vector. List of
+changed file paths from the GitHub changed-files
+workflow output.}
 
 \item{gh_actor}{Character. GitHub username of the
 person making changes.}
@@ -18,11 +19,12 @@ directory.}
 }
 \value{
 \code{NULL}, invisibly, raising an error if changes
-are outside model-output or if the user is unauthorized.
+are outside model-output or if the user is
+unauthorized.
 }
 \description{
-This function processes a list of changed files from a
-GitHub workflow, errors on any changes outside
+This function processes a list of changed files from
+a GitHub workflow, errors on any changes outside
 model-output directory, and passes model IDs to
 check_authorized_users for authorization validation.
 }

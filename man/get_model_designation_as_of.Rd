@@ -20,19 +20,19 @@ directory.}
 reference date to resolve designation as of.}
 
 \item{model_ids}{character vector of model IDs to
-include, or NULL (default) to include every model in
-that reference date's record}
+include, or \code{NULL} (default) to include every model
+in that reference date's record}
 
 \item{targets}{character vector of target names to
-include, or NULL (default) to include all targets
+include, or \code{NULL} (default) to include all targets
 supported by the hub.}
 }
 \value{
 A tibble with columns \code{model_id}, \code{target},
-and \code{designated} (logical), with one row per
-(model, target) combination. \code{model_id}s with no
-submission for the reference date have an \code{NA}
-designation status.
+and \code{designated} (logical), with one row per (model,
+target) combination. \code{model_id}s with no submission
+for the reference date have an \code{NA} designation
+status.
 }
 \description{
 Reads the hub's record of designation statuses used

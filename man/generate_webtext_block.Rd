@@ -15,8 +15,8 @@ generate_webtext_block(
 )
 }
 \arguments{
-\item{reference_date}{Character, the reference date for
-the forecast in YYYY-MM-DD format (ISO-8601).}
+\item{reference_date}{Character, the reference date
+for the forecast in YYYY-MM-DD format (ISO-8601).}
 
 \item{disease}{Character, disease name ("covid" or
 "rsv").}
@@ -24,19 +24,19 @@ the forecast in YYYY-MM-DD format (ISO-8601).}
 \item{base_hub_path}{Character, path to the forecast
 hub directory.}
 
-\item{weekly_data_path}{Character, path to the directory
-with weekly summary files.}
+\item{weekly_data_path}{Character, path to the
+directory with weekly summary files.}
 
 \item{targets}{Character vector of target names to
 generate text for.}
 
-\item{excluded_locations}{NULL, character vector, or
-named list of US state/territory abbreviations to
-exclude. If a character vector, locations are excluded
-across all targets. If a named list, names should be
-target names (or "all" for global exclusions) mapping
-to character vectors of abbreviations. Default: NULL
-(no exclusions).}
+\item{excluded_locations}{\code{NULL}, character vector,
+or named list of US state/territory abbreviations to
+exclude. If a character vector, locations are
+excluded across all targets. If a named list, names
+should be target names (or "all" for global
+exclusions) mapping to character vectors of
+abbreviations. Default: \code{NULL} (no exclusions).}
 
 \item{input_format}{Character, input file format for
 reading summary data files. One of "csv", "tsv", or
