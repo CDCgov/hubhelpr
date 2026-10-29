@@ -41,7 +41,7 @@ inputs:
     required: false
     default: "latest"
   observed_data_drop_missing:
-    description: "Drop observed rows whose value is missing? A missing value carries no information in the observed data files that an absent row does not. Affects the observed data file only. Defaults to true."
+    description: "Drop observed rows with NAs. Affects the observed data file only. Defaults to true."
     required: false
     default: true
   overwrite_existing:
