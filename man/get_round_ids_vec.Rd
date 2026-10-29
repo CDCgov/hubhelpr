@@ -7,25 +7,30 @@
 get_round_ids_vec(config_tasks)
 }
 \arguments{
-\item{config_tasks}{List of Hub tasks, as the
-output of \code{\link[hubUtils:read_config]{hubUtils::read_config()}} or the \code{config_tasks}
+\item{config_tasks}{List of Hub tasks, as the output
+of \code{\link[hubUtils:read_config]{hubUtils::read_config()}} or the \code{config_tasks}
 attribute of a \code{\link[hubData:connect_hub]{<hub_connection>}}.}
 }
 \value{
 Unique round ids, as a vector.
 }
 \description{
-Wrapper of \code{\link[hubUtils:get_round_ids]{hubUtils::get_round_ids()}} that returns a
-flat vector of unique round_id values regardless of whether
-\code{round_id_from_variable} is \code{TRUE} or \code{FALSE}.
+Wrapper of \code{\link[hubUtils:get_round_ids]{hubUtils::get_round_ids()}} that returns
+a flat vector of unique round_id values regardless
+of whether \code{round_id_from_variable} is \code{TRUE} or
+\code{FALSE}.
 }
 \details{
-\code{\link[hubUtils:get_round_ids]{hubUtils::get_round_ids()}} with \code{flatten = "all"} returns a vector,
-but may duplicate round_ids when \code{round_id_from_variable: true}.
-\code{\link[hubUtils:get_round_ids]{hubUtils::get_round_ids()}} with \code{flatten = "model_task"} handles
-both \code{round_id_from_variable: true} and \code{round_id_from_variable: false},
-but returns a list. This function provides a workaround by calling
-\code{\link[purrr:list_c]{purrr::list_c()}} on the output of \code{\link[hubUtils:get_round_ids]{hubUtils::get_round_ids()}} with
+\code{\link[hubUtils:get_round_ids]{hubUtils::get_round_ids()}} with \code{flatten = "all"}
+returns a vector, but may duplicate round_ids when
+\code{round_id_from_variable: true}.
+\code{\link[hubUtils:get_round_ids]{hubUtils::get_round_ids()}} with
+\code{flatten = "model_task"} handles both
+\code{round_id_from_variable: true} and
+\code{round_id_from_variable: false}, but returns a
+list. This function provides a workaround by calling
+\code{\link[purrr:list_c]{purrr::list_c()}} on the output of
+\code{\link[hubUtils:get_round_ids]{hubUtils::get_round_ids()}} with
 \code{flatten = "model_task"}.
 }
 \examples{

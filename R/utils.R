@@ -38,7 +38,8 @@ disease_display_names <- c(
 
 #' Get NHSN column name for a given disease
 #'
-#' @param disease Disease name ("covid", "rsv", or "flu")
+#' @param disease Disease name ("covid", "rsv", or
+#' "flu")
 #' @return Character string with the NHSN column name
 #' @export
 get_nhsn_col_name <- function(disease) {
@@ -48,7 +49,8 @@ get_nhsn_col_name <- function(disease) {
 
 #' Get NSSP column name for a given disease
 #'
-#' @param disease Disease name ("covid", "rsv", or "flu")
+#' @param disease Disease name ("covid", "rsv", or
+#' "flu")
 #' @return Character string with the NSSP column name
 #' @export
 get_nssp_col_name <- function(disease) {
@@ -59,12 +61,14 @@ get_nssp_col_name <- function(disease) {
 
 #' Get hub display name for a given disease.
 #'
-#' Converts disease identifier to hub display name format
-#' used for identifying hub-baseline and hub-ensemble.
+#' Converts disease identifier to hub display name
+#' format used for identifying hub-baseline and
+#' hub-ensemble.
 #'
-#' @param disease Character. Disease identifier ("covid",
-#' "rsv", or "flu").
-#' @return Character. Hub name (e.g., "CovidHub", "RSVHub", "FluSight").
+#' @param disease Character. Disease identifier
+#' ("covid", "rsv", or "flu").
+#' @return Character. Hub name (e.g., "CovidHub",
+#' "RSVHub", "FluSight").
 #' @export
 get_hub_name <- function(disease) {
   checkmate::assert_choice(disease, names(hub_names))
@@ -77,8 +81,8 @@ get_hub_name <- function(disease) {
 #' Converts disease identifier to corresponding GitHub
 #' repository name.
 #'
-#' @param disease Character. Disease identifier ("covid",
-#' "rsv", or "flu").
+#' @param disease Character. Disease identifier
+#' ("covid", "rsv", or "flu").
 #' @return Character. GitHub repository name.
 #' @export
 get_hub_repo_name <- function(disease) {
@@ -89,8 +93,8 @@ get_hub_repo_name <- function(disease) {
 
 #' Get GitHub organization owner for a given disease.
 #'
-#' @param disease Character. Disease identifier ("covid",
-#' "rsv", or "flu").
+#' @param disease Character. Disease identifier
+#' ("covid", "rsv", or "flu").
 #' @return Character. GitHub organization name.
 #' @noRd
 get_hub_repo_owner <- function(disease) {
@@ -104,8 +108,8 @@ get_hub_repo_owner <- function(disease) {
 #' Constructs full HTTPS GitHub URL for the forecast
 #' hub corresponding to the given disease identifier.
 #'
-#' @param disease Character. Disease identifier ("covid",
-#' "rsv", or "flu").
+#' @param disease Character. Disease identifier
+#' ("covid", "rsv", or "flu").
 #' @return Character. Full HTTPS GitHub URL.
 #' @export
 get_hub_repo_url <- function(disease) {
@@ -117,13 +121,13 @@ get_hub_repo_url <- function(disease) {
 
 #' Get display name for a given disease.
 #'
-#' Converts disease identifier to human-readable display
-#' name.
+#' Converts disease identifier to human-readable
+#' display name.
 #'
-#' @param disease Character. Disease identifier ("covid",
-#' "rsv", or "flu").
-#' @return Character. Display name (e.g., "COVID-19", "RSV",
-#' "Influenza").
+#' @param disease Character. Disease identifier
+#' ("covid", "rsv", or "flu").
+#' @return Character. Display name (e.g., "COVID-19",
+#' "RSV", "Influenza").
 #' @export
 get_disease_name <- function(disease) {
   checkmate::assert_choice(disease, names(disease_display_names))
@@ -151,11 +155,12 @@ round_to_place <- function(value) {
 
 #' Check if target is a hospital admissions count.
 #'
-#' Helper function to identify targets that end with "hosp".
+#' Helper function to identify targets that end with
+#' "hosp".
 #'
 #' @param target Character. Target name to check.
-#' @return Logical. TRUE if target ends with "hosp", FALSE
-#' otherwise.
+#' @return Logical. `TRUE` if target ends with "hosp",
+#' `FALSE` otherwise.
 #' @export
 is_hosp_target <- function(target) {
   stringr::str_ends(target, "hosp")
@@ -168,8 +173,8 @@ is_hosp_target <- function(target) {
 #' "prop ed visits".
 #'
 #' @param target Character. Target name to check.
-#' @return Logical. TRUE if target ends with "prop ed
-#' visits", FALSE otherwise.
+#' @return Logical. `TRUE` if target ends with "prop ed
+#' visits", `FALSE` otherwise.
 #' @export
 is_ed_target <- function(target) {
   stringr::str_ends(target, "prop ed visits")
@@ -181,8 +186,8 @@ is_ed_target <- function(target) {
 #' Reads a hub's tasks configuration and extracts all
 #' unique target names that the hub accepts.
 #'
-#' @param base_hub_path Character. Path to the base
-#' hub directory containing the hub configuration
+#' @param base_hub_path Character. Path to the base hub
+#' directory containing the hub configuration
 #' (tasks.json).
 #'
 #' @return Character vector of unique supported target
@@ -205,11 +210,11 @@ get_hub_supported_targets <- function(base_hub_path) {
 
 #' Get human-readable label for a target.
 #'
-#' Converts a full target name to a human-readable label
-#' for use in error messages and assertions.
+#' Converts a full target name to a human-readable
+#' label for use in error messages and assertions.
 #'
-#' @param target Character. Full target name (e.g.,
-#' "wk inc covid hosp", "wk inc rsv prop ed visits").
+#' @param target Character. Full target name (e.g., "wk
+#' inc covid hosp", "wk inc rsv prop ed visits").
 #' @return Character. Human-readable label.
 #' @export
 get_target_label <- function(target) {
@@ -226,10 +231,10 @@ get_target_label <- function(target) {
 #' Converts full target strings to data type for use in
 #' data outputs.
 #'
-#' @param target Character. Full target name (e.g.,
-#' "wk inc covid hosp").
-#' @return Character. Target data type ("hosp", "prop_ed",
-#' or NA if unrecognized).
+#' @param target Character. Full target name (e.g., "wk
+#' inc covid hosp").
+#' @return Character. Target data type ("hosp",
+#' "prop_ed", or `NA` if unrecognized).
 #' @export
 get_target_data_type <- function(target) {
   dplyr::case_when(
@@ -244,11 +249,11 @@ get_target_data_type <- function(target) {
 #' requested.
 #'
 #' @param path Path to the file that would be written.
-#' @param overwrite_existing Logical. If TRUE, allow an
-#' existing file at `path` to be overwritten. If FALSE,
-#' error when `path` already exists.
-#' @return Invisible NULL. Raises an error if `path`
-#' exists and `overwrite_existing` is FALSE.
+#' @param overwrite_existing Logical. If `TRUE`, allow
+#' an existing file at `path` to be overwritten. If
+#' `FALSE`, error when `path` already exists.
+#' @return Invisible `NULL`. Raises an error if `path`
+#' exists and `overwrite_existing` is `FALSE`.
 #' @noRd
 assert_empty_or_overwritable <- function(path, overwrite_existing) {
   if (fs::file_exists(path) && !overwrite_existing) {

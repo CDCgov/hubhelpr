@@ -1,22 +1,23 @@
-#' Check hospital reporting data latency and completeness.
+#' Check hospital reporting data latency and
+#' completeness.
 #'
 #' This function retrieves hospital reporting data from
-#' data.cdc.gov and checks for data latency and reporting
-#' completeness issues. It returns a flag string
-#' describing any reporting issues.
+#' data.cdc.gov and checks for data latency and
+#' reporting completeness issues. It returns a flag
+#' string describing any reporting issues.
 #'
-#' @param reference_date Date, the reference date for the
-#' forecast.
+#' @param reference_date Date, the reference date for
+#' the forecast.
 #' @param disease Character, disease name ("covid" or
 #' "rsv").
-#' @param excluded_hosp_locations Character vector of US
-#' state/territory abbreviations to exclude from
+#' @param excluded_hosp_locations Character vector of
+#' US state/territory abbreviations to exclude from
 #' expected reporting locations. Pre-resolved for the
 #' hospital admissions target by the caller. Default:
-#' NULL (no exclusions).
+#' `NULL` (no exclusions).
 #'
-#' @return Character string describing reporting issues,
-#' or empty string if no issues.
+#' @return Character string describing reporting
+#' issues, or empty string if no issues.
 check_hospital_reporting_rate <- function(
   reference_date,
   disease,
@@ -126,9 +127,11 @@ check_hospital_reporting_rate <- function(
 
 #' Load the webtext template.
 #'
-#' Reads the webtext template file associated with the package.
+#' Reads the webtext template file associated with the
+#' package.
 #'
-#' @return Character string containing the template text.
+#' @return Character string containing the template
+#' text.
 #' @noRd
 load_webtext_template <- function() {
   template_path <- fs::path_package(
@@ -143,15 +146,16 @@ load_webtext_template <- function() {
 
 #' Compute the forecast change direction text.
 #'
-#' Compares the forecast median to the last reported value
-#' and returns a human-readable direction string.
+#' Compares the forecast median to the last reported
+#' value and returns a human-readable direction string.
 #'
-#' @param forecast_value Numeric, the forecast median value.
-#' @param last_reported_value Numeric, the last reported
-#' observed value.
+#' @param forecast_value Numeric, the forecast median
+#' value.
+#' @param last_reported_value Numeric, the last
+#' reported observed value.
 #'
-#' @return Character string: "a decrease", "an increase",
-#' or "a similar level".
+#' @return Character string: "a decrease", "an
+#' increase", or "a similar level".
 #' @noRd
 compute_change_direction <- function(
   forecast_value,
@@ -167,31 +171,35 @@ compute_change_direction <- function(
 
 #' Compute webtext template values for a single target.
 #'
-#' Processes data for one target and returns a named list
-#' of values to fill webtext template placeholders. Keys
-#' are prefixed by the target data type derived from
-#' get_target_data_type() ("hosp" or "prop_ed").
+#' Processes data for one target and returns a named
+#' list of values to fill webtext template
+#' placeholders. Keys are prefixed by the target data
+#' type derived from [get_target_data_type()] ("hosp"
+#' or "prop_ed").
 #'
 #' @param target Character, the target name.
 #' @param disease Character, disease name.
-#' @param ensemble_data Data frame of ensemble forecast data.
-#' @param all_target_data Data frame of target time series
+#' @param ensemble_data Data frame of ensemble forecast
 #' data.
-#' @param all_forecasts_data Data frame of all forecasts data.
-#' @param all_model_metadata Data frame of model metadata.
+#' @param all_target_data Data frame of target time
+#' series data.
+#' @param all_forecasts_data Data frame of all
+#' forecasts data.
+#' @param all_model_metadata Data frame of model
+#' metadata.
 #' @param designation Data frame of per-target model
 #' designation with columns `model_id`, `target`, and
 #' `designated` (logical), typically produced by
 #' [get_model_designation_as_of()].
 #' @param hub_name Character, hub name.
 #' @param reference_date Date, the reference date.
-#' @param excluded_locations NULL, character vector, or
-#' named list of US state/territory abbreviations to
+#' @param excluded_locations `NULL`, character vector,
+#' or named list of US state/territory abbreviations to
 #' exclude. Target-specific exclusions are resolved
 #' before passing to hospital reporting latency checks.
 #'
-#' @return Named list of template placeholder values with
-#' keys prefixed by the target data type.
+#' @return Named list of template placeholder values
+#' with keys prefixed by the target data type.
 #' @noRd
 compute_target_webtext_values <- function(
   target,
@@ -328,23 +336,23 @@ compute_target_webtext_values <- function(
 #' visualizations by loading a template and filling in
 #' computed data values.
 #'
-#' @param reference_date Character, the reference date for
-#' the forecast in YYYY-MM-DD format (ISO-8601).
+#' @param reference_date Character, the reference date
+#' for the forecast in YYYY-MM-DD format (ISO-8601).
 #' @param disease Character, disease name ("covid" or
 #' "rsv").
 #' @param base_hub_path Character, path to the forecast
 #' hub directory.
-#' @param weekly_data_path Character, path to the directory
-#' with weekly summary files.
+#' @param weekly_data_path Character, path to the
+#' directory with weekly summary files.
 #' @param targets Character vector of target names to
 #' generate text for.
-#' @param excluded_locations NULL, character vector, or
-#' named list of US state/territory abbreviations to
-#' exclude. If a character vector, locations are excluded
-#' across all targets. If a named list, names should be
-#' target names (or "all" for global exclusions) mapping
-#' to character vectors of abbreviations. Default: NULL
-#' (no exclusions).
+#' @param excluded_locations `NULL`, character vector,
+#' or named list of US state/territory abbreviations to
+#' exclude. If a character vector, locations are
+#' excluded across all targets. If a named list, names
+#' should be target names (or "all" for global
+#' exclusions) mapping to character vectors of
+#' abbreviations. Default: `NULL` (no exclusions).
 #' @param input_format Character, input file format for
 #' reading summary data files. One of "csv", "tsv", or
 #' "parquet". Default: "csv".
@@ -475,31 +483,33 @@ generate_webtext_block <- function(
 #' Generate and save text content for forecast hub
 #' visualization webpage.
 #'
-#' Generates formatted text summary for a single disease
-#' and saves it to disk. Run separately for each disease.
+#' Generates formatted text summary for a single
+#' disease and saves it to disk. Run separately for
+#' each disease.
 #'
-#' @param reference_date Character, the reference date for
-#' the forecast in YYYY-MM-DD format (ISO-8601).
-#' @param disease Character, disease name ("covid" or "rsv").
-#' @param base_hub_path Character, path to the forecast hub
-#' directory.
-#' @param hub_reports_path Character, path to forecast hub
-#' reports directory.
+#' @param reference_date Character, the reference date
+#' for the forecast in YYYY-MM-DD format (ISO-8601).
+#' @param disease Character, disease name ("covid" or
+#' "rsv").
+#' @param base_hub_path Character, path to the forecast
+#' hub directory.
+#' @param hub_reports_path Character, path to forecast
+#' hub reports directory.
 #' @param targets Character vector of target names to
-#' generate text for. Default NULL discovers targets
+#' generate text for. Default `NULL` discovers targets
 #' from hub time-series data.
-#' @param excluded_locations NULL, character vector, or
-#' named list of US state/territory abbreviations to
-#' exclude. If a character vector, locations are excluded
-#' across all targets. If a named list, names should be
-#' target names (or "all" for global exclusions) mapping
-#' to character vectors of abbreviations. Default: NULL
-#' (no exclusions).
+#' @param excluded_locations `NULL`, character vector,
+#' or named list of US state/territory abbreviations to
+#' exclude. If a character vector, locations are
+#' excluded across all targets. If a named list, names
+#' should be target names (or "all" for global
+#' exclusions) mapping to character vectors of
+#' abbreviations. Default: `NULL` (no exclusions).
 #' @param input_format Character, input file format for
 #' reading summary data files. One of "csv", "tsv", or
 #' "parquet". Default: "csv".
-#' @param overwrite_existing logical. If TRUE, overwrite
-#' existing files. Default: FALSE.
+#' @param overwrite_existing logical. If `TRUE`,
+#' overwrite existing files. Default: `FALSE`.
 #'
 #' @export
 write_webtext <- function(

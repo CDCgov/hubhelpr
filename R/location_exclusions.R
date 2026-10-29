@@ -1,15 +1,15 @@
 #' Normalize excluded locations to a named list.
 #'
-#' Converts a character vector or named list of excluded
-#' locations into a consistent named list format.
-#' Validates that all abbreviations are valid US
-#' state/territory abbreviations.
+#' Converts a character vector or named list of
+#' excluded locations into a consistent named list
+#' format. Validates that all abbreviations are valid
+#' US state/territory abbreviations.
 #'
-#' @param excluded_locations NULL, character vector, or
-#' named list of character vectors.
+#' @param excluded_locations `NULL`, character vector,
+#' or named list of character vectors.
 #'
-#' @return Named list of character vectors, empty when there is
-#' nothing to exclude.
+#' @return Named list of character vectors, empty when
+#' there is nothing to exclude.
 #' @keywords internal
 normalize_excluded_locations <- function(excluded_locations) {
   if (is.null(excluded_locations) || length(excluded_locations) == 0) {
@@ -54,7 +54,7 @@ normalize_excluded_locations <- function(excluded_locations) {
 #' @param abbrs Character vector of abbreviations to
 #' validate.
 #'
-#' @return Invisible NULL. Called for side effects.
+#' @return Invisible `NULL`. Called for side effects.
 #' @noRd
 assert_valid_location_abbrs <- function(abbrs) {
   valid_abbrs <- forecasttools::us_location_table$abbr
@@ -90,10 +90,11 @@ get_target_exclusions <- function(exclusions, target) {
 #'
 #' @param exclusions Named list as returned by
 #' [normalize_excluded_locations()].
-#' @param targets Vector of targets for which to build the
-#' exclusion tibble.
-#' @return [`tibble`][tibble::tibble()] of exclusions that
-#' can be anti-joined to data on location and target.
+#' @param targets Vector of targets for which to build
+#' the exclusion tibble.
+#' @return [`tibble`][tibble::tibble()] of exclusions
+#' that can be anti-joined to data on location and
+#' target.
 #' @noRd
 build_exclusion_df <- function(exclusions, targets) {
   df <- purrr::map(purrr::set_names(targets), \(tgt) {
@@ -117,17 +118,17 @@ build_exclusion_df <- function(exclusions, targets) {
 #'
 #' Removes rows from a data frame based on
 #' target-specific excluded location abbreviations.
-#' Supports uniform exclusions (character vector applied
-#' to all targets) and target-specific exclusions (named
-#' list with target names as keys). Validates target
-#' names against hub-supported targets from the hub
-#' configuration. Filters on the "target" and "location"
-#' columns via anti-join.
+#' Supports uniform exclusions (character vector
+#' applied to all targets) and target-specific
+#' exclusions (named list with target names as keys).
+#' Validates target names against hub-supported targets
+#' from the hub configuration. Filters on the "target"
+#' and "location" columns via anti-join.
 #'
 #' @param data Data frame with "target" and "location"
 #' columns.
-#' @param excluded_locations NULL, character vector, or
-#' named list of US state/territory abbreviations to
+#' @param excluded_locations `NULL`, character vector,
+#' or named list of US state/territory abbreviations to
 #' exclude. If a character vector, locations are
 #' excluded across all targets. If a named list, names
 #' should be target names (or "all" for global
@@ -172,8 +173,8 @@ apply_target_location_exclusions <- function(
 #'
 #' @param data Data frame with "target" and "location"
 #' columns.
-#' @param excluded_locations NULL, character vector, or
-#' named list of US state/territory abbreviations to
+#' @param excluded_locations `NULL`, character vector,
+#' or named list of US state/territory abbreviations to
 #' exclude.
 #' @param base_hub_path Character, path to the forecast
 #' hub directory. Used to determine hub-supported
@@ -212,11 +213,11 @@ filter_to_expected_locations <- function(
 #' @param disease character, disease name ("covid" or
 #' "rsv").
 #' @param directory character, directory under
-#' `hub_reports_path` holding per-hub configuration. Default:
-#' "config".
-#' @param filename character, name of the exclusions file
-#' within a hub's configuration directory. Default:
-#' "report_exclusions.toml".
+#' `hub_reports_path` holding per-hub configuration.
+#' Default: "config".
+#' @param filename character, name of the exclusions
+#' file within a hub's configuration directory.
+#' Default: "report_exclusions.toml".
 #'
 #' @return The file path, whether or not it exists.
 #' @noRd
@@ -237,19 +238,20 @@ exclusion_file_path <- function(
 
 #' Parse a hub's weekly location exclusions file.
 #'
-#' The file is TOML keyed by reference date, where each value
-#' takes either form the `generate-viz-data` action accepts for
-#' `excluded_locations`: an array of abbreviations applying to
-#' every target, or a table mapping target names (or `all`) to
-#' arrays.
+#' The file is TOML keyed by reference date, where each
+#' value takes either form the `generate-viz-data`
+#' action accepts for `excluded_locations`: an array of
+#' abbreviations applying to every target, or a table
+#' mapping target names (or `all`) to arrays.
 #'
 #' ```toml
 #' 2025-01-01 = { all = ["VI"], "wk inc covid hosp" = ["GU"] }
 #' 2025-02-02 = ["AK", "AR"]
 #' ```
 #'
-#' @param path character, path to the exclusions file. A hub with
-#' nothing to exclude keeps a file with no entries.
+#' @param path character, path to the exclusions file.
+#' A hub with nothing to exclude keeps a file with no
+#' entries.
 #'
 #' @return Named list of exclusions keyed by reference
 #' date, each element a named list accepted by
@@ -296,14 +298,15 @@ parse_exclusion_file <- function(path) {
 }
 
 
-#' Get a hub's location exclusions for one reference date.
+#' Get a hub's location exclusions for one reference
+#' date.
 #'
-#' Exclusions are recorded per hub in a TOML file keyed by
-#' reference date, where each value takes either form the
-#' `generate-viz-data` action accepts for
-#' `excluded_locations`: an array of abbreviations applying
-#' to every target, or a table mapping target names (or
-#' `all`) to arrays.
+#' Exclusions are recorded per hub in a TOML file keyed
+#' by reference date, where each value takes either
+#' form the `generate-viz-data` action accepts for
+#' `excluded_locations`: an array of abbreviations
+#' applying to every target, or a table mapping target
+#' names (or `all`) to arrays.
 #'
 #' ```toml
 #' 2025-01-01 = { all = ["VI"], "wk inc covid hosp" = ["GU"] }
@@ -317,12 +320,12 @@ parse_exclusion_file <- function(path) {
 #' forecast hub reports directory.
 #' @param disease character, disease name ("covid" or
 #' "rsv").
-#' @param reference_date character or Date, the reference
-#' date to look up.
+#' @param reference_date character or Date, the
+#' reference date to look up.
 #'
-#' @return Named list of abbreviations keyed by target (or
-#' by `all`), empty when the date has no entry, ready to
-#' pass as `excluded_locations`.
+#' @return Named list of abbreviations keyed by target
+#' (or by `all`), empty when the date has no entry,
+#' ready to pass as `excluded_locations`.
 #' @export
 get_reference_date_exclusions_list <- function(
   hub_reports_path,
@@ -342,10 +345,10 @@ get_reference_date_exclusions_list <- function(
 #' Get a hub's location exclusions as JSON for the
 #' `generate-viz-data` action.
 #'
-#' The action takes `excluded_locations` as a JSON string,
-#' so this is the bridge from the TOML file to the
-#' workflow. TOML is the storage format because it permits
-#' comments.
+#' The action takes `excluded_locations` as a JSON
+#' string, so this is the bridge from the TOML file to
+#' the workflow. TOML is the storage format because it
+#' permits comments.
 #'
 #' @inheritParams get_reference_date_exclusions_list
 #'

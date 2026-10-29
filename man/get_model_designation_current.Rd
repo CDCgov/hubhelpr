@@ -12,33 +12,35 @@ get_model_designation_current(base_hub_path, model_ids = NULL, targets = NULL)
 directory.}
 
 \item{model_ids}{character vector of model IDs to
-include, or NULL (default) to include all models
+include, or \code{NULL} (default) to include all models
 with metadata in the hub.}
 
 \item{targets}{character vector of target names to
-include, or NULL (default) to include all targets
+include, or \code{NULL} (default) to include all targets
 supported by the hub.}
 }
 \value{
 A tibble with columns \code{model_id}, \code{target},
-and \code{designated} (logical), with one row per
-(model, target) combination.
+and \code{designated} (logical), with one row per (model,
+target) combination.
 }
 \description{
 Returns full grid of (model_id, target, designated)
 for the requested models and targets, resolved from
 current model metadata: the fields \code{designated_model}
 and the optional \code{designated_targets} list. If
-\code{designated_model} is FALSE: never designated. If
-\code{designated_model} is TRUE and \code{designated_targets}
-is absent or empty: designated for every target. If
-\code{designated_model} is TRUE and \code{designated_targets}
-is present: designated only for listed targets.
+\code{designated_model} is \code{FALSE}: never designated.
+If \code{designated_model} is \code{TRUE} and
+\code{designated_targets} is absent or empty: designated
+for every target. If \code{designated_model} is \code{TRUE}
+and \code{designated_targets} is present: designated only
+for listed targets.
 }
 \details{
 This describes models as they are today. This is
 only correct for the current reference date. Use
-\code{\link[=get_model_designation_as_of]{get_model_designation_as_of()}} for a past one. The
-exception is \code{\link[=generate_hub_ensemble]{generate_hub_ensemble()}}, which writes
-the record the as-of version reads.
+\code{\link[=get_model_designation_as_of]{get_model_designation_as_of()}}
+for a past one. The exception is
+\code{\link[=generate_hub_ensemble]{generate_hub_ensemble()}}, which writes the record
+as-of version reads.
 }

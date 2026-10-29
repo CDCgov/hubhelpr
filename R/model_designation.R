@@ -1,9 +1,10 @@
 # Submission records written before this date have no
-# `target` column, because hospital admissions was the only
-# target the hub carried: proportion of ED visits enters
-# covid19-forecast-hub's tasks.json for reference date
-# 2025-06-21, and the column follows on 2025-07-05. A record
-# missing the column after this date is malformed, not old.
+# `target` column, because hospital admissions was the
+# only target the hub carried: proportion of ED visits
+# enters covid19-forecast-hub's tasks.json for
+# reference date 2025-06-21, and the column follows on
+# 2025-07-05. A record missing the column after this
+# date is malformed, not old.
 last_date_without_designation_by_target <- lubridate::as_date("2025-06-28")
 
 
@@ -11,12 +12,13 @@ last_date_without_designation_by_target <- lubridate::as_date("2025-06-28")
 #' for a reference date.
 #'
 #' [generate_hub_ensemble()] writes
-#' `auxiliary-data/weekly-model-submissions/` each week,
-#' recording the models that submitted and how they were
-#' designated at the time. That record is the only source
-#' of designation for a past reference date:
-#' `model-metadata/` describes models as they are now,
-#' and designation changes as models come and go.
+#' `auxiliary-data/weekly-model-submissions/` each
+#' week, recording the models that submitted and how
+#' they were designated at the time. That record is the
+#' only source of designation for a past reference
+#' date: `model-metadata/` describes models as they
+#' are now, and designation changes as models come and
+#' go.
 #'
 #' @param base_hub_path character, path to the base hub
 #' directory.
@@ -81,30 +83,32 @@ read_weekly_model_submissions <- function(
 #' for the requested models and targets, resolved from
 #' current model metadata: the fields `designated_model`
 #' and the optional `designated_targets` list. If
-#' `designated_model` is FALSE: never designated. If
-#' `designated_model` is TRUE and `designated_targets`
-#' is absent or empty: designated for every target. If
-#' `designated_model` is TRUE and `designated_targets`
-#' is present: designated only for listed targets.
+#' `designated_model` is `FALSE`: never designated.
+#' If `designated_model` is `TRUE` and
+#' `designated_targets` is absent or empty: designated
+#' for every target. If `designated_model` is `TRUE`
+#' and `designated_targets` is present: designated only
+#' for listed targets.
 #'
 #' This describes models as they are today. This is
 #' only correct for the current reference date. Use
-#' [get_model_designation_as_of()] for a past one. The
-#' exception is [generate_hub_ensemble()], which writes
-#' the record the as-of version reads.
+#' [get_model_designation_as_of()]
+#' for a past one. The exception is
+#' [generate_hub_ensemble()], which writes the record
+#'  as-of version reads.
 #'
 #' @param base_hub_path character, path to the base hub
 #' directory.
 #' @param model_ids character vector of model IDs to
-#' include, or NULL (default) to include all models
+#' include, or `NULL` (default) to include all models
 #' with metadata in the hub.
 #' @param targets character vector of target names to
-#' include, or NULL (default) to include all targets
+#' include, or `NULL` (default) to include all targets
 #' supported by the hub.
 #'
 #' @return A tibble with columns `model_id`, `target`,
-#' and `designated` (logical), with one row per
-#' (model, target) combination.
+#' and `designated` (logical), with one row per (model,
+#' target) combination.
 #' @export
 get_model_designation_current <- function(
   base_hub_path,
@@ -165,17 +169,17 @@ get_model_designation_current <- function(
 #' @param reference_date character or Date, the
 #' reference date to resolve designation as of.
 #' @param model_ids character vector of model IDs to
-#' include, or NULL (default) to include every model in
-#' that reference date's record
+#' include, or `NULL` (default) to include every model
+#' in that reference date's record
 #' @param targets character vector of target names to
-#' include, or NULL (default) to include all targets
+#' include, or `NULL` (default) to include all targets
 #' supported by the hub.
 #'
 #' @return A tibble with columns `model_id`, `target`,
-#' and `designated` (logical), with one row per
-#' (model, target) combination. `model_id`s with no
-#' submission for the reference date have an `NA`
-#' designation status.
+#' and `designated` (logical), with one row per (model,
+#' target) combination. `model_id`s with no submission
+#' for the reference date have an `NA` designation
+#' status.
 #' @export
 get_model_designation_as_of <- function(
   base_hub_path,
@@ -241,28 +245,29 @@ get_model_designation_as_of <- function(
 #' location, and horizon.
 #'
 #' Gets the number of designated models that
-#' contributed forecasts for each combination of target,
-#' location, reference date, and horizon; useful for
-#' checking minimum model thresholds for ensemble
-#' reporting.
+#' contributed forecasts for each combination of
+#' target, location, reference date, and horizon;
+#' useful for checking minimum model thresholds for
+#' ensemble reporting.
 #'
 #' @param base_hub_path character, path to the base hub
 #' directory.
 #' @param reference_dates character or Date vector of
-#' reference dates in YYYY-MM-DD format. If NULL
+#' reference dates in YYYY-MM-DD format. If `NULL`
 #' (default), includes all available reference dates.
 #' @param targets character vector of target names to
-#' include. If NULL (default), includes all supported
+#' include. If `NULL` (default), includes all supported
 #' targets.
-#' @param horizons integer vector of horizons to include.
-#' If NULL (default), includes all available horizons.
+#' @param horizons integer vector of horizons to
+#' include. If `NULL` (default), includes all available
+#' horizons.
 #' @param output_types character vector of output types
-#' to include. Default: NULL (include all available
+#' to include. Default: `NULL` (include all available
 #' output types).
 #'
 #' @return A tibble with columns `reference_date`,
-#' `target`, `location`, `horizon`, `output_type`,
-#' and `n_models`.
+#' `target`, `location`, `horizon`, `output_type`, and
+#' `n_models`.
 #'
 #' @export
 count_designated_models <- function(

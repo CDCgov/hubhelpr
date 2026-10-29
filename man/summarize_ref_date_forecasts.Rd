@@ -2,7 +2,8 @@
 % Please edit documentation in R/summarize_ref_date_forecasts.R
 \name{summarize_ref_date_forecasts}
 \alias{summarize_ref_date_forecasts}
-\title{Summarize forecast hub data for a specific reference date.}
+\title{Summarize forecast hub data for a specific reference
+date.}
 \usage{
 summarize_ref_date_forecasts(
   reference_date,
@@ -16,41 +17,44 @@ summarize_ref_date_forecasts(
 )
 }
 \arguments{
-\item{reference_date}{character, the reference date for
-the forecast in YYYY-MM-DD format (ISO-8601).}
+\item{reference_date}{character, the reference date
+for the forecast in YYYY-MM-DD format (ISO-8601).}
 
-\item{base_hub_path}{character, path to the forecast hub
-directory.}
+\item{base_hub_path}{character, path to the forecast
+hub directory.}
 
 \item{disease}{character, disease name ("covid" or
 "rsv"). Used to derive hub name and file prefix.}
 
-\item{population_data}{data frame with columns "location"
-and "population". Adds population-based calculations.}
+\item{population_data}{data frame with columns
+"location" and "population". Adds population-based
+calculations.}
 
-\item{horizons_to_include}{integer vector, horizons to
-include in the output. Default: c(0, 1, 2).}
+\item{horizons_to_include}{integer vector, horizons
+to include in the output. Default: c(0, 1, 2).}
 
-\item{excluded_locations}{NULL, character vector, or
-named list of US state/territory abbreviations to
-exclude. If a character vector, locations are excluded
-across all targets. If a named list, names should be
-target names (or "all" for global exclusions) mapping
-to character vectors of abbreviations. Converted to
-hub codes internally. Default: NULL (no exclusions).}
+\item{excluded_locations}{\code{NULL}, character vector,
+or named list of US state/territory abbreviations to
+exclude. If a character vector, locations are
+excluded across all targets. If a named list, names
+should be target names (or "all" for global
+exclusions) mapping to character vectors of
+abbreviations. Converted to hub codes internally.
+Default: \code{NULL} (no exclusions).}
 
-\item{targets}{character vector, target name(s) to filter
-forecasts. If NULL (default), does not filter by target.}
+\item{targets}{character vector, target name(s) to
+filter forecasts. If \code{NULL} (default), does not
+filter by target.}
 
-\item{model_ids}{character vector of model IDs to include.
-If NULL (default), includes all models.}
+\item{model_ids}{character vector of model IDs to
+include. If \code{NULL} (default), includes all models.}
 }
 \value{
 tibble containing forecast summary data
 }
 \description{
 This function generates a tibble of forecast data
-for a given reference date. It can filter by model IDs;
-allows flexibility retrieve all models or specific
-subsets (e.g., ensemble only).
+for a given reference date. It can filter by model
+IDs; allows flexibility retrieve all models or
+specific subsets (e.g., ensemble only).
 }

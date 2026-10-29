@@ -7,8 +7,8 @@
 get_hub_supported_targets(base_hub_path)
 }
 \arguments{
-\item{base_hub_path}{Character. Path to the base
-hub directory containing the hub configuration
+\item{base_hub_path}{Character. Path to the base hub
+directory containing the hub configuration
 (tasks.json).}
 }
 \value{

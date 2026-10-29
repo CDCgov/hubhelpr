@@ -6,18 +6,21 @@ hubverse_ts_req_cols <- c(
   "target"
 )
 
-#' Merge new target time-series data with existing data.
+#' Merge new target time-series data with existing
+#' data.
 #'
-#' Combines new data with existing data, handling conflicts.
-#' Key columns are target_end_date, location, as_of, and target.
+#' Combines new data with existing data, handling
+#' conflicts. Key columns are target_end_date,
+#' location, as_of, and target.
 #'
-#' @param existing_data Data frame of existing time-series
-#' data, or NULL if no existing data.
-#' @param new_data Data frame of new time-series data to
-#' merge.
-#' @param overwrite_existing Logical. If TRUE, overwrite
-#' existing rows that share key columns with new data.
-#' If FALSE (default), error if any conflicts are found.
+#' @param existing_data Data frame of existing
+#' time-series data, or `NULL` if no existing data.
+#' @param new_data Data frame of new time-series data
+#' to merge.
+#' @param overwrite_existing Logical. If `TRUE`,
+#' overwrite existing rows that share key columns with
+#' new data. If `FALSE` (default), error if any
+#' conflicts are found.
 #'
 #' @return Data frame with merged data.
 #' @noRd
@@ -69,8 +72,8 @@ merge_target_data <- function(
 #' rows.
 #'
 #' @param raw_nhsn_data Data frame of NHSN HRD data
-#' with columns `weekendingdate`, `jurisdiction`, and the
-#' disease's admissions column (see
+#' with columns `weekendingdate`, `jurisdiction`, and
+#' the disease's admissions column (see
 #' [get_nhsn_col_name()]).
 #' @param disease Disease name ("covid", "rsv", or
 #' "flu").
@@ -105,11 +108,11 @@ format_nhsn_data_as_hubverse <- function(raw_nhsn_data, disease, as_of) {
 #' @param data Data frame of time series.
 #' @param date_col Character, name of the date column.
 #' Default "target_end_date".
-#' @param value_col Character, name of the value column.
-#' Default "observation".
+#' @param value_col Character, name of the value
+#' column. Default "observation".
 #' @param .by Character vector, names of the columns
-#' identifying a series. Default
-#' `c("as_of", "location", "target")`.
+#' identifying a series. Default `c("as_of", "location",
+#' "target")`.
 #' @return `data` without leading missing values.
 #' @noRd
 drop_leading_missing_observations <- function(
@@ -139,14 +142,14 @@ drop_leading_missing_observations <- function(
 #' @param disease Disease name ("covid" or "rsv").
 #' @param as_of As-of date of the data pull. Default is
 #' the system date as determined by [lubridate::today()].
-#' @param start_date First week-ending
-#' date to include for the NHSN dataset. Default value
-#' is NULL (no filtering).
-#' @param end_date Last week-ending
-#' date to include for the NHSN dataset. Default value
-#' is NULL (no filtering).
-#' @param date_col_name Character. Name for the date column
-#' in the output. Default is "target_end_date".
+#' @param start_date First week-ending date to include
+#' for the NHSN dataset. Default value is `NULL` (no
+#' filtering).
+#' @param end_date Last week-ending date to include for
+#' the NHSN dataset. Default value is `NULL` (no
+#' filtering).
+#' @param date_col_name Character. Name for the date
+#' column in the output. Default is "target_end_date".
 #'
 #' @return Data frame with formatted NHSN data.
 #' @export
@@ -174,21 +177,21 @@ get_hubverse_format_nhsn_data <- function(
 
 #' Get and format NSSP data for a given disease.
 #'
-#' This function pulls, formats and returns NSSP emergency
-#' department visit data in hubverse format.
+#' This function pulls, formats and returns NSSP
+#' emergency department visit data in hubverse format.
 #'
 #' @param disease Disease name ("covid" or "rsv").
 #' @param base_hub_path Path to the base hub directory.
 #' @param as_of As-of date of the data pull. Default is
 #' the system date as determined by [lubridate::today()].
-#' @param start_date First week-ending
-#' date to include for the NSSP dataset. Default value
-#' is NULL (no filtering).
-#' @param end_date Last week-ending
-#' date to include for the NSSP dataset. Default value
-#' is NULL (no filtering).
-#' @param date_col_name Character. Name for the date column
-#' in the output. Default is "target_end_date".
+#' @param start_date First week-ending date to include
+#' for the NSSP dataset. Default value is `NULL` (no
+#' filtering).
+#' @param end_date Last week-ending date to include for
+#' the NSSP dataset. Default value is `NULL` (no
+#' filtering).
+#' @param date_col_name Character. Name for the date
+#' column in the output. Default is "target_end_date".
 #'
 #' @return Data frame with formatted NSSP data.
 #' @export
@@ -235,32 +238,34 @@ get_hubverse_format_nssp_data <- function(
 #' Update hub target data.
 #'
 #' This function pulls, formats and saves NHSN and NSSP
-#' data for use in the Hub. It combines both data sources
-#' with any existing data and writes to the target-data directory.
+#' data for use in the Hub. It combines both data
+#' sources with any existing data and writes to the
+#' target-data directory.
 #'
 #' @param base_hub_path Path to the base hub directory.
 #' @param disease Disease name ("covid" or "rsv").
 #' @param as_of As-of date of the data pull. Default is
 #' the system date as determined by [lubridate::today()].
-#' @param start_date_nhsn Earliest week-ending
-#' date to include in the NHSN (admissions) target dataset.
+#' @param start_date_nhsn Earliest week-ending date to
+#' include in the NHSN (admissions) target dataset.
 #' Default `NULL` (include all available data).
 #' @param start_date_nssp Earliest week-ending date to
 #' include in the NSSP (ED visit) target dataset.
 #' Default `NULL` (include all available data).
-#' @param excluded_locations NULL, character vector, or
-#' named list of US state/territory abbreviations to
-#' exclude. If a character vector, locations are excluded
-#' across all targets. If a named list, names should be
-#' target names (or "all" for global exclusions) mapping
-#' to character vectors of abbreviations. Default: NULL
-#' (no exclusions).
+#' @param excluded_locations `NULL`, character vector,
+#' or named list of US state/territory abbreviations to
+#' exclude. If a character vector, locations are
+#' excluded across all targets. If a named list, names
+#' should be target names (or "all" for global
+#' exclusions) mapping to character vectors of
+#' abbreviations. Default: `NULL` (no exclusions).
 #' @param legacy_file Logical. Whether to write legacy
-#' CSV output (default: FALSE).
-#' @param overwrite_existing Logical. If TRUE, overwrite
-#' existing rows that share key columns (target_end_date, location,
-#' as_of, target) with the new data. If FALSE (default),
-#' error if any conflicts are found.
+#' CSV output (default: `FALSE`).
+#' @param overwrite_existing Logical. If `TRUE`,
+#' overwrite existing rows that share key columns
+#' (target_end_date, location, as_of, target) with the
+#' new data. If `FALSE` (default), error if any
+#' conflicts are found.
 #'
 #' @return Writes `time-series.parquet` and optionally
 #' legacy CSV target data files to the target-data

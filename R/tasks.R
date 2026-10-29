@@ -2,20 +2,25 @@
 
 #' Get a vector of unique round ids for a modeling hub
 #'
-#' Wrapper of [hubUtils::get_round_ids()] that returns a
-#' flat vector of unique round_id values regardless of whether
-#' `round_id_from_variable` is `TRUE` or `FALSE`.
+#' Wrapper of [hubUtils::get_round_ids()] that returns
+#' a flat vector of unique round_id values regardless
+#' of whether `round_id_from_variable` is `TRUE` or
+#' `FALSE`.
 #'
-#' [hubUtils::get_round_ids()] with `flatten = "all"` returns a vector,
-#' but may duplicate round_ids when `round_id_from_variable: true`.
-#' [hubUtils::get_round_ids()] with `flatten = "model_task"` handles
-#' both `round_id_from_variable: true` and `round_id_from_variable: false`,
-#' but returns a list. This function provides a workaround by calling
-#' [purrr::list_c()] on the output of [hubUtils::get_round_ids()] with
+#' [hubUtils::get_round_ids()] with `flatten = "all"`
+#' returns a vector, but may duplicate round_ids when
+#' `round_id_from_variable: true`.
+#' [hubUtils::get_round_ids()] with
+#' `flatten = "model_task"` handles both
+#' `round_id_from_variable: true` and
+#' `round_id_from_variable: false`, but returns a
+#' list. This function provides a workaround by calling
+#' [purrr::list_c()] on the output of
+#' [hubUtils::get_round_ids()] with
 #' `flatten = "model_task"`.
 #'
-#' @param config_tasks List of Hub tasks, as the
-#' output of [hubUtils::read_config()] or the `config_tasks`
+#' @param config_tasks List of Hub tasks, as the output
+#' of [hubUtils::read_config()] or the `config_tasks`
 #' attribute of a [`<hub_connection>`][hubData::connect_hub()].
 #' @return Unique round ids, as a vector.
 #'
@@ -33,16 +38,19 @@ get_round_ids_vec <- function(config_tasks) {
 }
 
 
-#' Get a `tibble` of all modeling tasks specified on the Hub.
+#' Get a `tibble` of all modeling tasks specified on the
+#' Hub.
 #'
 #' @param hub_path Path to the hub root.
 #' @param ... additional arguments passed to
 #' [hubValidations::expand_model_out_grid()].
-#' @return A [`tibble`][tibble::tibble()] of modeling tasks,
+#' @return A [`tibble`][tibble::tibble()] of modeling
+#' tasks.
 #'
 #' @examples
 #'
-#' get_hub_tasks(system.file("testhubs/v6/target_dir", package = "hubUtils"))
+#' get_hub_tasks(system.file("testhubs/v6/target_dir",
+#' package = "hubUtils"))
 #'
 #' @export
 get_hub_tasks <- function(hub_path, ...) {

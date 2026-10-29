@@ -1,20 +1,20 @@
 #' Check if a user is authorized to modify model
 #' directories.
 #'
-#' This function verifies whether a GitHub
-#' user is authorized to modify specific model IDs
-#' in a Hub by checking the designated users in model
-#' metadata.
+#' This function verifies whether a GitHub user is
+#' authorized to modify specific model IDs in a Hub by
+#' checking the designated users in model metadata.
 #'
-#' @param changed_model_ids Character vector. Model IDs that
-#' have been modified.
-#' @param gh_actor Character. GitHub username of the person
-#' making changes.
+#' @param changed_model_ids Character vector. Model IDs
+#' that have been modified.
+#' @param gh_actor Character. GitHub username of the
+#' person making changes.
 #' @param base_hub_path Character. Path to the base hub
 #' directory.
 #'
-#' @return `NULL`, invisibly, raising an error if the user is
-#' unauthorized and printing a success message if the user is authorized.
+#' @return `NULL`, invisibly, raising an error if the
+#' user is unauthorized and printing a success message
+#' if the user is authorized.
 #'
 #' @export
 check_authorized_users <- function(

@@ -1,19 +1,22 @@
 #' Checks latency of input data.
 #'
 #' @param data Data frame containing target data.
-#' @param expected_max_time_value Date. The most recent date for which
-#' observations are expected.
-#' @param target_label Character. Human-readable label for the target.
-#' Default is the variable name of the data object.
-#' @param location_col_name Character. Name of the location column.
-#' Default is "geo_value".
-#' @param date_col_name Character. Name of the date column.
-#' Default is "time_value".
-#' @param overlatent_err_thresh Numeric. Proportion threshold for raising error
-#' vs warning. Default 0.20.
+#' @param expected_max_time_value Date. The most recent
+#' date for which observations are expected.
+#' @param target_label Character. Human-readable label
+#' for the target. Default is the variable name of the
+#' data object.
+#' @param location_col_name Character. Name of the
+#' location column. Default is "geo_value".
+#' @param date_col_name Character. Name of the date
+#' column. Default is "time_value".
+#' @param overlatent_err_thresh Numeric. Proportion
+#' threshold for raising error vs warning. Default
+#' 0.20.
 #'
-#' @return Invisible NULL. Raises warnings or errors
-#' based on the proportion of locations with excess latency.
+#' @return Invisible `NULL`. Raises warnings or errors
+#' based on the proportion of locations with excess
+#' latency.
 #' @export
 assert_data_up_to_date <- function(
   data,

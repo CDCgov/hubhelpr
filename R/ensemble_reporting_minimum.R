@@ -8,8 +8,8 @@
 #' @param directory character, directory under
 #' `hub_reports_path` holding per-hub configuration.
 #' Default: "config".
-#' @param filename character, name of the record within a
-#' hub's configuration directory. Default:
+#' @param filename character, name of the record within
+#' a hub's configuration directory. Default:
 #' "ensemble_reporting_minimums.toml".
 #'
 #' @return The file path, whether or not it exists.
@@ -42,8 +42,8 @@ ens_min_designated_models_file_path <- function(
 #'
 #' @param path character, path to the minimums file.
 #'
-#' @return A tibble with columns `reference_date` and
-#' `n_models`, ordered by `reference_date`.
+#' @return A tibble with columns `reference_date` and `n_models`, ordered
+#' by `reference_date`.
 #' @export
 parse_ens_min_designated_models_file <- function(path) {
   if (!fs::file_exists(path)) {
