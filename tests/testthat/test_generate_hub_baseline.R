@@ -43,7 +43,7 @@ test_that("hindcasts unique value per quantile and in total 23 quantiles", {
   reference_date <- as.Date("2026-04-18")
   forecasts <- make_baseline_forecasts(example_cfa_hub)
   hindcasts <- dplyr::filter(forecasts, horizon == -1L)
-  
+
   # check all forecasts (including hindcasts) are finite
   expect_true(all(is.finite(forecasts$value)))
 
