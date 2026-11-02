@@ -1,6 +1,6 @@
-test_that("baseline hindcasts have the correct target date, also that all quantiles at horizon -1 have unique value and in total we have 23 quantiles", {
+make_baseline_forecasts <- function(source_hub) {
   base_hub_path <- fs::path(withr::local_tempdir(), "covidhub")
-  fs::dir_copy(example_cfa_hub, base_hub_path)
+  fs::dir_copy(source_hub, base_hub_path)
 
   reference_date <- as.Date("2026-04-18")
   output_path <- fs::path(
@@ -14,27 +14,36 @@ test_that("baseline hindcasts have the correct target date, also that all quanti
     fs::file_delete(output_path)
   }
 
-  generate_hub_baseline(
+  hubhelpr::generate_hub_baseline(
     base_hub_path,
     reference_date,
     "covid",
     output_format = "csv"
   )
-  # after generating hub baseline file, check its existence
-  expect_true(fs::file_exists(output_path))
-  forecasts <- forecasttools::read_tabular(output_path)
+  forecasttools::read_tabular(output_path)
+}
 
-  hindcasts <- dplyr::filter(forecasts, horizon == -1L)
-  # now checking that all forecasts/hindcasts have the correct target date -- one week prior to the current reference date
+test_that("baseline hindcasts have the correct target date", {
+  reference_date <- as.Date("2026-04-18")
+  forecasts <- make_baseline_forecasts(example_cfa_hub)
   expect_true(all(as.Date(forecasts$reference_date) == reference_date))
   expect_setequal(forecasts$horizon, -1:3)
   expect_equal(
     as.Date(forecasts$target_end_date),
     reference_date + 7L * forecasts$horizon
   )
-  expect_true(all(
-    as.Date(hindcasts$target_end_date) == reference_date - 7L
-  ))
+})
+test_that("all forecasts are finite", {
+  reference_date <- as.Date("2026-04-18")
+  forecasts <- make_baseline_forecasts(example_cfa_hub)
+  expect_true(all(is.finite(forecasts$value)))
+})
+
+test_that("hindcasts unique value per quantile and in total 23 quantiles", {
+  reference_date <- as.Date("2026-04-18")
+  forecasts <- make_baseline_forecasts(example_cfa_hub)
+  hindcasts <- dplyr::filter(forecasts, horizon == -1L)
+  
   # check all forecasts (including hindcasts) are finite
   expect_true(all(is.finite(forecasts$value)))
 
@@ -53,21 +62,8 @@ test_that("baseline hindcasts have the correct target date, also that all quanti
 # now a final check that guarantees all predicted quantiles do not cross for each group of forecasts:
 
 test_that("baseline quantiles are nondecreasing", {
-  base_hub_path <- fs::path(withr::local_tempdir(), "covidhub")
-  fs::dir_copy(example_cfa_hub, base_hub_path)
-
-  output_path <- fs::path(
-    base_hub_path,
-    "model-output",
-    "CovidHub-baseline",
-    "2026-04-18-CovidHub-baseline.csv"
-  )
-  if (fs::file_exists(output_path)) {
-    fs::file_delete(output_path)
-  }
-
-  generate_hub_baseline(base_hub_path, "2026-04-18", "covid")
-  forecasts <- forecasttools::read_tabular(output_path)
+  reference_date <- as.Date("2026-04-18")
+  forecasts <- make_baseline_forecasts(example_cfa_hub)
 
   expect_true(all(is.finite(forecasts$value)))
 
@@ -107,9 +103,12 @@ test_that("baseline quantiles are nondecreasing", {
     )
 
   expect_setequal(counts$target, names(expected_n_locations))
-  expected <- c(53L, 51L)
+  expected <- unname(expected_n_locations[counts$target])
+
+  tasks <- hubhelpr::get_hub_tasks(example_cfa_hub)
+  n_horizons <- dplyr::n_distinct(tasks$horizon)
 
   expect_equal(counts$n_locations, expected)
-  expect_equal(counts$n_rows, expected * 5L * 23L)
-  expect_equal(nrow(forecasts), sum(expected_n_locations) * 5L * 23L)
+  expect_equal(counts$n_rows, expected * n_horizons * 23L)
+  expect_equal(nrow(forecasts), sum(expected_n_locations) * n_horizons * 23L)
 })
