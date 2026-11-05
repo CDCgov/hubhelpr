@@ -15,10 +15,10 @@ write_ref_date_summary(
 )
 }
 \arguments{
-\item{summary_data}{Summary of forecast data
-for a given reference date, usually the output of
-summarize_ref_date_forecasts() after column selection.
-Must include: \code{location_name}, \code{horizon},
+\item{summary_data}{Summary of forecast data for a
+given reference date, usually the output of
+\code{\link[=summarize_ref_date_forecasts]{summarize_ref_date_forecasts()}} after column
+selection. Must include: \code{location_name}, \code{horizon},
 \code{target}, \code{target_data_type}, \verb{quantile_*},
 \code{target_end_date}, \code{forecast_due_date}, and \code{model}.}
 
@@ -37,8 +37,8 @@ filename (e.g., "map_data", "forecasts_data").}
 \item{output_format}{character, output file format.
 One of "csv", "tsv", or "parquet". Default: "csv".}
 
-\item{overwrite_existing}{logical. If TRUE, overwrite
-existing files. Default: FALSE.}
+\item{overwrite_existing}{logical. If \code{TRUE},
+overwrite existing files. Default: \code{FALSE}.}
 }
 \value{
 invisibly returns the file path where data

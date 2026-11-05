@@ -1,20 +1,22 @@
-#' Create a hub formatted baseline forecast for a single
-#' target.
+#' Create a hub formatted baseline forecast for a
+#' single target.
 #'
 #' @param target_data Data frame of target time series.
-#' Must include `target_end_date`, `location`, `target`,
-#' and `observation` columns.
+#' Must include `target_end_date`, `location`,
+#' `target`, and `observation` columns.
 #' @param target_name Character. Name of the target to
 #' forecast, e.g., "wk inc covid hosp".
 #' @param target_label Character. Label for the target,
-#' e.g., "Hospital Admissions" or "Proportion ED Visits".
+#' e.g., "Hospital Admissions" or "Proportion ED
+#' Visits".
 #' @param reference_date Date. Reference date for the
 #' forecast.
 #' @param desired_max_time_value Date. Most recent date
 #' for which observations are expected.  Function will
 #' error if there is excess latency; see
 #' [assert_data_up_to_date()].
-#' @param rng_seed Integer. Random seed for reproducibility.
+#' @param rng_seed Integer. Random seed for
+#' reproducibility.
 #' @return A data frame of baseline forecasts for the
 #' specified target.
 make_baseline_forecast <- function(
@@ -120,24 +122,26 @@ make_baseline_forecast <- function(
 }
 
 
-#' Generate hub baseline forecasts for a given disease and
-#' reference date.
+#' Generate hub baseline forecasts for a given disease
+#' and reference date.
 #'
 #' @param base_hub_path Path to the base hub directory.
-#' @param reference_date Reference date (should be a Saturday).
+#' @param reference_date Reference date (should be a
+#' Saturday).
 #' @param disease Disease name ("covid" or "rsv").
-#' @param targets Character vector of full target names to
-#' generate baselines for (e.g., c("wk inc covid hosp",
-#' "wk inc covid prop ed visits")). Defaults to NULL,
-#' which generates baselines for all unique targets in
-#' the time-series data.
+#' @param targets Character vector of full target names
+#' to generate baselines for (e.g., c("wk inc covid
+#' hosp", "wk inc covid prop ed visits")). Defaults to
+#' `NULL`, which generates baselines for all unique
+#' targets in the time-series data.
 #' @param as_of As of date to filter to, as an object
-#' coercible by as.Date(), or "latest" to filter to the
-#' most recent available vintage. Default "latest".
+#' coercible by [base::as.Date()], or "latest" to
+#' filter to the most recent available vintage.
+#' Default "latest".
 #' @param output_format Character, output file format.
 #' One of "csv", "tsv", or "parquet". Default: "csv".
-#' @return NULL. Writes baseline forecast file to hub's
-#' model-output directory.
+#' @return `NULL`. Writes baseline forecast file to
+#' hub's model-output directory.
 #' @export
 generate_hub_baseline <- function(
   base_hub_path,

@@ -16,24 +16,27 @@ assert_data_up_to_date(
 \arguments{
 \item{data}{Data frame containing target data.}
 
-\item{expected_max_time_value}{Date. The most recent date for which
-observations are expected.}
+\item{expected_max_time_value}{Date. The most recent
+date for which observations are expected.}
 
-\item{target_label}{Character. Human-readable label for the target.
-Default is the variable name of the data object.}
+\item{target_label}{Character. Human-readable label
+for the target. Default is the variable name of the
+data object.}
 
-\item{location_col_name}{Character. Name of the location column.
-Default is "geo_value".}
+\item{location_col_name}{Character. Name of the
+location column. Default is "geo_value".}
 
-\item{date_col_name}{Character. Name of the date column.
-Default is "time_value".}
+\item{date_col_name}{Character. Name of the date
+column. Default is "time_value".}
 
-\item{overlatent_err_thresh}{Numeric. Proportion threshold for raising error
-vs warning. Default 0.20.}
+\item{overlatent_err_thresh}{Numeric. Proportion
+threshold for raising error vs warning. Default
+0.20.}
 }
 \value{
-Invisible NULL. Raises warnings or errors
-based on the proportion of locations with excess latency.
+Invisible \code{NULL}. Raises warnings or errors
+based on the proportion of locations with excess
+latency.
 }
 \description{
 Checks latency of input data.

@@ -7,8 +7,8 @@
 get_hub_repo_name(disease)
 }
 \arguments{
-\item{disease}{Character. Disease identifier ("covid",
-"rsv", or "flu").}
+\item{disease}{Character. Disease identifier
+("covid", "rsv", or "flu").}
 }
 \value{
 Character. GitHub repository name.

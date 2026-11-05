@@ -7,24 +7,31 @@
 hub_cloud_path(disease, anonymous = TRUE, ...)
 }
 \arguments{
-\item{disease}{Disease identifier for the hub. One of \code{"covid"}, \code{"rsv"},
+\item{disease}{Disease identifier for the hub. One
+of \code{"covid"}, \code{"rsv"},
 or \code{"flu"}.}
 
-\item{anonymous}{Logical. Use anonymous (unauthenticated) access to the
-hub's S3 bucket? Passed through to \code{\link[hubData:s3_bucket]{hubData::s3_bucket()}}. The hubverse
-buckets are public and \code{hubData} interactions are read-only, so
-this defaults to \code{TRUE}.}
+\item{anonymous}{Logical. Use anonymous
+(unauthenticated) access to the
+hub's S3 bucket? Passed through to
+\code{\link[hubData:s3_bucket]{hubData::s3_bucket()}}. The hubverse
+buckets are public and \code{hubData} interactions are
+read-only, so this defaults to \code{TRUE}.}
 
-\item{...}{Additional keyword arguments passed through to
+\item{...}{Additional keyword arguments passed
+through to
 \code{\link[hubData:s3_bucket]{hubData::s3_bucket()}}.}
 }
 \value{
-A \verb{<SubTreeFileSystem>} object pointing at the hub's S3 bucket.
+A \verb{<SubTreeFileSystem>} object pointing at
+the hub's S3 bucket.
 }
 \description{
-Returns a cloud storage path for a supported forecast hub that can be passed
-to \code{\link[hubData:connect_hub]{hubData::connect_hub()}} and related hubverse \verb{connect_*} functions in
-place of a local hub directory path. This avoids having to check out the
+Returns a cloud storage path for a supported
+forecast hub that can be passed to
+\code{\link[hubData:connect_hub]{hubData::connect_hub()}} and related hubverse
+\verb{connect_*} functions in place of a local hub
+directory path. This avoids having to check out the
 hub's GitHub repository to read its data.
 }
 \examples{

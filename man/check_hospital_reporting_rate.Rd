@@ -2,7 +2,8 @@
 % Please edit documentation in R/write_webtext.R
 \name{check_hospital_reporting_rate}
 \alias{check_hospital_reporting_rate}
-\title{Check hospital reporting data latency and completeness.}
+\title{Check hospital reporting data latency and
+completeness.}
 \usage{
 check_hospital_reporting_rate(
   reference_date,
@@ -11,25 +12,25 @@ check_hospital_reporting_rate(
 )
 }
 \arguments{
-\item{reference_date}{Date, the reference date for the
-forecast.}
+\item{reference_date}{Date, the reference date for
+the forecast.}
 
 \item{disease}{Character, disease name ("covid" or
 "rsv").}
 
-\item{excluded_hosp_locations}{Character vector of US
-state/territory abbreviations to exclude from
+\item{excluded_hosp_locations}{Character vector of
+US state/territory abbreviations to exclude from
 expected reporting locations. Pre-resolved for the
 hospital admissions target by the caller. Default:
-NULL (no exclusions).}
+\code{NULL} (no exclusions).}
 }
 \value{
-Character string describing reporting issues,
-or empty string if no issues.
+Character string describing reporting
+issues, or empty string if no issues.
 }
 \description{
 This function retrieves hospital reporting data from
-data.cdc.gov and checks for data latency and reporting
-completeness issues. It returns a flag string
-describing any reporting issues.
+data.cdc.gov and checks for data latency and
+reporting completeness issues. It returns a flag
+string describing any reporting issues.
 }

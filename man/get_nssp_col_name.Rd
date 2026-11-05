@@ -7,7 +7,8 @@
 get_nssp_col_name(disease)
 }
 \arguments{
-\item{disease}{Disease name ("covid", "rsv", or "flu")}
+\item{disease}{Disease name ("covid", "rsv", or
+"flu")}
 }
 \value{
 Character string with the NSSP column name

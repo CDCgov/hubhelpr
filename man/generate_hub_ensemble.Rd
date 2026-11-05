@@ -2,8 +2,8 @@
 % Please edit documentation in R/generate_hub_ensemble.R
 \name{generate_hub_ensemble}
 \alias{generate_hub_ensemble}
-\title{Generate hub ensemble forecasts for a given disease and
-reference date.}
+\title{Generate hub ensemble forecasts for a given disease
+and reference date.}
 \usage{
 generate_hub_ensemble(
   base_hub_path,
@@ -25,24 +25,24 @@ Saturday).}
 \item{targets}{Character vector of full target names
 to generate ensembles for (e.g., c("wk inc covid
 hosp", "wk inc covid prop ed visits")). Defaults to
-NULL, which generates ensembles for all unique
+\code{NULL}, which generates ensembles for all unique
 targets in the time-series data.}
 
 \item{output_format}{Character, output file format.
 One of "csv", "tsv", or "parquet". Default: "csv".}
 
-\item{overwrite_existing}{Logical. If TRUE,
+\item{overwrite_existing}{Logical. If \code{TRUE},
 regenerate the ensemble even when an ensemble file
 for \code{reference_date} is already present in the hub.
-If FALSE (default), error in that case, since the
+If \code{FALSE} (default), error in that case, since the
 existing ensemble has (typically) already been
 reviewed and merged.}
 }
 \value{
-NULL. Writes ensemble forecast file to hub's
-model-output directory.
+\code{NULL}. Writes ensemble forecast file to
+hub's model-output directory.
 }
 \description{
-Generate hub ensemble forecasts for a given disease and
-reference date.
+Generate hub ensemble forecasts for a given disease
+and reference date.
 }

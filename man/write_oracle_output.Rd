@@ -20,13 +20,13 @@ generate_oracle_output(
 \arguments{
 \item{hub_path}{Path to the hub root.}
 
-\item{output_dirpath}{Directory in which to
-write the oracle-output.parquet file. Defaults
-to the \code{target-data} subdirectory of the hub specified
-in \code{hub_path}.}
+\item{output_dirpath}{Directory in which to write
+the oracle-output.parquet file. Defaults to the
+\code{target-data} subdirectory of the hub specified in
+\code{hub_path}.}
 
-\item{ts_date_col}{Name of the date column in
-the \code{time-series} format target data. Will be converted
+\item{ts_date_col}{Name of the date column in the
+\code{time-series} format target data. Will be converted
 to \code{target_end_date} for the oracle output. Default
 \code{target_end_date}.}
 }

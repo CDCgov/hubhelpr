@@ -1,12 +1,11 @@
 #' Create an oracle output table from a Hub.
 #'
 #' @param hub_path Path to the hub root.
-#' @param ts_date_col Name of the date column in
-#' the `time-series` format target data. Will be
-#' converted to `target_end_date` for the oracle output.
-#' Default `target_end_date`.
-#' @return the oracle output table, as a
-#' [`tibble`][tibble::tibble()].
+#' @param ts_date_col Name of the date column in the
+#' `time-series` format target data. Will be converted
+#' to `target_end_date` for the oracle output. Default
+#' `target_end_date`.
+#' @return the oracle output table, as a [`tibble`][tibble::tibble()].
 #' @export
 generate_oracle_output_table <- function(
   hub_path,
@@ -56,12 +55,12 @@ generate_oracle_output_table <- function(
 #' Generate and save oracle output for the Hub.
 #'
 #' @param hub_path Path to the hub root.
-#' @param output_dirpath Directory in which to
-#' write the oracle-output.parquet file. Defaults
-#' to the `target-data` subdirectory of the hub specified
-#' in `hub_path`.
-#' @param ts_date_col Name of the date column in
-#' the `time-series` format target data. Will be converted
+#' @param output_dirpath Directory in which to write
+#' the oracle-output.parquet file. Defaults to the
+#' `target-data` subdirectory of the hub specified in
+#' `hub_path`.
+#' @param ts_date_col Name of the date column in the
+#' `time-series` format target data. Will be converted
 #' to `target_end_date` for the oracle output. Default
 #' `target_end_date`.
 #'

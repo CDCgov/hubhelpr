@@ -1,7 +1,7 @@
 #' Population Data by Location
 #'
-#' A dataset containing population information for US states and national level based on
-#' 2023 census data.
+#' A dataset containing population information for US
+#' states and national level based on 2023 census data.
 #'
 #' @format A data frame with 2 variables:
 #' \describe{

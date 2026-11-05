@@ -7,8 +7,9 @@
 parse_exclusion_file(path)
 }
 \arguments{
-\item{path}{character, path to the exclusions file. A hub with
-nothing to exclude keeps a file with no entries.}
+\item{path}{character, path to the exclusions file.
+A hub with nothing to exclude keeps a file with no
+entries.}
 }
 \value{
 Named list of exclusions keyed by reference
@@ -16,11 +17,11 @@ date, each element a named list accepted by
 \code{\link[=apply_target_location_exclusions]{apply_target_location_exclusions()}}.
 }
 \description{
-The file is TOML keyed by reference date, where each value
-takes either form the \code{generate-viz-data} action accepts for
-\code{excluded_locations}: an array of abbreviations applying to
-every target, or a table mapping target names (or \code{all}) to
-arrays.
+The file is TOML keyed by reference date, where each
+value takes either form the \code{generate-viz-data}
+action accepts for \code{excluded_locations}: an array of
+abbreviations applying to every target, or a table
+mapping target names (or \code{all}) to arrays.
 }
 \details{
 \if{html}{\out{<div class="sourceCode toml">}}\preformatted{2025-01-01 = \{ all = ["VI"], "wk inc covid hosp" = ["GU"] \}

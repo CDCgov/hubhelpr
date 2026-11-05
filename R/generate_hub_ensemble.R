@@ -74,8 +74,8 @@ ensemble_by_target <- function(
 }
 
 
-#' Generate hub ensemble forecasts for a given disease and
-#' reference date.
+#' Generate hub ensemble forecasts for a given disease
+#' and reference date.
 #'
 #' @param base_hub_path Path to the base hub directory.
 #' @param reference_date Reference date (should be a
@@ -84,18 +84,18 @@ ensemble_by_target <- function(
 #' @param targets Character vector of full target names
 #' to generate ensembles for (e.g., c("wk inc covid
 #' hosp", "wk inc covid prop ed visits")). Defaults to
-#' NULL, which generates ensembles for all unique
+#' `NULL`, which generates ensembles for all unique
 #' targets in the time-series data.
 #' @param output_format Character, output file format.
 #' One of "csv", "tsv", or "parquet". Default: "csv".
-#' @param overwrite_existing Logical. If TRUE,
+#' @param overwrite_existing Logical. If `TRUE`,
 #' regenerate the ensemble even when an ensemble file
 #' for `reference_date` is already present in the hub.
-#' If FALSE (default), error in that case, since the
+#' If `FALSE` (default), error in that case, since the
 #' existing ensemble has (typically) already been
 #' reviewed and merged.
-#' @return NULL. Writes ensemble forecast file to hub's
-#' model-output directory.
+#' @return `NULL`. Writes ensemble forecast file to
+#' hub's model-output directory.
 #' @export
 generate_hub_ensemble <- function(
   base_hub_path,

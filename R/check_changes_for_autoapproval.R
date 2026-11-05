@@ -1,19 +1,21 @@
 #' Check changed files for auto-approval eligibility.
 #'
-#' This function processes a list of changed files from a
-#' GitHub workflow, errors on any changes outside
+#' This function processes a list of changed files from
+#' a GitHub workflow, errors on any changes outside
 #' model-output directory, and passes model IDs to
 #' check_authorized_users for authorization validation.
 #'
-#' @param changed_files Character vector. List of changed
-#' file paths from the GitHub changed-files workflow output.
+#' @param changed_files Character vector. List of
+#' changed file paths from the GitHub changed-files
+#' workflow output.
 #' @param gh_actor Character. GitHub username of the
 #' person making changes.
 #' @param base_hub_path Character. Path to the base hub
 #' directory.
 #'
 #' @return `NULL`, invisibly, raising an error if changes
-#' are outside model-output or if the user is unauthorized.
+#' are outside model-output or if the user is
+#' unauthorized.
 #'
 #' @export
 check_changes_for_autoapproval <- function(

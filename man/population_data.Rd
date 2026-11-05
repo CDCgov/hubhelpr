@@ -18,7 +18,7 @@ data-raw/population_data.R
 population_data
 }
 \description{
-A dataset containing population information for US states and national level based on
-2023 census data.
+A dataset containing population information for US
+states and national level based on 2023 census data.
 }
 \keyword{datasets}

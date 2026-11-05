@@ -18,16 +18,16 @@ get_hubverse_format_nhsn_data(
 \item{as_of}{As-of date of the data pull. Default is
 the system date as determined by \code{\link[lubridate:today]{lubridate::today()}}.}
 
-\item{start_date}{First week-ending
-date to include for the NHSN dataset. Default value
-is NULL (no filtering).}
+\item{start_date}{First week-ending date to include
+for the NHSN dataset. Default value is \code{NULL} (no
+filtering).}
 
-\item{end_date}{Last week-ending
-date to include for the NHSN dataset. Default value
-is NULL (no filtering).}
+\item{end_date}{Last week-ending date to include for
+the NHSN dataset. Default value is \code{NULL} (no
+filtering).}
 
-\item{date_col_name}{Character. Name for the date column
-in the output. Default is "target_end_date".}
+\item{date_col_name}{Character. Name for the date
+column in the output. Default is "target_end_date".}
 }
 \value{
 Data frame with formatted NHSN data.

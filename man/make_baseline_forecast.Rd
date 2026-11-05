@@ -2,8 +2,8 @@
 % Please edit documentation in R/generate_hub_baselines.R
 \name{make_baseline_forecast}
 \alias{make_baseline_forecast}
-\title{Create a hub formatted baseline forecast for a single
-target.}
+\title{Create a hub formatted baseline forecast for a
+single target.}
 \usage{
 make_baseline_forecast(
   target_data,
@@ -16,14 +16,15 @@ make_baseline_forecast(
 }
 \arguments{
 \item{target_data}{Data frame of target time series.
-Must include \code{target_end_date}, \code{location}, \code{target},
-and \code{observation} columns.}
+Must include \code{target_end_date}, \code{location},
+\code{target}, and \code{observation} columns.}
 
 \item{target_name}{Character. Name of the target to
 forecast, e.g., "wk inc covid hosp".}
 
 \item{target_label}{Character. Label for the target,
-e.g., "Hospital Admissions" or "Proportion ED Visits".}
+e.g., "Hospital Admissions" or "Proportion ED
+Visits".}
 
 \item{reference_date}{Date. Reference date for the
 forecast.}
@@ -33,13 +34,14 @@ for which observations are expected.  Function will
 error if there is excess latency; see
 \code{\link[=assert_data_up_to_date]{assert_data_up_to_date()}}.}
 
-\item{rng_seed}{Integer. Random seed for reproducibility.}
+\item{rng_seed}{Integer. Random seed for
+reproducibility.}
 }
 \value{
 A data frame of baseline forecasts for the
 specified target.
 }
 \description{
-Create a hub formatted baseline forecast for a single
-target.
+Create a hub formatted baseline forecast for a
+single target.
 }

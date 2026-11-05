@@ -11,8 +11,8 @@ apply_target_location_exclusions(data, excluded_locations, base_hub_path)
 \item{data}{Data frame with "target" and "location"
 columns.}
 
-\item{excluded_locations}{NULL, character vector, or
-named list of US state/territory abbreviations to
+\item{excluded_locations}{\code{NULL}, character vector,
+or named list of US state/territory abbreviations to
 exclude. If a character vector, locations are
 excluded across all targets. If a named list, names
 should be target names (or "all" for global
@@ -29,10 +29,10 @@ Data frame with excluded rows removed.
 \description{
 Removes rows from a data frame based on
 target-specific excluded location abbreviations.
-Supports uniform exclusions (character vector applied
-to all targets) and target-specific exclusions (named
-list with target names as keys). Validates target
-names against hub-supported targets from the hub
-configuration. Filters on the "target" and "location"
-columns via anti-join.
+Supports uniform exclusions (character vector
+applied to all targets) and target-specific
+exclusions (named list with target names as keys).
+Validates target names against hub-supported targets
+from the hub configuration. Filters on the "target"
+and "location" columns via anti-join.
 }

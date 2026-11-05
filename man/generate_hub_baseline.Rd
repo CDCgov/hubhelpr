@@ -2,8 +2,8 @@
 % Please edit documentation in R/generate_hub_baselines.R
 \name{generate_hub_baseline}
 \alias{generate_hub_baseline}
-\title{Generate hub baseline forecasts for a given disease and
-reference date.}
+\title{Generate hub baseline forecasts for a given disease
+and reference date.}
 \usage{
 generate_hub_baseline(
   base_hub_path,
@@ -17,28 +17,30 @@ generate_hub_baseline(
 \arguments{
 \item{base_hub_path}{Path to the base hub directory.}
 
-\item{reference_date}{Reference date (should be a Saturday).}
+\item{reference_date}{Reference date (should be a
+Saturday).}
 
 \item{disease}{Disease name ("covid" or "rsv").}
 
-\item{targets}{Character vector of full target names to
-generate baselines for (e.g., c("wk inc covid hosp",
-"wk inc covid prop ed visits")). Defaults to NULL,
-which generates baselines for all unique targets in
-the time-series data.}
+\item{targets}{Character vector of full target names
+to generate baselines for (e.g., c("wk inc covid
+hosp", "wk inc covid prop ed visits")). Defaults to
+\code{NULL}, which generates baselines for all unique
+targets in the time-series data.}
 
 \item{as_of}{As of date to filter to, as an object
-coercible by as.Date(), or "latest" to filter to the
-most recent available vintage. Default "latest".}
+coercible by \code{\link[base:as.Date]{base::as.Date()}}, or "latest" to
+filter to the most recent available vintage.
+Default "latest".}
 
 \item{output_format}{Character, output file format.
 One of "csv", "tsv", or "parquet". Default: "csv".}
 }
 \value{
-NULL. Writes baseline forecast file to hub's
-model-output directory.
+\code{NULL}. Writes baseline forecast file to
+hub's model-output directory.
 }
 \description{
-Generate hub baseline forecasts for a given disease and
-reference date.
+Generate hub baseline forecasts for a given disease
+and reference date.
 }

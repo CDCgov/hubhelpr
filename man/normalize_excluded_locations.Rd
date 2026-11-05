@@ -7,17 +7,17 @@
 normalize_excluded_locations(excluded_locations)
 }
 \arguments{
-\item{excluded_locations}{NULL, character vector, or
-named list of character vectors.}
+\item{excluded_locations}{\code{NULL}, character vector,
+or named list of character vectors.}
 }
 \value{
-Named list of character vectors, empty when there is
-nothing to exclude.
+Named list of character vectors, empty when
+there is nothing to exclude.
 }
 \description{
-Converts a character vector or named list of excluded
-locations into a consistent named list format.
-Validates that all abbreviations are valid US
-state/territory abbreviations.
+Converts a character vector or named list of
+excluded locations into a consistent named list
+format. Validates that all abbreviations are valid
+US state/territory abbreviations.
 }
 \keyword{internal}

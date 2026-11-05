@@ -7,12 +7,12 @@
 get_target_data_type(target)
 }
 \arguments{
-\item{target}{Character. Full target name (e.g.,
-"wk inc covid hosp").}
+\item{target}{Character. Full target name (e.g., "wk
+inc covid hosp").}
 }
 \value{
-Character. Target data type ("hosp", "prop_ed",
-or NA if unrecognized).
+Character. Target data type ("hosp",
+"prop_ed", or \code{NA} if unrecognized).
 }
 \description{
 Converts full target strings to data type for use in

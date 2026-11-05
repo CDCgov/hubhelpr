@@ -3,10 +3,10 @@
 #' This helper writes a summary data frame to disk in
 #' the specified format.
 #'
-#' @param summary_data Summary of forecast data
-#' for a given reference date, usually the output of
-#' summarize_ref_date_forecasts() after column selection.
-#' Must include: `location_name`, `horizon`,
+#' @param summary_data Summary of forecast data for a
+#' given reference date, usually the output of
+#' [summarize_ref_date_forecasts()] after column
+#' selection. Must include: `location_name`, `horizon`,
 #' `target`, `target_data_type`, `quantile_*`,
 #' `target_end_date`, `forecast_due_date`, and `model`.
 #' @param reference_date character, the reference date
@@ -19,8 +19,8 @@
 #' filename (e.g., "map_data", "forecasts_data").
 #' @param output_format character, output file format.
 #' One of "csv", "tsv", or "parquet". Default: "csv".
-#' @param overwrite_existing logical. If TRUE, overwrite
-#' existing files. Default: FALSE.
+#' @param overwrite_existing logical. If `TRUE`,
+#' overwrite existing files. Default: `FALSE`.
 #'
 #' @return invisibly returns the file path where data
 #' was written.
@@ -64,7 +64,7 @@ write_ref_date_summary <- function(
 #'
 #' @param ensemble_summary_data Hub ensemble forecast
 #' summary data, usually output of
-#' summarize_ref_date_forecasts() filtered to include
+#' [summarize_ref_date_forecasts()] filtered to include
 #' only ensemble. Must include `model_id`,
 #' `reference_date`, `target`, `location`, and `horizon`.
 #' @param ensemble_model_name character, model id for
@@ -74,8 +74,8 @@ write_ref_date_summary <- function(
 #' @param base_hub_path character, path to the forecast
 #' hub directory.
 #' @param targets character vector, target name(s) to
-#' filter forecasts. If NULL (default), does not filter
-#' by target.
+#' filter forecasts. If `NULL` (default), does not
+#' filter by target.
 #' @param horizons_to_include integer vector, horizons
 #' to include in the output.
 #' @param n_models_for_ens_reporting integer, minimum
@@ -139,28 +139,30 @@ filter_reportable_ensemble <- function(
 #' @param horizons_to_include integer vector, horizons
 #' to include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
-#' "location" and "population". Default: population_data.
-#' @param excluded_locations NULL, character vector, or
-#' named list of US state/territory abbreviations to
+#' "location" and "population". Default:
+#' population_data.
+#' @param excluded_locations `NULL`, character vector,
+#' or named list of US state/territory abbreviations to
 #' exclude. If a character vector, locations are
 #' excluded across all targets. If a named list, names
 #' should be target names (or "all" for global
 #' exclusions) mapping to character vectors of
-#' abbreviations. Default: NULL (no exclusions).
+#' abbreviations. Default: `NULL` (no exclusions).
 #' @param output_format character, output file format.
 #' One of "csv", "tsv", or "parquet". Default: "csv".
 #' @param targets character vector, target name(s) to
-#' filter forecasts. If NULL (default), does not filter
-#' by target.
+#' filter forecasts. If `NULL` (default), does not
+#' filter by target.
 #' @param n_models_for_ens_reporting integer, minimum
 #' number of designated model submissions required to
 #' include an ensemble forecast in the report. Default:
-#' NULL, which uses the minimum designated for
-#' `reference_date`, so that regenerating an older report
-#' applies the rule it was published under rather than
-#' today's. See [get_reference_date_ens_minimum()].
-#' @param overwrite_existing logical. If TRUE, overwrite
-#' existing files. Default: FALSE.
+#' `NULL`, which uses the minimum designated for
+#' `reference_date`, so that regenerating an older
+#' report applies the rule it was published under
+#' rather than today's. See
+#' [get_reference_date_ens_minimum()].
+#' @param overwrite_existing logical. If `TRUE`, overwrite
+#' existing files. Default: `FALSE`.
 #'
 #' @return invisibly returns the file path where data
 #' was written.
@@ -261,32 +263,32 @@ write_ref_date_summary_ens <- function(
 #' hub reports directory.
 #' @param disease character, disease name ("covid" or
 #' "rsv").
-#' @param horizons_to_include integer vector, horizons to
-#' include in the output. Default: c(0, 1, 2).
+#' @param horizons_to_include integer vector, horizons
+#' to include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
 #' "location" and "population". Default: [population_data].
-#' @param excluded_locations NULL, character vector, or
-#' named list of US state/territory abbreviations to
+#' @param excluded_locations `NULL`, character vector,
+#' or named list of US state/territory abbreviations to
 #' exclude. If a character vector, locations are
 #' excluded across all targets. If a named list, names
 #' should be target names (or "all" for global
 #' exclusions) mapping to character vectors of
-#' abbreviations. Default: NULL (no exclusions).
+#' abbreviations. Default: `NULL` (no exclusions).
 #' @param output_format character, output file format.
 #' One of "csv", "tsv", or "parquet". Default: "csv".
 #' @param targets character vector, target name(s) to
-#' filter forecasts. If NULL (default), does not filter
-#' by target.
+#' filter forecasts. If `NULL` (default), does not
+#' filter by target.
 #' @param n_models_for_ens_reporting integer, minimum
 #' number of designated model submissions required to
 #' include an ensemble forecast in the report. Default:
-#' NULL, which uses the minimum reporting rule for the
+#' `NULL`, which uses the minimum reporting rule for the
 #' `reference_date`, so that regenerating an older
 #' report applies the rule it was published under
 #' rather than today's rule. See
 #' [get_reference_date_ens_minimum()].
-#' @param overwrite_existing logical. If TRUE,
-#' overwrite existing files. Default: FALSE.
+#' @param overwrite_existing logical. If `TRUE`, overwrite
+#' existing files. Default: `FALSE`.
 #'
 #' @return invisibly returns the file path where data
 #' was written.

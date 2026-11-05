@@ -17,37 +17,39 @@ write_webtext(
 )
 }
 \arguments{
-\item{reference_date}{Character, the reference date for
-the forecast in YYYY-MM-DD format (ISO-8601).}
+\item{reference_date}{Character, the reference date
+for the forecast in YYYY-MM-DD format (ISO-8601).}
 
-\item{disease}{Character, disease name ("covid" or "rsv").}
+\item{disease}{Character, disease name ("covid" or
+"rsv").}
 
-\item{base_hub_path}{Character, path to the forecast hub
-directory.}
+\item{base_hub_path}{Character, path to the forecast
+hub directory.}
 
-\item{hub_reports_path}{Character, path to forecast hub
-reports directory.}
+\item{hub_reports_path}{Character, path to forecast
+hub reports directory.}
 
 \item{targets}{Character vector of target names to
-generate text for. Default NULL discovers targets
+generate text for. Default \code{NULL} discovers targets
 from hub time-series data.}
 
-\item{excluded_locations}{NULL, character vector, or
-named list of US state/territory abbreviations to
-exclude. If a character vector, locations are excluded
-across all targets. If a named list, names should be
-target names (or "all" for global exclusions) mapping
-to character vectors of abbreviations. Default: NULL
-(no exclusions).}
+\item{excluded_locations}{\code{NULL}, character vector,
+or named list of US state/territory abbreviations to
+exclude. If a character vector, locations are
+excluded across all targets. If a named list, names
+should be target names (or "all" for global
+exclusions) mapping to character vectors of
+abbreviations. Default: \code{NULL} (no exclusions).}
 
 \item{input_format}{Character, input file format for
 reading summary data files. One of "csv", "tsv", or
 "parquet". Default: "csv".}
 
-\item{overwrite_existing}{logical. If TRUE, overwrite
-existing files. Default: FALSE.}
+\item{overwrite_existing}{logical. If \code{TRUE},
+overwrite existing files. Default: \code{FALSE}.}
 }
 \description{
-Generates formatted text summary for a single disease
-and saves it to disk. Run separately for each disease.
+Generates formatted text summary for a single
+disease and saves it to disk. Run separately for
+each disease.
 }

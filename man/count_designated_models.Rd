@@ -18,29 +18,30 @@ count_designated_models(
 directory.}
 
 \item{reference_dates}{character or Date vector of
-reference dates in YYYY-MM-DD format. If NULL
+reference dates in YYYY-MM-DD format. If \code{NULL}
 (default), includes all available reference dates.}
 
 \item{targets}{character vector of target names to
-include. If NULL (default), includes all supported
+include. If \code{NULL} (default), includes all supported
 targets.}
 
-\item{horizons}{integer vector of horizons to include.
-If NULL (default), includes all available horizons.}
+\item{horizons}{integer vector of horizons to
+include. If \code{NULL} (default), includes all available
+horizons.}
 
 \item{output_types}{character vector of output types
-to include. Default: NULL (include all available
+to include. Default: \code{NULL} (include all available
 output types).}
 }
 \value{
 A tibble with columns \code{reference_date},
-\code{target}, \code{location}, \code{horizon}, \code{output_type},
-and \code{n_models}.
+\code{target}, \code{location}, \code{horizon}, \code{output_type}, and
+\code{n_models}.
 }
 \description{
 Gets the number of designated models that
-contributed forecasts for each combination of target,
-location, reference date, and horizon; useful for
-checking minimum model thresholds for ensemble
-reporting.
+contributed forecasts for each combination of
+target, location, reference date, and horizon;
+useful for checking minimum model thresholds for
+ensemble reporting.
 }

@@ -1,31 +1,35 @@
-#' Summarize forecast hub data for a specific reference date.
+#' Summarize forecast hub data for a specific reference
+#' date.
 #'
 #' This function generates a tibble of forecast data
-#' for a given reference date. It can filter by model IDs;
-#' allows flexibility retrieve all models or specific
-#' subsets (e.g., ensemble only).
+#' for a given reference date. It can filter by model
+#' IDs; allows flexibility retrieve all models or
+#' specific subsets (e.g., ensemble only).
 #'
-#' @param reference_date character, the reference date for
-#' the forecast in YYYY-MM-DD format (ISO-8601).
-#' @param base_hub_path character, path to the forecast hub
-#' directory.
+#' @param reference_date character, the reference date
+#' for the forecast in YYYY-MM-DD format (ISO-8601).
+#' @param base_hub_path character, path to the forecast
+#' hub directory.
 #' @param disease character, disease name ("covid" or
 #' "rsv"). Used to derive hub name and file prefix.
-#' @param population_data data frame with columns "location"
-#' and "population". Adds population-based calculations.
-#' @param horizons_to_include integer vector, horizons to
-#' include in the output. Default: c(0, 1, 2).
-#' @param excluded_locations NULL, character vector, or
-#' named list of US state/territory abbreviations to
-#' exclude. If a character vector, locations are excluded
-#' across all targets. If a named list, names should be
-#' target names (or "all" for global exclusions) mapping
-#' to character vectors of abbreviations. Converted to
-#' hub codes internally. Default: NULL (no exclusions).
-#' @param targets character vector, target name(s) to filter
-#' forecasts. If NULL (default), does not filter by target.
-#' @param model_ids character vector of model IDs to include.
-#' If NULL (default), includes all models.
+#' @param population_data data frame with columns
+#' "location" and "population". Adds population-based
+#' calculations.
+#' @param horizons_to_include integer vector, horizons
+#' to include in the output. Default: c(0, 1, 2).
+#' @param excluded_locations `NULL`, character vector,
+#' or named list of US state/territory abbreviations to
+#' exclude. If a character vector, locations are
+#' excluded across all targets. If a named list, names
+#' should be target names (or "all" for global
+#' exclusions) mapping to character vectors of
+#' abbreviations. Converted to hub codes internally.
+#' Default: `NULL` (no exclusions).
+#' @param targets character vector, target name(s) to
+#' filter forecasts. If `NULL` (default), does not
+#' filter by target.
+#' @param model_ids character vector of model IDs to
+#' include. If `NULL` (default), includes all models.
 #'
 #' @return tibble containing forecast summary data
 #'
