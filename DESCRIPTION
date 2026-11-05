@@ -49,6 +49,7 @@ Remotes:
     epiprocess=github::cmu-delphi/epiprocess
 Additional_repositories: https://hubverse-org.r-universe.dev
 Suggests:
+    arrow,
     httptest2,
     testthat (>= 3.3.0),
     withr
