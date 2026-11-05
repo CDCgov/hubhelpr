@@ -14,33 +14,35 @@ write_viz_target_data(
   start_date = NULL,
   end_date = NULL,
   excluded_locations = NULL,
+  drop_missing_observations = TRUE,
   output_format = "csv",
   overwrite_existing = FALSE
 )
 }
 \arguments{
-\item{reference_date}{Character, the reference date for
-the forecast in YYYY-MM-DD format (ISO-8601).}
+\item{reference_date}{Character, the reference date
+for the forecast in YYYY-MM-DD format (ISO-8601).}
 
-\item{base_hub_path}{Character, path to the forecast hub
-directory.}
+\item{base_hub_path}{Character, path to the forecast
+hub directory.}
 
-\item{hub_reports_path}{Character, path to forecast hub
-reports directory.}
+\item{hub_reports_path}{Character, path to forecast
+hub reports directory.}
 
-\item{disease}{Character, disease name ("covid" or "rsv").}
+\item{disease}{Character, disease name ("covid" or
+"rsv").}
 
-\item{use_hub_data}{Logical, whether to read data from
-the hub's time-series file (TRUE) or pull fresh data
-from sources (FALSE). Default: FALSE.}
+\item{use_hub_data}{Logical, whether to read data
+from the hub's time-series file (TRUE) or pull fresh
+data from sources (FALSE). Default: FALSE.}
 
-\item{as_of}{As of date to filter to, as an object coercible
-by as.Date(), or "latest" to filter to the most recent
-available vintage. Default "latest". Used only when
-use_hub_data = TRUE.}
+\item{as_of}{As of date to filter to, as an object
+coercible by as.Date(), or "latest" to filter to
+the most recent available vintage. Default "latest".
+Used only when use_hub_data = TRUE.}
 
-\item{start_date}{Date, earliest date to include in data.
-Default: NULL (no filtering). Used only when
+\item{start_date}{Date, earliest date to include in
+data. Default: NULL (no filtering). Used only when
 use_hub_data = FALSE.}
 
 \item{end_date}{Date, latest date to include in data.
@@ -49,27 +51,33 @@ use_hub_data = FALSE.}
 
 \item{excluded_locations}{NULL, character vector, or
 named list of US state/territory abbreviations to
-exclude. If a character vector, locations are excluded
-across all targets. If a named list, names should be
-target names (or "all" for global exclusions) mapping
-to character vectors of abbreviations. Converted to
-hub codes internally. Default: NULL (no exclusions).}
+exclude. If a character vector, locations are
+excluded across all targets. If a named list, names
+should be target names (or "all" for global
+exclusions) mapping to character vectors of
+abbreviations. Converted to hub codes internally.
+Default: NULL (no exclusions).}
 
-\item{output_format}{Character, output file format. One
-of "csv", "tsv", or "parquet". Default: "csv".}
+\item{drop_missing_observations}{Logical, whether to
+drop rows whose observation is missing. Set FALSE to
+keep them. Default: TRUE.}
 
-\item{overwrite_existing}{logical. If TRUE, overwrite
-existing files. Default: FALSE.}
+\item{output_format}{Character, output file format.
+One of "csv", "tsv", or "parquet". Default: "csv".}
+
+\item{overwrite_existing}{logical. If TRUE,
+overwrite existing files. Default: FALSE.}
 }
 \value{
 Invisibly returns file path where data was
 written.
 }
 \description{
-This function reads target data either from the hub's
-time-series file using hubData or by pulling data
-from NHSN and NSSP APIs, then writes to the
-weekly-summaries directory for use by the visualization
-webpage. Output includes columns: week_ending_date,
-location, location_name, target, target_data_type, and value.
+This function reads target data either from the
+hub's time-series file using hubData or by pulling
+data from NHSN and NSSP APIs, then writes to the
+weekly-summaries directory for use by the
+visualization webpage. Output includes columns:
+week_ending_date, location, location_name, target,
+target_data_type, and value.
 }

@@ -1,43 +1,49 @@
 #' Write target data for visualization to disk.
 #'
-#' This function reads target data either from the hub's
-#' time-series file using hubData or by pulling data
-#' from NHSN and NSSP APIs, then writes to the
-#' weekly-summaries directory for use by the visualization
-#' webpage. Output includes columns: week_ending_date,
-#' location, location_name, target, target_data_type, and value.
+#' This function reads target data either from the
+#' hub's time-series file using hubData or by pulling
+#' data from NHSN and NSSP APIs, then writes to the
+#' weekly-summaries directory for use by the
+#' visualization webpage. Output includes columns:
+#' week_ending_date, location, location_name, target,
+#' target_data_type, and value.
 #'
-#' @param reference_date Character, the reference date for
-#' the forecast in YYYY-MM-DD format (ISO-8601).
-#' @param base_hub_path Character, path to the forecast hub
-#' directory.
-#' @param hub_reports_path Character, path to forecast hub
-#' reports directory.
-#' @param disease Character, disease name ("covid" or "rsv").
-#' @param use_hub_data Logical, whether to read data from
-#' the hub's time-series file (TRUE) or pull fresh data
-#' from sources (FALSE). Default: FALSE.
-#' @param as_of As of date to filter to, as an object coercible
-#' by as.Date(), or "latest" to filter to the most recent
-#' available vintage. Default "latest". Used only when
-#' use_hub_data = TRUE.
-#' @param start_date Date, earliest date to include in data.
-#' Default: NULL (no filtering). Used only when
+#' @param reference_date Character, the reference date
+#' for the forecast in YYYY-MM-DD format (ISO-8601).
+#' @param base_hub_path Character, path to the forecast
+#' hub directory.
+#' @param hub_reports_path Character, path to forecast
+#' hub reports directory.
+#' @param disease Character, disease name ("covid" or
+#' "rsv").
+#' @param use_hub_data Logical, whether to read data
+#' from the hub's time-series file (TRUE) or pull fresh
+#' data from sources (FALSE). Default: FALSE.
+#' @param as_of As of date to filter to, as an object
+#' coercible by as.Date(), or "latest" to filter to
+#' the most recent available vintage. Default "latest".
+#' Used only when use_hub_data = TRUE.
+#' @param start_date Date, earliest date to include in
+#' data. Default: NULL (no filtering). Used only when
 #' use_hub_data = FALSE.
 #' @param end_date Date, latest date to include in data.
 #' Default: NULL (no filtering). Used only when
 #' use_hub_data = FALSE.
 #' @param excluded_locations NULL, character vector, or
 #' named list of US state/territory abbreviations to
-#' exclude. If a character vector, locations are excluded
-#' across all targets. If a named list, names should be
-#' target names (or "all" for global exclusions) mapping
-#' to character vectors of abbreviations. Converted to
-#' hub codes internally. Default: NULL (no exclusions).
-#' @param output_format Character, output file format. One
-#' of "csv", "tsv", or "parquet". Default: "csv".
-#' @param overwrite_existing logical. If TRUE, overwrite
-#' existing files. Default: FALSE.
+#' exclude. If a character vector, locations are
+#' excluded across all targets. If a named list, names
+#' should be target names (or "all" for global
+#' exclusions) mapping to character vectors of
+#' abbreviations. Converted to hub codes internally.
+#' Default: NULL (no exclusions).
+#' @param drop_missing_observations Logical, whether to
+#' drop rows whose observation is missing. Set FALSE to
+#' keep them. Default: TRUE.
+#' @param output_format Character, output file format.
+#' One of "csv", "tsv", or "parquet". Default: "csv".
+#' @param overwrite_existing logical. If TRUE,
+#' overwrite existing files. Default: FALSE.
 #'
 #' @return Invisibly returns file path where data was
 #' written.
@@ -53,9 +59,11 @@ write_viz_target_data <- function(
   start_date = NULL,
   end_date = NULL,
   excluded_locations = NULL,
+  drop_missing_observations = TRUE,
   output_format = "csv",
   overwrite_existing = FALSE
 ) {
+  checkmate::assert_logical(drop_missing_observations, len = 1)
   if (use_hub_data) {
     target_data <- hubData::connect_target_timeseries(base_hub_path) |>
       forecasttools::hub_target_data_as_of(as_of = as_of) |>
@@ -100,6 +108,9 @@ write_viz_target_data <- function(
       .data$target_end_date >= lubridate::as_date("2024-05-01") &
         .data$target_end_date <= lubridate::as_date("2024-10-31") &
         .data$target_data_type == "hosp"
+    ) |>
+    dplyr::filter_out(
+      !!drop_missing_observations & is.na(.data$observation)
     ) |>
     dplyr::mutate(
       observation = dplyr::if_else(

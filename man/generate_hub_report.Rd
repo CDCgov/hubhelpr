@@ -2,8 +2,8 @@
 % Please edit documentation in R/generate_hub_report.R
 \name{generate_hub_report}
 \alias{generate_hub_report}
-\title{Generate a full report for a disease and reference date
-with sensible, consistent configuration.}
+\title{Generate a full report for a disease and reference
+date with sensible, consistent configuration.}
 \usage{
 generate_hub_report(
   reference_date,
@@ -21,6 +21,7 @@ generate_hub_report(
   observed_data_as_of = "latest",
   observed_data_start_date = NULL,
   observed_data_end_date = NULL,
+  observed_data_drop_missing = TRUE,
   verbose = TRUE
 )
 }
@@ -41,9 +42,9 @@ hub directory.}
 to include in the output. Default: c(0, 1, 2).}
 
 \item{population_data}{data frame with columns
-"location" and "population". Used to compute per-population
-metrics such as rates per 100k from rate counts.
-Default: \link{population_data}.}
+"location" and "population". Used to compute
+per-population metrics such as rates per 100k from
+rate counts. Default: \link{population_data}.}
 
 \item{excluded_locations}{NULL, character vector, or
 named list of US state/territory abbreviations to
@@ -61,42 +62,52 @@ does not filter out targets.}
 number of designated model submissions required to
 include an ensemble forecast in the report. Default:
 NULL, which uses the minimum designated for
-\code{reference_date}, so that regenerating an older report
-applies the rule it was published under rather than
-today's. See \code{\link[=get_reference_date_ens_minimum]{get_reference_date_ens_minimum()}}.}
+\code{reference_date}, so that regenerating an older
+report applies the rule it was published under
+rather than today's. See
+\code{\link[=get_reference_date_ens_minimum]{get_reference_date_ens_minimum()}}.}
 
 \item{output_format}{character, output file format.
 One of "csv", "tsv", or "parquet". Default: "csv".}
 
-\item{overwrite_existing}{logical. If TRUE, overwrite
-existing files. Default: FALSE.}
+\item{overwrite_existing}{logical. If TRUE,
+overwrite existing files. Default: FALSE.}
 
-\item{observed_data_use_hub}{Logical, whether to read data from
-the hub's time-series file (TRUE) or pull fresh data
-from raw sources (FALSE) when creating observed data files.
-Default: \code{FALSE}.}
+\item{observed_data_use_hub}{Logical, whether to
+read data from the hub's time-series file (TRUE) or
+pull fresh data from raw sources (FALSE) when
+creating observed data files. Default: \code{FALSE}.}
 
-\item{observed_data_as_of}{As of date for the observed
-data shown in the report. Either an object coercible by
-\code{\link[=as.Date]{as.Date()}} or "latest" to use the most recent
-available vintage. Default "latest". Used only when
-\code{observed_data_use_hub = TRUE}.}
+\item{observed_data_as_of}{As of date for the
+observed data shown in the report. Either an object
+coercible by \code{\link[=as.Date]{as.Date()}} or "latest" to use the most
+recent available vintage. Default "latest". Used
+only when \code{observed_data_use_hub = TRUE}.}
 
-\item{observed_data_start_date}{Date, earliest date to include in observed
-data shown in the report. Default: NULL (no filtering).
-Used only when \code{observed_data_use_hub = FALSE}.}
+\item{observed_data_start_date}{Date, earliest date
+to include in observed data shown in the report.
+Default: NULL (no filtering). Used only when
+\code{observed_data_use_hub = FALSE}.}
 
-\item{observed_data_end_date}{Date, latest date to include in observed
-data shown in the report. Default: NULL (no filtering).
-Used only when \code{observed_data_use_hub = FALSE}.}
+\item{observed_data_end_date}{Date, latest date to
+include in observed data shown in the report.
+Default: NULL (no filtering). Used only when
+\code{observed_data_use_hub = FALSE}.}
 
-\item{verbose}{Report progress to the terminal? Default \code{TRUE}.}
+\item{observed_data_drop_missing}{Logical, whether
+to drop observed rows whose value is missing.
+Applies to the observed data file only; the
+forecast, map, and webtext outputs are unaffected.
+Default \code{TRUE}.}
+
+\item{verbose}{Report progress to the terminal?
+Default \code{TRUE}.}
 }
 \value{
 NULL, invisibly
 }
 \description{
 Wrapper function for \code{\link[=write_ref_date_summary_ens]{write_ref_date_summary_ens()}},
-\code{\link[=write_ref_date_summary_all]{write_ref_date_summary_all()}}, \code{\link[=write_viz_target_data]{write_viz_target_data()}},
-and \code{\link[=write_webtext]{write_webtext()}}.
+\code{\link[=write_ref_date_summary_all]{write_ref_date_summary_all()}},
+\code{\link[=write_viz_target_data]{write_viz_target_data()}}, and \code{\link[=write_webtext]{write_webtext()}}.
 }

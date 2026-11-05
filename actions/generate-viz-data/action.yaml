@@ -40,6 +40,10 @@ inputs:
     description: "As of date for the observed data shown in the report. Either an string coercible by R's as.Date() or 'latest' to use the most recent available vintage. Used only when observed_data_use_hub is true)"
     required: false
     default: "latest"
+  observed_data_drop_missing:
+    description: "Drop observed rows with NAs. Affects the observed data file only. Defaults to true."
+    required: false
+    default: true
   overwrite_existing:
     description: "Overwrite existing report files, if any?"
     required: false
@@ -94,6 +98,7 @@ runs:
           n_models_for_ens_reporting = n_models_for_ens_reporting,
           observed_data_use_hub = as.logical("${{ inputs.observed_data_use_hub }}"),
           observed_data_as_of = "${{ inputs.observed_data_as_of }}",
+          observed_data_drop_missing = as.logical("${{ inputs.observed_data_drop_missing }}"),
           overwrite_existing = as.logical("${{ inputs.overwrite_existing }}")
         )
 

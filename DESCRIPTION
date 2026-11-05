@@ -1,6 +1,6 @@
 Package: hubhelpr
 Title: Helper functions for CDC hubs maintenance
-Version: 0.2.0
+Version: 0.2.0.9000
 Authors@R:
     c(person("Subekshya", "Bidari",
     email = "zib2@cdc.gov",
@@ -49,6 +49,7 @@ Remotes:
     epiprocess=github::cmu-delphi/epiprocess
 Additional_repositories: https://hubverse-org.r-universe.dev
 Suggests:
+    arrow,
     httptest2,
     testthat (>= 3.3.0),
     withr

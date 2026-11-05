@@ -1,3 +1,10 @@
+# hubhelpr 0.2.0.9000
+
+## Behaviour Changes
+
+- `write_viz_target_data()` now drops rows where observations are missing (rather than add them as NA), via a new `drop_missing_observations` argument defaulting to `TRUE`. Previously, nothing in the visualization path filtered missing values, so upstream nulls were written straight into the `weekly-summaries` observed data files. Only observed data files are affected; the forecast, map, and webtext outputs are unchanged. One can set the argument to `FALSE` to restore the previous behaviour.
+- N.B.: `drop_leading_missing_observations()`, which is used when building hub target data, is unrelated; this trims only the missing weeks before a location's first real observation, so trailing and interior gaps reached the observed data files untouched.
+
 # hubhelpr 0.2.0
 
 ## Breaking Changes

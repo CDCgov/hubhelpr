@@ -1,9 +1,9 @@
-#' Generate a full report for a disease and reference date
-#' with sensible, consistent configuration.
+#' Generate a full report for a disease and reference
+#' date with sensible, consistent configuration.
 #'
 #' Wrapper function for [write_ref_date_summary_ens()],
-#' [write_ref_date_summary_all()], [write_viz_target_data()],
-#' and [write_webtext()].
+#' [write_ref_date_summary_all()],
+#' [write_viz_target_data()], and [write_webtext()].
 #'
 #' @param reference_date character, the reference date
 #' for the forecast in YYYY-MM-DD format (ISO-8601).
@@ -16,9 +16,9 @@
 #' @param horizons integer vector, forecast horizons
 #' to include in the output. Default: c(0, 1, 2).
 #' @param population_data data frame with columns
-#' "location" and "population". Used to compute per-population
-#' metrics such as rates per 100k from rate counts.
-#' Default: [hubhelpr::population_data].
+#' "location" and "population". Used to compute
+#' per-population metrics such as rates per 100k from
+#' rate counts. Default: [hubhelpr::population_data].
 #' @param excluded_locations NULL, character vector, or
 #' named list of US state/territory abbreviations to
 #' exclude. If a character vector, locations are
@@ -35,27 +35,36 @@
 #' number of designated model submissions required to
 #' include an ensemble forecast in the report. Default:
 #' NULL, which uses the minimum designated for
-#' `reference_date`, so that regenerating an older report
-#' applies the rule it was published under rather than
-#' today's. See [get_reference_date_ens_minimum()].
-#' @param overwrite_existing logical. If TRUE, overwrite
-#' existing files. Default: FALSE.
-#' @param observed_data_use_hub Logical, whether to read data from
-#' the hub's time-series file (TRUE) or pull fresh data
-#' from raw sources (FALSE) when creating observed data files.
-#' Default: `FALSE`.
-#' @param observed_data_as_of As of date for the observed
-#' data shown in the report. Either an object coercible by
-#' [as.Date()] or "latest" to use the most recent
-#' available vintage. Default "latest". Used only when
-#' `observed_data_use_hub = TRUE`.
-#' @param observed_data_start_date Date, earliest date to include in observed
-#' data shown in the report. Default: NULL (no filtering).
-#' Used only when `observed_data_use_hub = FALSE`.
-#' @param observed_data_end_date Date, latest date to include in observed
-#' data shown in the report. Default: NULL (no filtering).
-#' Used only when `observed_data_use_hub = FALSE`.
-#' @param verbose Report progress to the terminal? Default `TRUE`.
+#' `reference_date`, so that regenerating an older
+#' report applies the rule it was published under
+#' rather than today's. See
+#' [get_reference_date_ens_minimum()].
+#' @param overwrite_existing logical. If TRUE,
+#' overwrite existing files. Default: FALSE.
+#' @param observed_data_use_hub Logical, whether to
+#' read data from the hub's time-series file (TRUE) or
+#' pull fresh data from raw sources (FALSE) when
+#' creating observed data files. Default: `FALSE`.
+#' @param observed_data_as_of As of date for the
+#' observed data shown in the report. Either an object
+#' coercible by [as.Date()] or "latest" to use the most
+#' recent available vintage. Default "latest". Used
+#' only when `observed_data_use_hub = TRUE`.
+#' @param observed_data_start_date Date, earliest date
+#' to include in observed data shown in the report.
+#' Default: NULL (no filtering). Used only when
+#' `observed_data_use_hub = FALSE`.
+#' @param observed_data_end_date Date, latest date to
+#' include in observed data shown in the report.
+#' Default: NULL (no filtering). Used only when
+#' `observed_data_use_hub = FALSE`.
+#' @param observed_data_drop_missing Logical, whether
+#' to drop observed rows whose value is missing.
+#' Applies to the observed data file only; the
+#' forecast, map, and webtext outputs are unaffected.
+#' Default `TRUE`.
+#' @param verbose Report progress to the terminal?
+#' Default `TRUE`.
 #' @return NULL, invisibly
 #' @export
 generate_hub_report <- function(
@@ -74,6 +83,7 @@ generate_hub_report <- function(
   observed_data_as_of = "latest",
   observed_data_start_date = NULL,
   observed_data_end_date = NULL,
+  observed_data_drop_missing = TRUE,
   verbose = TRUE
 ) {
   base_hub_path <- base_hub_path %||% hub_cloud_path(disease)
@@ -133,6 +143,7 @@ generate_hub_report <- function(
     as_of = observed_data_as_of,
     start_date = observed_data_start_date,
     end_date = observed_data_end_date,
+    drop_missing_observations = observed_data_drop_missing,
     excluded_locations = excluded_locations,
     output_format = output_format,
     overwrite_existing = overwrite_existing
