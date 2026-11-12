@@ -52,7 +52,7 @@ make_baseline_forecast <- function(
     target_label = target_label
   )
 
-  args_list <- epipredict::cdc_baseline_args_list(aheads = 1:4, nsims = 1e5)
+  args_list <- epipredict::cdc_baseline_args_list(aheads = 1:4, nsims = 1e5, n_training =52L)
   preds <- withr::with_rng_version(
     "4.0.0",
     withr::with_seed(rng_seed, {
