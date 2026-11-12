@@ -178,7 +178,6 @@ get_hubverse_format_nhsn_data <- function(
 #' department visit data in hubverse format.
 #'
 #' @param disease Disease name ("covid" or "rsv").
-#' @param base_hub_path Path to the base hub directory.
 #' @param as_of As-of date of the data pull. Default is
 #' the system date as determined by [lubridate::today()].
 #' @param start_date First week-ending
@@ -194,7 +193,6 @@ get_hubverse_format_nhsn_data <- function(
 #' @export
 get_hubverse_format_nssp_data <- function(
   disease,
-  base_hub_path,
   as_of = lubridate::today(),
   start_date = NULL,
   end_date = NULL,
@@ -294,7 +292,6 @@ update_hub_target_data <- function(
 
   nssp_data <- get_hubverse_format_nssp_data(
     disease,
-    base_hub_path,
     as_of = as_of,
     start_date = start_date_nssp
   )

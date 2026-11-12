@@ -28,7 +28,6 @@ httptest2::with_mock_dir(mockdir_target_data, {
   )
   nssp_all <- get_hubverse_format_nssp_data(
     disease = default_test_disease,
-    base_hub_path = tempdir(),
     as_of = default_test_as_of
   )
 
@@ -106,10 +105,7 @@ httptest2::with_mock_dir(mockdir_target_data, {
         drop_leading = drop_leading_missing_observations
       )
       test_get_hubverse_format_data_fn(
-        purrr::partial(
-          get_hubverse_format_nssp_data,
-          base_hub_path = tempdir()
-        ),
+        get_hubverse_format_nssp_data,
         nssp_all
       )
     }
