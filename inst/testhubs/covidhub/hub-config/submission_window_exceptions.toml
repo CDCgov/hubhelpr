@@ -1,0 +1,5 @@
+# one-off exceptions to this hub's submission window, keyed by the calendar
+# date on which submissions are accepted; each value is the reason the
+# exception was put forth.
+
+2026-11-12 = "Veterans Day on the Wednesday submission deadline"
