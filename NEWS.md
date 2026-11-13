@@ -1,4 +1,4 @@
-# hubhelpr 0.2.0.9000
+# hubhelpr 0.3.0
 
 ## Behaviour Changes
 
