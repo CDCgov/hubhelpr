@@ -80,7 +80,6 @@ write_viz_target_data <- function(
     )
     nssp_data <- get_hubverse_format_nssp_data(
       disease,
-      base_hub_path,
       start_date = start_date,
       end_date = end_date
     )

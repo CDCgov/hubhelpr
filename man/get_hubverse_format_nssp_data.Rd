@@ -6,7 +6,6 @@
 \usage{
 get_hubverse_format_nssp_data(
   disease,
-  base_hub_path,
   as_of = lubridate::today(),
   start_date = NULL,
   end_date = NULL,
@@ -15,8 +14,6 @@ get_hubverse_format_nssp_data(
 }
 \arguments{
 \item{disease}{Disease name ("covid" or "rsv").}
-
-\item{base_hub_path}{Path to the base hub directory.}
 
 \item{as_of}{As-of date of the data pull. Default is
 the system date as determined by \code{\link[lubridate:today]{lubridate::today()}}.}
