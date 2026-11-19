@@ -52,14 +52,14 @@ clone_hub_metadata <- function(hub_url, hub_path) {
 hub_contact_emails <- function(hub_path) {
   metadata <- suppressWarnings(hubData::load_model_metadata(hub_path))
   metadata$model_contributors |>
-  unlist(recursive = FALSE) |>
-  purrr::map_chr("email", .default = NA_character_) |>
-  trimws() |>
-  tolower() |>
-  purrr::discard(is.na) |>
-  purrr::keep(nzchar) |>
-  unique() |>
-  sort()
+    unlist(recursive = FALSE) |>
+    purrr::map_chr("email", .default = NA_character_) |>
+    trimws() |>
+    tolower() |>
+    purrr::discard(is.na) |>
+    purrr::keep(nzchar) |>
+    unique() |>
+    sort()
 }
 
 #' Write a contact list for every hub in `HUB_URLS`.
@@ -67,10 +67,9 @@ hub_contact_emails <- function(hub_path) {
 #' @param output_dir character, directory to write the lists into.
 #' @return named list of address vectors, invisibly.
 make_hub_contact_lists <- function(output_dir = ".") {
-  lists <- lapply(names(HUB_URLS), function(hub) {
-    hub_path <- file.path(tempdir(), hub)
-    on.exit(unlink(hub_path, recursive = TRUE), add = TRUE)
-    clone_hub_metadata(HUB_URLS[[hub]], hub_path)
+  lists <- purrr::imap(HUB_URLS, function(hub_url, hub) {
+    hub_path <- withr::local_tempdir()
+    clone_hub_metadata(hub_url, hub_path)
     emails <- hub_contact_emails(hub_path)
     output_path <- file.path(output_dir, paste0(hub, "_contacts.txt"))
     writeLines(emails, output_path)
@@ -79,7 +78,6 @@ make_hub_contact_lists <- function(output_dir = ".") {
     )
     emails
   })
-  names(lists) <- names(HUB_URLS)
   invisible(lists)
 }
 
