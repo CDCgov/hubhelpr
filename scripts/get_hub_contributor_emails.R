@@ -51,12 +51,15 @@ clone_hub_metadata <- function(hub_url, hub_path) {
 #' sorted.
 hub_contact_emails <- function(hub_path) {
   metadata <- suppressWarnings(hubData::load_model_metadata(hub_path))
-  emails <- metadata$model_contributors |>
-    unlist(recursive = FALSE) |>
-    purrr::map_chr("email", .default = NA_character_) |>
-    trimws() |>
-    tolower()
-  sort(unique(emails[!is.na(emails) & nzchar(emails)]))
+  metadata$model_contributors |>
+  unlist(recursive = FALSE) |>
+  purrr::map_chr("email", .default = NA_character_) |>
+  trimws() |>
+  tolower() |>
+  purrr::discard(is.na) |>
+  purrr::keep(nzchar) |>
+  unique() |>
+  sort()
 }
 
 #' Write a contact list for every hub in `HUB_URLS`.
