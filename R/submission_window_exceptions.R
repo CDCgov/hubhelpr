@@ -22,80 +22,99 @@ submission_window_exceptions_file_path <- function(
 #'
 #' @param base_hub_path character, path to the hub directory.
 #'
-#' @return The timezone as a string. "UTC" when `admin.json` is missing or
-#' declares no timezone.
+#' @return The timezone as a string.
 #' @noRd
 hub_timezone <- function(base_hub_path) {
   admin_path <- fs::path(base_hub_path, "hub-config", "admin.json")
   if (!fs::file_exists(admin_path)) {
     return("UTC")
   }
+
   timezone <- jsonlite::read_json(admin_path)$timezone
   if (is.null(timezone)) {
     return("UTC")
   }
-  return(as.character(timezone))
+  timezone <- as.character(timezone)
+
+  if (!timezone %in% OlsonNames()) {
+    cli::cli_warn(c(
+      "{.val {timezone}} in {.path {admin_path}} is not a known timezone.",
+      "i" = "Falling back to UTC. See {.code OlsonNames()} for valid zones."
+    ))
+    return("UTC")
+  }
+
+  return(timezone)
 }
 
 
 #' Parse a hub's submission window exceptions TOML file.
 #'
-#' This TOML file is keyed by the  calendar date where submissions dates are
-#' exceptions. Values here are reasons the exception was granted, e.g.:
+#' This TOML file has a single `dates` array of excepted calendar date
+#' exceptions, written as bare TOML dates. Reasons, if wanted, go in comments:
 #'
 #' ```toml
-#' 2026-11-12 = "NHSN publication delayed past the Wednesday deadline"
+#' dates = [
+#'   2026-01-01, # New Year's Day
+#'   2026-07-04, # Independence Day
+#'   2026-12-25, # Christmas Day
+#' ]
 #' ```
 #'
-#' Exceptions are one-off. Standing changes to the window instead. go in the
-#' hub's `submissions_due` configuration. Only the most recent excepted date
-#' is returned.
+#' Every listed date is excepted, so a deadline can be extended across
+#' several consecutive days by listing each of them. Permanent changes to the
+#' window go in the hub's `submissions_due` configuration instead.
 #'
 #' @param path character, path to the exceptions file.
 #'
-#' @return The latest excepted date, as a `Date` of length one. `NA` of class
-#' `Date` when the file does not exist or records no exceptions, since
+#' @return A `Date` vector of excepted dates, sorted and de-duplicated.
+#' Length zero when the file does not exist or records no exceptions, since
 #' having none is the routine case.
 #' @export
 parse_submission_window_exceptions_file <- function(path) {
-  empty <- lubridate::NA_Date_
+  empty <- lubridate::Date()
 
   if (!fs::file_exists(path)) {
     return(empty)
   }
 
-  contents <- RcppTOML::parseTOML(path)
-  if (length(contents) == 0) {
+  dates <- RcppTOML::parseTOML(path)$dates
+  if (is.null(dates) || length(dates) == 0) {
     return(empty)
   }
 
-  exceptions <- contents |>
-    tibble::enframe(name = "date_raw", value = "reason") |>
-    tidyr::unnest("reason") |>
-    dplyr::mutate(date = lubridate::ymd(.data$date_raw, quiet = TRUE))
+  return(sort(unique(read_exception_dates(dates, path))))
+}
 
-  malformed_dates <- exceptions |>
-    dplyr::filter(is.na(.data$date)) |>
-    dplyr::pull("date_raw")
 
-  if (length(malformed_dates) > 0) {
-    cli::cli_abort(
-      c(
-        "Every key in {.path {path}} must be a calendar date in
-         YYYY-MM-DD format.",
-        "x" = "Found: {.val {malformed_dates}}."
-      )
-    )
+#' Read the `dates` array of an exceptions file as dates.
+#'
+#' @param dates the `dates` element of a parsed exceptions file.
+#' @param path character, path to the file, for error messages.
+#'
+#' @return A `Date` vector of the same length as `dates`.
+#' @noRd
+read_exception_dates <- function(dates, path) {
+  if (inherits(dates, "Date")) {
+    return(dates)
   }
 
-  checkmate::assert_character(
-    exceptions$reason,
-    min.chars = 1,
-    any.missing = FALSE,
-    .var.name = glue::glue("reasons in {path}")
-  )
+  if (!is.character(dates)) {
+    cli::cli_abort(c(
+      "{.field dates} in {.path {path}} must be TOML dates.",
+      "i" = "Write them bare, e.g. {.code dates = [2026-11-12]}."
+    ))
+  }
 
-  return(max(exceptions$date))
+  parsed <- lubridate::ymd(dates, quiet = TRUE)
+  if (anyNA(parsed)) {
+    cli::cli_abort(c(
+      "Every entry of {.field dates} in {.path {path}} must be a calendar
+       date in YYYY-MM-DD format.",
+      "x" = "Found: {.val {dates[is.na(parsed)]}}."
+    ))
+  }
+  return(parsed)
 }
 
 
@@ -126,11 +145,11 @@ is_submission_window_exception <- function(
   }
   date <- lubridate::as_date(date)
 
-  latest_exception <- parse_submission_window_exceptions_file(
+  exceptions <- parse_submission_window_exceptions_file(
     submission_window_exceptions_file_path(base_hub_path)
   )
 
-  if (is.na(latest_exception) || latest_exception != date) {
+  if (!date %in% exceptions) {
     return(FALSE)
   }
 

@@ -10,19 +10,23 @@ parse_submission_window_exceptions_file(path)
 \item{path}{character, path to the exceptions file.}
 }
 \value{
-The latest excepted date, as a \code{Date} of length one. \code{NA} of class
-\code{Date} when the file does not exist or records no exceptions, since
+A \code{Date} vector of excepted dates, sorted and de-duplicated.
+Length zero when the file does not exist or records no exceptions, since
 having none is the routine case.
 }
 \description{
-This TOML file is keyed by the  calendar date where submissions dates are
-exceptions. Values here are reasons the exception was granted, e.g.:
+This TOML file has a single \code{dates} array of excepted calendar date
+exceptions, written as bare TOML dates. Reasons, if wanted, go in comments:
 }
 \details{
-\if{html}{\out{<div class="sourceCode toml">}}\preformatted{2026-11-12 = "NHSN publication delayed past the Wednesday deadline"
+\if{html}{\out{<div class="sourceCode toml">}}\preformatted{dates = [
+  2026-01-01, # New Year's Day
+  2026-07-04, # Independence Day
+  2026-12-25, # Christmas Day
+]
 }\if{html}{\out{</div>}}
 
-Exceptions are one-off. Standing changes to the window instead. go in the
-hub's \code{submissions_due} configuration. Only the most recent excepted date
-is returned.
+Every listed date is excepted, so a deadline can be extended across
+several consecutive days by listing each of them. Permanent changes to the
+window go in the hub's \code{submissions_due} configuration instead.
 }

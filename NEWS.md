@@ -2,7 +2,13 @@
 
 ## New Features
 
-- Added `is_submission_window_exception()` and `parse_submission_window_exceptions_file()`, plus a `check-submission-window-exception` composite action, for granting a hub a one-off exception to its submission window. We want to accept submissions on, for example, a Thursday when the Wednesday before is a federal holiday (e.g., Veterans Day on 2026-11-11). A hub records excepted dates and the reason for each in `hub-config/submission_window_exceptions.toml`; the action emits an `exception` output intended for the `skip_submit_window_check` input of the hubverse `validate-submission` action. The window check itself remains in `hubValidations`; the above feature only decides whether to skip it for a single date.
+- Added `is_submission_window_exception()` and `parse_submission_window_exceptions_file()`, plus a `check-submission-window-exception` composite action, for excepting dates from a hub's submission window. We want to accept submissions on, for example, a Thursday when the Wednesday before is a federal holiday (e.g., Veterans Day on 2026-11-11). A hub lists excepted dates in a `dates` array in `hub-config/submission_window_exceptions.toml`, with reasons as comments if wanted; the action emits an `exception` output intended for the `skip_submit_window_check` input of the hubverse `validate-submission` action. The window check itself remains in `hubValidations`; the above feature only decides whether to skip it.
+
+```toml
+dates = [
+  2026-11-12, # Veterans Day on the Wednesday submission deadline
+]
+```
 
 # hubhelpr 0.3.0
 

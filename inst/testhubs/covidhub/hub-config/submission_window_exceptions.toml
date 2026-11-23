@@ -1,5 +1,9 @@
-# one-off exceptions to this hub's submission window, keyed by the calendar
-# date on which submissions are accepted; each value is the reason the
-# exception was put forth.
+# calendar dates on which submissions are accepted despite falling outside
+# the round's configured submission window. every listed date is excepted,
+# so a deadline can be extended across consecutive days by listing each one.
+#
+# standing changes to the window belong in `submissions_due` in tasks.json.
 
-2026-11-12 = "Veterans Day on the Wednesday submission deadline"
+dates = [
+  2026-11-12, # Veterans Day on the Wednesday submission deadline
+]
