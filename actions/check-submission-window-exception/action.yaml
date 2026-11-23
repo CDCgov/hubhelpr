@@ -1,0 +1,42 @@
+name: "Check Submission Window Exception"
+description: >-
+  Check if the current date is a recorded exception (one-off) for a hub's
+  submission window (routine: Wednesday 11PM ET), for use as the
+  `skip_submit_window_check` input of the hubverse `validate-submission`
+  action.
+
+inputs:
+  base_hub_path:
+    description: "Path to the hub, relative to checkout root."
+    required: false
+    default: "."
+  date:
+    description: >-
+      Date to look up (YYYY-MM-DD). If empty, uses current date in the hub's
+      configured timezone.
+    required: false
+    default: ""
+
+outputs:
+  exception:
+    description: >-
+      "true" when the date is recorded in
+      hub-config/submission_window_exceptions.toml, otherwise "false".
+    value: ${{ steps.check.outputs.exception }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Check Submission Window Exception"
+      id: check
+      shell: Rscript {0}
+      run: |
+        date_input <- "${{ inputs.date }}"
+        exception <- hubhelpr::is_submission_window_exception(
+          base_hub_path = "${{ inputs.base_hub_path }}",
+          date = if (nzchar(date_input)) date_input else NULL
+        )
+        writeLines(
+          paste0("exception=", tolower(as.character(exception))),
+          Sys.getenv("GITHUB_OUTPUT")
+        )
