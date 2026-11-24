@@ -158,7 +158,7 @@ get_hubverse_format_nhsn_data <- function(
   date_col_name = "target_end_date"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
-
+  checkmate::assert_date(as_of, len = 1, any.missing = FALSE)
   hubverse_format_nhsn_data <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "nhsn_hrd_prelim",
     columns = get_nhsn_col_name(disease),
@@ -199,6 +199,7 @@ get_hubverse_format_nssp_data <- function(
   date_col_name = "target_end_date"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
+  checkmate::assert_date(as_of, len = 1, any.missing = FALSE) 
 
   nssp_col_name <- get_nssp_col_name(disease)
 
