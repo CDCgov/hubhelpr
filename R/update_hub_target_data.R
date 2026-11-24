@@ -199,7 +199,7 @@ get_hubverse_format_nssp_data <- function(
   date_col_name = "target_end_date"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
-  checkmate::assert_date(as_of, len = 1, any.missing = FALSE) 
+  checkmate::assert_date(as_of, len = 1, any.missing = FALSE)
 
   nssp_col_name <- get_nssp_col_name(disease)
 
