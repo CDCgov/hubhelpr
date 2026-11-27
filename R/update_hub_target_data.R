@@ -158,7 +158,7 @@ get_hubverse_format_nhsn_data <- function(
   date_col_name = "target_end_date"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
-
+  checkmate::assert_date(as_of, len = 1, any.missing = FALSE)
   hubverse_format_nhsn_data <- forecasttools::pull_data_cdc_gov_dataset(
     dataset = "nhsn_hrd_prelim",
     columns = get_nhsn_col_name(disease),
@@ -178,7 +178,6 @@ get_hubverse_format_nhsn_data <- function(
 #' department visit data in hubverse format.
 #'
 #' @param disease Disease name ("covid" or "rsv").
-#' @param base_hub_path Path to the base hub directory.
 #' @param as_of As-of date of the data pull. Default is
 #' the system date as determined by [lubridate::today()].
 #' @param start_date First week-ending
@@ -194,13 +193,13 @@ get_hubverse_format_nhsn_data <- function(
 #' @export
 get_hubverse_format_nssp_data <- function(
   disease,
-  base_hub_path,
   as_of = lubridate::today(),
   start_date = NULL,
   end_date = NULL,
   date_col_name = "target_end_date"
 ) {
   checkmate::assert_choice(disease, choices = c("covid", "rsv", "flu"))
+  checkmate::assert_date(as_of, len = 1, any.missing = FALSE)
 
   nssp_col_name <- get_nssp_col_name(disease)
 
@@ -294,7 +293,6 @@ update_hub_target_data <- function(
 
   nssp_data <- get_hubverse_format_nssp_data(
     disease,
-    base_hub_path,
     as_of = as_of,
     start_date = start_date_nssp
   )
