@@ -242,6 +242,7 @@ httptest2::with_mock_dir(mockdir_target_data, {
           as_of = lubridate::as_date("2025-08-18"),
           excluded_locations = test_excluded_locations
         )
+        gc()
 
         # second run with same data errors by default
         expect_error(
@@ -253,6 +254,7 @@ httptest2::with_mock_dir(mockdir_target_data, {
           ),
           "overwrite"
         )
+        gc()
 
         # second run with overwrite_existing = TRUE
         # (should succeed)
