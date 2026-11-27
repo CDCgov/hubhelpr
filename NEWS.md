@@ -2,7 +2,7 @@
 
 ## Breaking Changes
 
-- `get_hubverse_format_nssp_data()` no longer accepts `base_hub_path`, so please emove it from the calls.
+- `get_hubverse_format_nssp_data()` no longer accepts `base_hub_path`, so please remove it from the calls.
 - `get_hubverse_format_nhsn_data()` and `get_hubverse_format_nssp_data()` now require `as_of` to be a single, non-missing `Date` object. Defaults to today's date (convert character dates with `as.Date()` before calling these).
 
 ## Behaviour Changes
